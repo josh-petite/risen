@@ -43,15 +43,15 @@ namespace Risen.Tests.Acceptance.Helpers
         {
             var zone = CreateEmptyZone(3, 3);
 
-            var room00 = new Room(0) {Coordinates = new Point(0, 0)};
-            var room01 = new Room(1) {Coordinates = new Point(0, 1)};
-            var room02 = new Room(2) {Coordinates = new Point(0, 2)};
-            var room10 = new Room(3) {Coordinates = new Point(1, 0)};
-            var room11 = new Room(4) {Coordinates = new Point(1, 1)};
-            var room12 = new Room(5) {Coordinates = new Point(1, 2)};
-            var room20 = new Room(6) {Coordinates = new Point(2, 0)};
-            var room21 = new Room(7) {Coordinates = new Point(2, 1)};
-            var room22 = new Room(8) {Coordinates = new Point(2, 2)};
+            var room00 = new Room(0) {Coordinates = new Point(0, 0), Zone = zone};
+            var room01 = new Room(1) {Coordinates = new Point(0, 1), Zone = zone};
+            var room02 = new Room(2) {Coordinates = new Point(0, 2), Zone = zone};
+            var room10 = new Room(3) {Coordinates = new Point(1, 0), Zone = zone};
+            var room11 = new Room(4) {Coordinates = new Point(1, 1), Zone = zone};
+            var room12 = new Room(5) {Coordinates = new Point(1, 2), Zone = zone};
+            var room20 = new Room(6) {Coordinates = new Point(2, 0), Zone = zone};
+            var room21 = new Room(7) {Coordinates = new Point(2, 1), Zone = zone};
+            var room22 = new Room(8) {Coordinates = new Point(2, 2), Zone = zone};
 
             room00.Exits = new Dictionary<Direction, Room> {{Direction.East, room01}, {Direction.South, room10}};
             room01.Exits = new Dictionary<Direction, Room> {{Direction.East, room02}, {Direction.South, room11}, {Direction.West, room00}};

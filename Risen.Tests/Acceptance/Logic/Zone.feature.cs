@@ -78,7 +78,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 6
  testRunner.And("my player is at the center of the cube map", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
- testRunner.When("the player moves north 1 room", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("the player moves North 1 room", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 8
  testRunner.Then("the player should be N1 of its origin", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -99,7 +99,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 13
  testRunner.And("my player is at the center of the cube map", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 14
- testRunner.When("the player moves north 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("the player moves North 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 15
  testRunner.Then("the player should be N1 of its origin", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -120,7 +120,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 20
  testRunner.And("my player is at the center of the cube map", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 21
- testRunner.When("the player moves south 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("the player moves South 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 22
  testRunner.Then("the player should be S1 of its origin", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -141,7 +141,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 27
  testRunner.And("my player is at the center of the cube map", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 28
- testRunner.When("the player moves east 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("the player moves East 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 29
  testRunner.Then("the player should be E1 of its origin", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -162,7 +162,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 34
  testRunner.And("my player is at the center of the cube map", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 35
- testRunner.When("the player moves west 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("the player moves West 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 36
  testRunner.Then("the player should be W1 of its origin", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -183,9 +183,9 @@ this.ScenarioSetup(scenarioInfo);
 #line 41
  testRunner.And("my player is at the center of the cube map", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 42
- testRunner.When("the player moves west 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("the player moves West 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 43
- testRunner.And("the player moves north 1 room", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the player moves North 1 room", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 44
  testRunner.Then("the player should be W1|N1 of its origin", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -208,13 +208,13 @@ this.ScenarioSetup(scenarioInfo);
 #line 49
  testRunner.And("my player is at the center of the cube map", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 50
- testRunner.When("the player moves west 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("the player moves West 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 51
- testRunner.And("the player moves north 1 room", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the player moves North 1 room", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 52
- testRunner.And("the player moves east 2 room", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the player moves East 2 room", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 53
- testRunner.And("the player moves south 2 room", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the player moves South 2 room", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 54
  testRunner.Then("the player should be E2|S2 of its origin", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -235,7 +235,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 59
  testRunner.And("my player is at the center of the North to South Hallway map", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 60
- testRunner.When("the player moves west 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("the player moves West 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 61
  testRunner.Then("the player should be at its origin", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -256,7 +256,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 66
  testRunner.And("my player is at the center of the North to South Hallway map", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 67
- testRunner.When("the player moves east 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("the player moves East 2 rooms", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 68
  testRunner.Then("the player should be at its origin", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

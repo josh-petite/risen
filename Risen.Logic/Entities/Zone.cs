@@ -14,6 +14,11 @@ namespace Risen.Logic.Entities
         {
             return Map.Rooms.Single(o => o.Id == Id);
         }
+
+        public Room GetSpawnRoom()
+        {
+            return Map.Rooms.Any() ? Map.Rooms.First() : null;
+        }
     }
 
     public class Map

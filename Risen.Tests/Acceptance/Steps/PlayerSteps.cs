@@ -20,10 +20,11 @@ namespace Risen.Tests.Acceptance.Steps
         public void GivenMyPlayerIsAtTheCenterOfAMap(string mapType)
         {
             var player = PlayerHelper.GetPlayerFromContext();
+            player.CurrentRoom = ZoneHelper.GetZoneFromContext().GetSpawnRoom();
             ZoneHelper.SpawnPlayerAtCenterOfMap(player, mapType);
         }
         
-        [When(@"the player moves (north|south|east|west|up|down) (.*) rooms?")]
+        [When(@"the player moves (North|South|East|West|Northwest|Northeast|Southwest|Southeast|Up|Down) (.*) rooms?")]
         public void WhenThePlayerMoves(string direction, int numberOfRooms)
         {
             PlayerHelper.MovePlayer((Direction) Enum.Parse(typeof (Direction), direction), numberOfRooms);

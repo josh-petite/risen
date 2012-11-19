@@ -23,7 +23,7 @@
 
         public static bool operator ==(Point current, Point comparingValue)
         {
-            if (current == null || comparingValue == null) return false;
+            if ((object)current == null || (object)comparingValue == null) return false;
             return current.X == comparingValue.X && current.Y == comparingValue.Y;
         }
 
