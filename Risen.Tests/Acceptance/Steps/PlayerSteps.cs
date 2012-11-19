@@ -1,5 +1,7 @@
+using System;
 using NUnit.Framework;
 using Risen.Logic.Entities;
+using Risen.Logic.Enums;
 using Risen.Tests.Acceptance.Helpers;
 using TechTalk.SpecFlow;
 
@@ -18,15 +20,13 @@ namespace Risen.Tests.Acceptance.Steps
         public void GivenMyPlayerIsAtTheCenterOfAMap(string mapType)
         {
             var player = PlayerHelper.GetPlayerFromContext();
-            player.Zone = MapHelper.GetMapFromContext();
-
-            MapHelper.SpawnPlayerAtCenterOfMap(player, mapType);
+            ZoneHelper.SpawnPlayerAtCenterOfMap(player, mapType);
         }
         
         [When(@"the player moves (north|south|east|west|up|down) (.*) rooms?")]
         public void WhenThePlayerMoves(string direction, int numberOfRooms)
         {
-            PlayerHelper.MovePlayer(direction, numberOfRooms);
+            PlayerHelper.MovePlayer((Direction) Enum.Parse(typeof (Direction), direction), numberOfRooms);
         }
 
         [Then(@"the player should be (.*) of its origin")]
@@ -36,14 +36,14 @@ namespace Risen.Tests.Acceptance.Steps
             var movementPath = PlayerHelper.ParseMovement(expectedMovement);
             var destinationLocation = PlayerHelper.GetDestinationLocation(player, movementPath);
 
-            Assert.AreEqual(player.Location, destinationLocation);
+            Assert.AreEqual(player.CurrentRoom, destinationLocation);
         }
 
         [Then(@"the player should be at its origin")]
         public void ThenThePlayerShouldBeAtItsOrigin()
         {
             var player = PlayerHelper.GetPlayerFromContext();
-            Assert.AreEqual(player.Location, player.Origin);
+            Assert.AreEqual(player.CurrentRoom.Coordinates, PlayerHelper.GetPlayerOriginFromContext());
         }
     }
 }

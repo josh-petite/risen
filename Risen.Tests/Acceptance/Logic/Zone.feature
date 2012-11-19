@@ -1,4 +1,4 @@
-﻿Feature: Defining the characteristics of the map when a player moves around	
+﻿Feature: Defining the characteristics of the zone when a player moves around the map
 
 Scenario: #1 Player attempts to move one room north on a cube map
 	Given I have a character

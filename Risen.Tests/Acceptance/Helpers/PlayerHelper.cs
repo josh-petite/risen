@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Risen.Logic.Entities;
+using Risen.Logic.Enums;
+using Risen.Logic.Utility;
 using TechTalk.SpecFlow;
 
 namespace Risen.Tests.Acceptance.Helpers
@@ -13,12 +15,17 @@ namespace Risen.Tests.Acceptance.Helpers
             return (Player)ScenarioContext.Current.Single(o => o.Value.GetType() == typeof(Player)).Value;
         }
 
-        public static void MovePlayer(string direction, int numberOfRooms)
+        public static Room GetPlayerOriginFromContext()
+        {
+            return (Room) ScenarioContext.Current["PlayerOrigin"];
+        }
+
+        public static void MovePlayer(Direction direction, int numberOfRooms)
         {
             var player = GetPlayerFromContext();
 
             for (int i = 0; i < numberOfRooms; i++)
-                player.Move(direction);
+                player.MoveTo(direction);
         }
 
         public static MovementPath ParseMovement(string expectedMovement)
@@ -38,23 +45,24 @@ namespace Risen.Tests.Acceptance.Helpers
 
         public static Room GetDestinationLocation(Player player, MovementPath movementPath)
         {
-            var location = new Room(player.Origin);
+            var playerOrigin = GetPlayerOriginFromContext();
+            var location = new Room {Coordinates = playerOrigin.Coordinates, Exits = playerOrigin.Exits};
 
             foreach (var step in movementPath.Steps)
             {
                 switch (step.Key)
                 {
                     case "N":
-                        location = location.Exits.North;
+                        location = location.Exits[Direction.North];
                         break;
                     case "S":
-                        location = location.Exits.South;
+                        location = location.Exits[Direction.South];
                         break;
                     case "E":
-                        location = location.Exits.East;
+                        location = location.Exits[Direction.East];
                         break;
                     case "W":
-                        location = location.Exits.West;
+                        location = location.Exits[Direction.West];
                         break;
                 }
             }

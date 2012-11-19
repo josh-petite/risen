@@ -48,22 +48,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Acceptance\Helpers\MapHelper.cs" />
+    <Compile Include="Acceptance\Helpers\ZoneHelper.cs" />
     <Compile Include="Acceptance\Helpers\MovementPath.cs" />
     <Compile Include="Acceptance\Helpers\PlayerHelper.cs" />
-    <Compile Include="Acceptance\Logic\Map.feature.cs">
+    <Compile Include="Acceptance\Logic\Zone.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Map.feature</DependentUpon>
+      <DependentUpon>Zone.feature</DependentUpon>
     </Compile>
     <Compile Include="Acceptance\Steps\MapSteps.cs" />
     <Compile Include="Acceptance\Steps\PlayerSteps.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Acceptance\Logic\Map.feature">
+    <None Include="Acceptance\Logic\Zone.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Map.feature.cs</LastGenOutput>
+      <LastGenOutput>Zone.feature.cs</LastGenOutput>
     </None>
     <None Include="App.config" />
     <None Include="packages.config" />
