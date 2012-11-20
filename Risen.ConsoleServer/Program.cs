@@ -1,6 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
 using System.Net;
-using System.Threading;
 using Risen.Server.Tcp;
 
 namespace Risen.ConsoleServer
@@ -13,9 +12,7 @@ namespace Risen.ConsoleServer
             var server = new AsyncTcpServer(new IPAddress(0), 4000);
             server.Start();
 
-            while (server.TcpClients.Any())
-            {
-            }
+            Process.GetCurrentProcess().WaitForExit();
         }
     }
 }
