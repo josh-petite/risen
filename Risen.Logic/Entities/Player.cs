@@ -14,8 +14,10 @@ namespace Risen.Server.Entities
             CurrentRoom = spawnRoom;
         }
 
-        public string GivenName { get; set; }
+        public Title Title { get; set; }
+        public string Name { get; set; }
         public string Surname { get; set; }
+        public PostTitle PostTitle { get; set; }
         public CharacterClass Class  { get; set; }
         public byte Level { get; set; }
         public Room CurrentRoom { get; set; }

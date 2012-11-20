@@ -55,6 +55,8 @@
     <Compile Include="Entities\Zone.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\ZoneCache.cs" />
+    <Compile Include="Enums\PostTitle.cs" />
+    <Compile Include="Enums\Title.cs" />
     <Compile Include="Logic\ZoneLogic.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Tcp\AsyncTcpServer.cs" />

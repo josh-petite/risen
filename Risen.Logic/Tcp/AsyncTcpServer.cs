@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -38,7 +39,12 @@ namespace Risen.Server.Tcp
         public void Start()
         {
             _tcpListener.Start();
-            _tcpListener.BeginAcceptTcpClient(AcceptTcpClientCallback, null);
+            StartAccept();
+        }
+
+        private void StartAccept()
+        {
+            _tcpListener.BeginAcceptTcpClient(HandleAsyncConnection, null);
         }
 
         public void Stop()
@@ -77,8 +83,9 @@ namespace Risen.Server.Tcp
             }
         }
 
-        private void AcceptTcpClientCallback(IAsyncResult ar)
+        private void HandleAsyncConnection(IAsyncResult ar)
         {
+            StartAccept();
             var tcpClient = _tcpListener.EndAcceptTcpClient(ar);
             var buffer = new byte[tcpClient.ReceiveBufferSize];
             var client = new Client(tcpClient, buffer);
@@ -118,6 +125,18 @@ namespace Risen.Server.Tcp
             Console.WriteLine(data);
 
             networkStream.BeginRead(client.Buffer, 0, client.Buffer.Length, ReadCallback, client);
+        }
+
+        public void Broadcast(string msg, string uName, bool flag)
+        {
+            foreach (var client in _clients)
+            {
+                var broadcastStream = client.NetworkStream;
+
+                var broadcastBytes = flag ? Encoding.ASCII.GetBytes(uName + " says : " + msg) : Encoding.ASCII.GetBytes(msg);
+                broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
+                broadcastStream.Flush();
+            }
         }
     }
 
