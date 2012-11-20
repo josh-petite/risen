@@ -69,8 +69,12 @@ namespace Risen.Server.Tcp
         private void WriteCallBack(IAsyncResult ar)
         {
             var tcpClient = ar.AsyncState as TcpClient;
-            var networkStream = tcpClient.GetStream();
-            networkStream.EndWrite(ar);
+            
+            if (tcpClient != null)
+            {
+                var networkStream = tcpClient.GetStream();
+                networkStream.EndWrite(ar);
+            }
         }
 
         private void AcceptTcpClientCallback(IAsyncResult ar)

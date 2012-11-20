@@ -30,7 +30,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\packages\FluentNHibernate.1.3.0.733\lib\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\packages\NHibernate.3.3.2.4000\lib\Net35\NHibernate.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -41,10 +51,12 @@
   <ItemGroup>
     <Compile Include="Entities\CharacterClass.cs" />
     <Compile Include="Entities\ExperienceTable.cs" />
+    <Compile Include="Entities\Maps\RoomMap.cs" />
     <Compile Include="Entities\Zone.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\ZoneCache.cs" />
     <Compile Include="Logic\ZoneLogic.cs" />
+    <Compile Include="Repository.cs" />
     <Compile Include="Tcp\AsyncTcpServer.cs" />
     <Compile Include="Utility\Point.cs" />
     <Compile Include="Entities\Room.cs" />
@@ -54,7 +66,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
