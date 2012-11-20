@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Risen.Logic.Entities
+namespace Risen.Server.Entities
 {
     public class World
     {

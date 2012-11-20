@@ -1,4 +1,4 @@
-﻿namespace Risen.Logic.Enums
+﻿namespace Risen.Server.Enums
 {
     public enum Direction
     {

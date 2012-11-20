@@ -1,4 +1,4 @@
-﻿namespace Risen.Logic.Utility
+﻿namespace Risen.Server.Utility
 {
     public class Point
     {

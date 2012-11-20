@@ -1,6 +1,6 @@
-﻿using Risen.Logic.Entities;
+﻿using Risen.Server.Entities;
 
-namespace Risen.Logic.Logic
+namespace Risen.Server.Logic
 {
     public interface IZoneLogic
     {

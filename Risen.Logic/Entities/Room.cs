@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Risen.Logic.Enums;
-using Risen.Logic.Utility;
+using Risen.Server.Enums;
+using Risen.Server.Utility;
 
-namespace Risen.Logic.Entities
+namespace Risen.Server.Entities
 {
     public class Room
     {

@@ -1,7 +1,7 @@
 using System;
 using NUnit.Framework;
-using Risen.Logic.Entities;
-using Risen.Logic.Enums;
+using Risen.Server.Entities;
+using Risen.Server.Enums;
 using Risen.Tests.Acceptance.Helpers;
 using TechTalk.SpecFlow;
 

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Risen.Logic.Entities;
-using Risen.Logic.Enums;
-using Risen.Logic.Utility;
+using Risen.Server.Entities;
+using Risen.Server.Enums;
 using TechTalk.SpecFlow;
 
 namespace Risen.Tests.Acceptance.Helpers

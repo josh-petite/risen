@@ -7,8 +7,8 @@
     <ProjectGuid>{C5C997D3-C60D-4715-B648-323BE9960C07}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Risen.Logic</RootNamespace>
-    <AssemblyName>Risen.Logic</AssemblyName>
+    <RootNamespace>Risen.Server</RootNamespace>
+    <AssemblyName>Risen.Server</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -45,7 +45,7 @@
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\ZoneCache.cs" />
     <Compile Include="Logic\ZoneLogic.cs" />
-    <Compile Include="Tcp\SocketServer.cs" />
+    <Compile Include="Tcp\AsyncTcpServer.cs" />
     <Compile Include="Utility\Point.cs" />
     <Compile Include="Entities\Room.cs" />
     <Compile Include="Entities\World.cs" />

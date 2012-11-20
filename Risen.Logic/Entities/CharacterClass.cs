@@ -1,4 +1,4 @@
-﻿namespace Risen.Logic.Entities
+﻿namespace Risen.Server.Entities
 {
     public class CharacterClass
     {
