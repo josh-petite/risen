@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C5C997D3-C60D-4715-B648-323BE9960C07}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{557DF5BB-439D-4ED7-B09C-BCB256566C48}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Risen.Logic</RootNamespace>
-    <AssemblyName>Risen.Logic</AssemblyName>
+    <RootNamespace>Risen.ConsoleServer</RootNamespace>
+    <AssemblyName>Risen.ConsoleServer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -39,22 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\CharacterClass.cs" />
-    <Compile Include="Entities\ExperienceTable.cs" />
-    <Compile Include="Entities\Zone.cs" />
-    <Compile Include="Entities\Player.cs" />
-    <Compile Include="Entities\ZoneCache.cs" />
-    <Compile Include="Logic\ZoneLogic.cs" />
-    <Compile Include="Tcp\SocketServer.cs" />
-    <Compile Include="Utility\Point.cs" />
-    <Compile Include="Entities\Room.cs" />
-    <Compile Include="Entities\World.cs" />
-    <Compile Include="Enums\Direction.cs" />
-    <Compile Include="Extentions\RoomExtensions.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Risen.Client\Risen.Client.csproj">
+      <Project>{01B4EA93-7D6E-4F2A-8CBC-F5C265FB899A}</Project>
+      <Name>Risen.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Risen.Logic\Risen.Server.csproj">
+      <Project>{C5C997D3-C60D-4715-B648-323BE9960C07}</Project>
+      <Name>Risen.Server</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

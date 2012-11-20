@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Risen.Logic.Enums;
 using Risen.Logic.Utility;
 
 namespace Risen.Logic.Entities
