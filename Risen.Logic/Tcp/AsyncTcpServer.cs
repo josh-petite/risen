@@ -94,7 +94,10 @@ namespace Risen.Server.Tcp
             if (client == null) return;
 
             var networkStream = client.NetworkStream;
-            int read = networkStream.EndRead(ar);
+            int read;
+
+            try { read = networkStream.EndRead(ar); }
+            catch { read = 0; }
 
             if (read == 0)
             {
@@ -114,7 +117,7 @@ namespace Risen.Server.Tcp
         }
     }
 
-    public class Client
+    internal class Client
     {
         public Client(TcpClient tcpClient, byte[] buffer)
         {
