@@ -4,10 +4,10 @@ using TechTalk.SpecFlow;
 namespace Risen.Tests.Acceptance.Steps
 {
     [Binding]
-    public class MapSteps
+    public class ZoneSteps
     {
-        [Given(@"I have a (.*) map")]
-        public void GivenIHaveACrossShapedMap(string mapType)
+        [Given(@"I have a (.*) zone")]
+        public void GivenIHaveAZone(string mapType)
         {
             ScenarioContext.Current.Add(string.Format("{0} map", mapType), ZoneHelper.BuildMapFromMapType(mapType));
         }
@@ -15,9 +15,8 @@ namespace Risen.Tests.Acceptance.Steps
         [Given(@"the player is in a north to south hallway")]
         public void GivenThePlayerIsInANorthToSouthHallway()
         {
-            var mapType = "North to South Hallway";
-            ScenarioContext.Current.Add(mapType, ZoneHelper.BuildMapFromMapType(mapType));
+            const string mapType = "North to South Hallway";
+            ScenarioContext.Current.Add(string.Format("{0} map", mapType), ZoneHelper.BuildMapFromMapType(mapType));
         }
-
     }
 }

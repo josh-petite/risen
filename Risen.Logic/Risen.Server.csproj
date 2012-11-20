@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\CharacterClass.cs" />
+    <Compile Include="Entities\ExperienceTable.cs" />
     <Compile Include="Entities\Zone.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\ZoneCache.cs" />

@@ -21,7 +21,7 @@ namespace Risen.Logic.Entities
 
         public static Room MovePlayerTo(Player player, Point roomCoordinates)
         {
-            var targetRoom = player.CurrentRoom.Zone.Map.Rooms.First(o => o.Coordinates == roomCoordinates);
+            var targetRoom = player.CurrentRoom.Zone.Rooms.First(o => o.Coordinates == roomCoordinates);
             player.CurrentRoom = targetRoom;
 
             return targetRoom;

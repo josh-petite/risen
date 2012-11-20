@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Risen.Logic.Enums;
+﻿using Risen.Logic.Enums;
 using Risen.Logic.Utility;
 
 namespace Risen.Logic.Entities
@@ -23,6 +22,9 @@ namespace Risen.Logic.Entities
 
         public void MoveTo(Direction exit)
         {
+            if (!CurrentRoom.Exits.ContainsKey(exit))
+                return;
+
             CurrentRoom = CurrentRoom.Exits[exit];
         }
 
@@ -31,16 +33,5 @@ namespace Risen.Logic.Entities
             CurrentRoom = ZoneCache.MovePlayerTo(this, roomCoordinates);
             return CurrentRoom;
         }
-    }
-
-    public class CharacterClass
-    {
-        public string Name { get; set; }
-        public ExperienceTable ExperienceTable { get; set; }
-    }
-
-    public class ExperienceTable
-    {
-        public Dictionary<byte, int> LevelDefinitions { get; set; } 
     }
 }

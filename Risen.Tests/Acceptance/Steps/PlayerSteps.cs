@@ -16,8 +16,8 @@ namespace Risen.Tests.Acceptance.Steps
             ScenarioContext.Current.Add("Player", new Player());
         }
 
-        [Given(@"my player is at the center of the (.*) map")]
-        public void GivenMyPlayerIsAtTheCenterOfAMap(string mapType)
+        [Given(@"my player is at the center of the (.*) zone")]
+        public void GivenMyPlayerIsAtTheCenterOfAZone(string mapType)
         {
             var player = PlayerHelper.GetPlayerFromContext();
             player.CurrentRoom = ZoneHelper.GetZoneFromContext().GetSpawnRoom();
@@ -44,7 +44,7 @@ namespace Risen.Tests.Acceptance.Steps
         public void ThenThePlayerShouldBeAtItsOrigin()
         {
             var player = PlayerHelper.GetPlayerFromContext();
-            Assert.AreEqual(player.CurrentRoom.Coordinates, PlayerHelper.GetPlayerOriginFromContext());
+            Assert.AreEqual(player.CurrentRoom, PlayerHelper.GetPlayerOriginFromContext());
         }
     }
 }

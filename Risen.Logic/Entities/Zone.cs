@@ -8,21 +8,16 @@ namespace Risen.Logic.Entities
         public uint Id { get; set; }
         public string Name { get; set; }
         public List<Player> ActivePlayers { get; set; }
-        public Map Map { get; set; }
+        public IList<Room> Rooms { get; set; }
         
         public Room GetRoom(uint roomId)
         {
-            return Map.Rooms.Single(o => o.Id == Id);
+            return Rooms.Single(o => o.Id == Id);
         }
 
         public Room GetSpawnRoom()
         {
-            return Map.Rooms.Any() ? Map.Rooms.First() : null;
+            return Rooms.Any() ? Rooms.First() : null;
         }
-    }
-
-    public class Map
-    {
-        public IList<Room> Rooms { get; set; }
     }
 }
