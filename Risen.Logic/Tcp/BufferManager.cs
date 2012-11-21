@@ -5,18 +5,18 @@ namespace Risen.Server.Tcp
 {
     internal class BufferManager
     {
-        int m_numBytes;                 // the total number of bytes controlled by the buffer pool
-        byte[] m_buffer;                // the underlying byte array maintained by the Buffer Manager
-        Stack<int> m_freeIndexPool;     //  
-        int m_currentIndex;
-        int m_bufferSize;
+        private readonly int _numBytes;        // the total number of bytes controlled by the buffer pool
+        private byte[] _buffer;                // the underlying byte array maintained by the Buffer Manager
+        private readonly Stack<int> _freeIndexPool;     
+        private int _currentIndex;
+        private readonly int _bufferSize;
 
         public BufferManager(int totalBytes, int bufferSize)
         {
-            m_numBytes = totalBytes;
-            m_currentIndex = 0;
-            m_bufferSize = bufferSize;
-            m_freeIndexPool = new Stack<int>();
+            _numBytes = totalBytes;
+            _currentIndex = 0;
+            _bufferSize = bufferSize;
+            _freeIndexPool = new Stack<int>();
         }
 
         // Allocates buffer space used by the buffer pool 
@@ -24,7 +24,7 @@ namespace Risen.Server.Tcp
         {
             // create one big large buffer and divide that  
             // out to each SocketAsyncEventArg object
-            m_buffer = new byte[m_numBytes];
+            _buffer = new byte[_numBytes];
         }
 
         // Assigns a buffer from the buffer pool to the  
@@ -34,18 +34,18 @@ namespace Risen.Server.Tcp
         public bool SetBuffer(SocketAsyncEventArgs args)
         {
 
-            if (m_freeIndexPool.Count > 0)
+            if (_freeIndexPool.Count > 0)
             {
-                args.SetBuffer(m_buffer, m_freeIndexPool.Pop(), m_bufferSize);
+                args.SetBuffer(_buffer, _freeIndexPool.Pop(), _bufferSize);
             }
             else
             {
-                if ((m_numBytes - m_bufferSize) < m_currentIndex)
+                if ((_numBytes - _bufferSize) < _currentIndex)
                 {
                     return false;
                 }
-                args.SetBuffer(m_buffer, m_currentIndex, m_bufferSize);
-                m_currentIndex += m_bufferSize;
+                args.SetBuffer(_buffer, _currentIndex, _bufferSize);
+                _currentIndex += _bufferSize;
             }
             return true;
         }
@@ -54,9 +54,8 @@ namespace Risen.Server.Tcp
         // This frees the buffer back to the buffer pool 
         public void FreeBuffer(SocketAsyncEventArgs args)
         {
-            m_freeIndexPool.Push(args.Offset);
+            _freeIndexPool.Push(args.Offset);
             args.SetBuffer(null, 0, 0);
         }
-
     }
 }
