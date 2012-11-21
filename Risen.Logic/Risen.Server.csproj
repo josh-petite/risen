@@ -58,8 +58,12 @@
     <Compile Include="Enums\PostTitle.cs" />
     <Compile Include="Enums\Title.cs" />
     <Compile Include="Logic\ZoneLogic.cs" />
+    <Compile Include="Pooling\Foo.cs" />
+    <Compile Include="Pooling\Pool.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Tcp\AsyncTcpServer.cs" />
+    <Compile Include="Tcp\SocketAsyncEventArgsServer.cs" />
+    <Compile Include="Tcp\Telnet.cs" />
     <Compile Include="Utility\Point.cs" />
     <Compile Include="Entities\Room.cs" />
     <Compile Include="Entities\World.cs" />
