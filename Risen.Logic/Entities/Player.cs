@@ -3,7 +3,7 @@ using Risen.Server.Utility;
 
 namespace Risen.Server.Entities
 {
-    public class Player
+    public sealed class Player : MobileEntity
     {
         public Player()
         {
@@ -18,10 +18,10 @@ namespace Risen.Server.Entities
         public string Name { get; set; }
         public string Surname { get; set; }
         public PostTitle PostTitle { get; set; }
-        public CharacterClass Class  { get; set; }
+        public PlayerClassReferenceType ClassReferenceType { get; set; }
         public byte Level { get; set; }
         public Room CurrentRoom { get; set; }
-
+        
         public void MoveTo(Direction exit)
         {
             if (!CurrentRoom.Exits.ContainsKey(exit))

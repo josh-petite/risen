@@ -4,22 +4,16 @@ using Risen.Server.Utility;
 
 namespace Risen.Server.Entities
 {
-    public class Room
+    public class Room : EntityBase
     {
         public Room()
         {
         }
 
-        public Room(uint id)
-        {
-            Id = id;
-        }
-
-        public uint Id { get; set; }
-        public string Name { get; set; }
-        public IEnumerable<Player> PlayersPresent { get; set; }
-        public Dictionary<Direction, Room> Exits { get; set; }
-        public Zone Zone { get; set; }
-        public Point Coordinates { get; set; }
+        public virtual string Name { get; set; }
+        public virtual IEnumerable<Player> PlayersPresent { get; set; }
+        public virtual Dictionary<Direction, Room> Exits { get; set; }
+        public virtual Zone Zone { get; set; }
+        public virtual Point Coordinates { get; set; }
     }
 }

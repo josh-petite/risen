@@ -31,21 +31,21 @@ namespace Risen.Tests.Acceptance.Helpers
         {
             var zone = CreateEmptyZone(3, 5);
 
-            var room00 = new Room(0) { Coordinates = new Point(0, 0), Zone = zone };
-            var room01 = new Room(1) { Coordinates = new Point(0, 1), Zone = zone };
-            var room02 = new Room(2) { Coordinates = new Point(0, 2), Zone = zone };
-            var room10 = new Room(3) { Coordinates = new Point(1, 0), Zone = zone };
-            var room11 = new Room(4) { Coordinates = new Point(1, 1), Zone = zone };
-            var room12 = new Room(5) { Coordinates = new Point(1, 2), Zone = zone };
-            var room20 = new Room(6) { Coordinates = new Point(2, 0), Zone = zone };
-            var room21 = new Room(7) { Coordinates = new Point(2, 1), Zone = zone };
-            var room22 = new Room(8) { Coordinates = new Point(2, 2), Zone = zone };
-            var room30 = new Room(9) { Coordinates = new Point(3, 0), Zone = zone };
-            var room31 = new Room(10) { Coordinates = new Point(3, 1), Zone = zone };
-            var room32 = new Room(11) { Coordinates = new Point(3, 2), Zone = zone };
-            var room40 = new Room(12) { Coordinates = new Point(4, 0), Zone = zone };
-            var room41 = new Room(13) { Coordinates = new Point(4, 1), Zone = zone };
-            var room42 = new Room(14) { Coordinates = new Point(4, 2), Zone = zone };
+            var room00 = new Room { Id = 1, Coordinates = new Point(0, 0), Zone = zone };
+            var room01 = new Room { Id = 2, Coordinates = new Point(0, 1), Zone = zone };
+            var room02 = new Room { Id = 3, Coordinates = new Point(0, 2), Zone = zone };
+            var room10 = new Room { Id = 4, Coordinates = new Point(1, 0), Zone = zone };
+            var room11 = new Room { Id = 5, Coordinates = new Point(1, 1), Zone = zone };
+            var room12 = new Room { Id = 6, Coordinates = new Point(1, 2), Zone = zone };
+            var room20 = new Room { Id = 7, Coordinates = new Point(2, 0), Zone = zone };
+            var room21 = new Room { Id = 8, Coordinates = new Point(2, 1), Zone = zone };
+            var room22 = new Room { Id = 9, Coordinates = new Point(2, 2), Zone = zone };
+            var room30 = new Room { Id = 10, Coordinates = new Point(3, 0), Zone = zone };
+            var room31 = new Room { Id = 11, Coordinates = new Point(3, 1), Zone = zone };
+            var room32 = new Room { Id = 12, Coordinates = new Point(3, 2), Zone = zone };
+            var room40 = new Room { Id = 13, Coordinates = new Point(4, 0), Zone = zone };
+            var room41 = new Room { Id = 14, Coordinates = new Point(4, 1), Zone = zone };
+            var room42 = new Room { Id = 15, Coordinates = new Point(4, 2), Zone = zone };
 
             room01.Exits = new Dictionary<Direction, Room> {{Direction.South, room11}};
             room11.Exits = new Dictionary<Direction, Room> {{Direction.North, room01}, {Direction.South, room21}};
@@ -76,15 +76,15 @@ namespace Risen.Tests.Acceptance.Helpers
         {
             var zone = CreateEmptyZone(3, 3);
 
-            var room00 = new Room(0) {Coordinates = new Point(0, 0), Zone = zone};
-            var room01 = new Room(1) {Coordinates = new Point(0, 1), Zone = zone};
-            var room02 = new Room(2) {Coordinates = new Point(0, 2), Zone = zone};
-            var room10 = new Room(3) {Coordinates = new Point(1, 0), Zone = zone};
-            var room11 = new Room(4) {Coordinates = new Point(1, 1), Zone = zone};
-            var room12 = new Room(5) {Coordinates = new Point(1, 2), Zone = zone};
-            var room20 = new Room(6) {Coordinates = new Point(2, 0), Zone = zone};
-            var room21 = new Room(7) {Coordinates = new Point(2, 1), Zone = zone};
-            var room22 = new Room(8) {Coordinates = new Point(2, 2), Zone = zone};
+            var room00 = new Room { Id = 1, Coordinates = new Point(0, 0), Zone = zone };
+            var room01 = new Room { Id = 2, Coordinates = new Point(0, 1), Zone = zone };
+            var room02 = new Room { Id = 3, Coordinates = new Point(0, 2), Zone = zone };
+            var room10 = new Room { Id = 4, Coordinates = new Point(1, 0), Zone = zone };
+            var room11 = new Room { Id = 5, Coordinates = new Point(1, 1), Zone = zone };
+            var room12 = new Room { Id = 6, Coordinates = new Point(1, 2), Zone = zone };
+            var room20 = new Room { Id = 7, Coordinates = new Point(2, 0), Zone = zone };
+            var room21 = new Room { Id = 8, Coordinates = new Point(2, 1), Zone = zone };
+            var room22 = new Room { Id = 9, Coordinates = new Point(2, 2), Zone = zone };
 
             room00.Exits = new Dictionary<Direction, Room> {{Direction.East, room01}, {Direction.South, room10}};
             room01.Exits = new Dictionary<Direction, Room> {{Direction.East, room02}, {Direction.South, room11}, {Direction.West, room00}};
