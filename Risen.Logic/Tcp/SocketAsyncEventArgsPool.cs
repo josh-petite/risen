@@ -6,23 +6,12 @@ using System.Threading;
 
 namespace Risen.Server.Tcp
 {
-    public interface ISocketAsyncEventArgsPool
+    public class SocketAsyncEventArgsPool
     {
-        void Push(SocketAsyncEventArgs item);
-        int AssignTokenId();
-    }
+        private int _nextTokenId;
+        private readonly Stack<SocketAsyncEventArgs> _pool;
 
-    public class SocketAsyncEventArgsPool : ISocketAsyncEventArgsPool
-    {
-        private int _nextTokenId = 0;
-        private Stack<SocketAsyncEventArgs> _pool;
-
-        /// <summary>
-        /// Initializes the pool to the specified size.
-        /// </summary>
-        /// <param name="capacity">Maximum number of <see cref="System.Net.Sockets.SocketAsyncEventArgs"/>
-        /// objects the pool can hold.</param>
-        public void Init(int capacity)
+        public SocketAsyncEventArgsPool(int capacity)
         {
             _pool = new Stack<SocketAsyncEventArgs>(capacity);
         }
@@ -45,8 +34,13 @@ namespace Risen.Server.Tcp
 
         public int AssignTokenId()
         {
-            Int32 tokenId = Interlocked.Increment(ref nextTokenId);
+            var tokenId = Interlocked.Increment(ref _nextTokenId);
             return tokenId;
+        }
+
+        public bool Any()
+        {
+            return _pool.Count > 0;
         }
 
         /// <summary>

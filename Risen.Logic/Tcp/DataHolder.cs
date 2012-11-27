@@ -12,13 +12,11 @@ namespace Risen.Server.Tcp
         //the SAEA object back in the pool quickly, or continue with the data
         //transmission quickly.
         //DataHolder has this byte array to which you can copy the data.
-        internal Byte[] DataMessageReceived;
-
-        internal Int32 ReceivedTransMissionId;
-
-        internal Int32 SessionId;
+        public Byte[] DataMessageReceived;
+        public int ReceivedTransmissionId;
+        public int SessionId;
 
         //for testing. With a packet analyzer this can help you see specific connections.
-        internal EndPoint RemoteEndpoint;
+        public EndPoint RemoteEndpoint;
     }
 }

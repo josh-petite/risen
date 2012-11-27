@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Configuration;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Risen.Server.Tcp
 {
@@ -9,6 +11,11 @@ namespace Risen.Server.Tcp
         int ReceiveBufferSize { get; }
         int MaxSimultaneousAcceptOperations { get; }
         int MaxNumberOfConnections { get; }
+        IPEndPoint LocalEndPoint { get; set; }
+        int Backlog { get; }
+        int NumberOfSaeaForRecSend { get; }
+        int ReceivePrefixLength { get; }
+        int SendPrefixLength { get; }
     }
 
     public class ListenerConfiguration : IListenerConfiguration
@@ -24,9 +31,9 @@ namespace Risen.Server.Tcp
         public int SendPrefixLength { get; private set; }
         public int MainTransmissionId { get; private set; }
         public int StartingId { get; private set; }
-        public int MainSessionId { get; private set; }
         public int MaxSimultaneousClientsThatWereConnected { get; private set; }
         public int NumberOfSaeaForRecSend { get; private set; }
+        public IPEndPoint LocalEndPoint { get; set; }
 
         public void Init()
         {
@@ -41,16 +48,15 @@ namespace Risen.Server.Tcp
             SendPrefixLength = Convert.ToInt32(ConfigurationManager.AppSettings["SendPrefixLength"]);
             MainTransmissionId = Convert.ToInt32(ConfigurationManager.AppSettings["MainTransmissionId"]);
             StartingId = Convert.ToInt32(ConfigurationManager.AppSettings["StartingId"]);
-            MainSessionId = Convert.ToInt32(ConfigurationManager.AppSettings["MainSessionId"]);
             MaxSimultaneousClientsThatWereConnected = Convert.ToInt32(ConfigurationManager.AppSettings["MaxSimultaneousClientsThatWereConnected"]);
 
             NumberOfSaeaForRecSend = MaxNumberOfConnections + ExcessSaeaObjectsInPool;
+            LocalEndPoint = new IPEndPoint(IPAddress.Any, Port);
         }
 
         public int GetTotalBytesRequiredForInitialBufferConfiguration()
         {
             return ReceiveBufferSize*NumberOfSaeaForRecSend*OperationsToPreallocate;
         }
-
     }
 }
