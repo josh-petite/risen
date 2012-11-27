@@ -27,7 +27,7 @@ namespace Risen.Server.Tcp
         // call the Init method followed by Start method  
         public SocketListener(IListenerConfiguration listenerConfiguration, IBufferManager bufferManager, IPrefixHandler prefixHandler, IMessageHandler messageHandler, ILogger logger)
         {
-            logger.WriteLine("-- Starting Socket Listener Constructor --");
+            logger.WriteLine("-- Starting SocketListener Constructor --");
 
             _listenerConfiguration = listenerConfiguration;
             _prefixHandler = prefixHandler;
@@ -41,7 +41,7 @@ namespace Risen.Server.Tcp
             Log(Init);
             Log(StartListen);
 
-            logger.WriteLine("-- Socket Listener Constructor Complete --");
+            logger.WriteLine("-- SocketListener Constructor Complete --");
         }
 
         private void Log(Action action)
@@ -97,7 +97,7 @@ namespace Risen.Server.Tcp
                 var receiveSendUserToken = new DataHoldingUserToken(eventArgForPool, _listenerConfiguration, _poolOfRecSendEventArgs.AssignTokenId() + 1000000);
                 receiveSendUserToken.CreateNewDataHolder();
                 eventArgForPool.UserToken = receiveSendUserToken;
-                _poolOfAcceptEventArgs.Push(eventArgForPool);
+                _poolOfRecSendEventArgs.Push(eventArgForPool);
             }
         }
 
