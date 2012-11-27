@@ -6,11 +6,16 @@ namespace Risen.ConsoleServer
 {
     class Program
     {
-        // http://robjdavey.wordpress.com/2011/02/12/asynchronous-tcp-server-example/
         static void Main(string[] args)
         {
-            var server = new AsyncTcpServer(new IPAddress(0), 4000);
-            server.Start();
+            // Simple Async Tcp Server
+            //var server = new AsyncTcpServer(new IPAddress(0), 4000);
+            //server.Start();
+
+            // SocketAsyncEventArgsPool server
+            var listenerConfiguration = new ListenerConfiguration();
+            var bufferManager = new BufferManager(listenerConfiguration.GetTotalBytesRequiredForInitialBufferConfiguration(), listenerConfiguration.GetBufferSize());
+            var server = new SocketListener(listenerConfiguration, bufferManager, new PrefixHandler(), new MessageHandler(), new Logger(true));
 
             Process.GetCurrentProcess().WaitForExit();
         }

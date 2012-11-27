@@ -3,21 +3,21 @@ using System.Net.Sockets;
 
 namespace Risen.Server.Tcp
 {
-    public class MessageHandler
+    public interface IMessageHandler
     {
-        public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs,
-                                  DataHoldingUserToken receiveSendToken,
-                                  Int32 remainingBytesToProcess)
+        bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess);
+    }
+
+    public class MessageHandler : IMessageHandler
+    {
+        public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken receiveSendToken, int remainingBytesToProcess)
         {
             bool incomingTcpMessageIsReady = false;
 
             //Create the array where we'll store the complete message,
             //if it has not been created on a previous receive op.
             if (receiveSendToken.ReceivedMessageBytesDoneCount == 0)
-            {
-                receiveSendToken.DataHolder.DataMessageReceived =
-                    new Byte[receiveSendToken.LengthOfCurrentIncomingMessage];
-            }
+                receiveSendToken.DataHolder.DataMessageReceived = new Byte[receiveSendToken.LengthOfCurrentIncomingMessage];
 
             // Remember there is a receiveSendToken.receivedPrefixBytesDoneCount
             // variable, which allowed us to handle the prefix even when it
@@ -57,12 +57,10 @@ namespace Risen.Server.Tcp
                                  receiveSendToken.ReceivedMessageBytesDoneCount,
                                  remainingBytesToProcess);
 
-                receiveSendToken.ReceiveMessageOffset =
-                    receiveSendToken.ReceiveMessageOffset -
-                    receiveSendToken.RecPrefixBytesDoneThisOperation;
-
+                receiveSendToken.ReceiveMessageOffset = receiveSendToken.ReceiveMessageOffset - receiveSendToken.RecPrefixBytesDoneThisOperation;
                 receiveSendToken.ReceivedMessageBytesDoneCount += remainingBytesToProcess;
             }
+
             return incomingTcpMessageIsReady;
         }
     }

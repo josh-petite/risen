@@ -24,7 +24,9 @@ namespace Risen.Server.Tcp
         /// <exception cref="ArgumentNullException">If <paramref name="item"/> is null.</exception>
         public void Push(SocketAsyncEventArgs item)
         {
-            Contract.Requires<ArgumentNullException>(item != null, "item must not be null.");
+            if (item == null)
+                throw new ArgumentNullException("item");
+            
 
             lock (_pool)
             {

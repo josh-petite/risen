@@ -3,7 +3,12 @@ using System.Net.Sockets;
 
 namespace Risen.Server.Tcp
 {
-    public class PrefixHandler
+    public interface IPrefixHandler
+    {
+        int HandlePrefix(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess);
+    }
+
+    public class PrefixHandler : IPrefixHandler
     {
         public int HandlePrefix(SocketAsyncEventArgs e, DataHoldingUserToken receiveSendToken, Int32 remainingBytesToProcess)
         {

@@ -70,6 +70,7 @@
     <Compile Include="Tcp\DataHoldingUserToken.cs" />
     <Compile Include="Tcp\IncomingDataPreparer.cs" />
     <Compile Include="Tcp\ListenerConfiguration.cs" />
+    <Compile Include="Tcp\Logger.cs" />
     <Compile Include="Tcp\Mediator.cs" />
     <Compile Include="Tcp\MessageHandler.cs" />
     <Compile Include="Tcp\OutgoingDataPreparer.cs" />

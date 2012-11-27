@@ -8,42 +8,51 @@ namespace Risen.Server.Tcp
 {
     // sample walkthrough at: http://www.codeproject.com/Articles/83102/C-SocketAsyncEventArgs-High-Performance-Socket-Cod
     // Implements the connection logic for the socket server.   
-    // After accepting a connection, all data read from the client  
-    // is sent back to the client. The read and echo back to the client pattern  
-    // is continued until the client disconnects.
+    // After accepting a connection, all data read from the client is sent back to the client. 
+    // The read and echo back to the client pattern is continued until the client disconnects.
     public class SocketListener
     {
         private readonly IBufferManager _bufferManager; // represents a large reusable set of buffers for all socket operations 
-        private Socket _listenSocket; // the socket used to listen for incoming connection requests 
         private readonly IListenerConfiguration _listenerConfiguration;
+        private readonly IPrefixHandler _prefixHandler;
+        private readonly IMessageHandler _messageHandler;
+        private readonly ILogger _logger;
         private readonly Semaphore _maxNumberAcceptedClients;
-        private PrefixHandler _prefixHandler;
-        private MessageHandler _messageHandler;
-
+        private Socket _listenSocket; // the socket used to listen for incoming connection requests 
         private SocketAsyncEventArgsPool _poolOfAcceptEventArgs; // pool of reusable SocketAsyncEventArgs objects for accept operations
         private SocketAsyncEventArgsPool _poolOfRecSendEventArgs; // pool of reusable SocketAsyncEventArgs objects for receive and send socket operations
 
         // Create an uninitialized server instance.   
         // To start the server listening for connection requests 
         // call the Init method followed by Start method  
-        public SocketListener(IListenerConfiguration listenerConfiguration, IBufferManager bufferManager)
+        public SocketListener(IListenerConfiguration listenerConfiguration, IBufferManager bufferManager, IPrefixHandler prefixHandler, IMessageHandler messageHandler, ILogger logger)
         {
+            logger.WriteLine("-- Starting Socket Listener Constructor --");
+
             _listenerConfiguration = listenerConfiguration;
+            _prefixHandler = prefixHandler;
+            _messageHandler = messageHandler;
+            _logger = logger;
+
             // allocate buffers such that the maximum number of sockets can have one outstanding read and write posted to the socket simultaneously  
-            _bufferManager = bufferManager; // new BufferManager(_listenerConfiguration.GetTotalBytesRequiredForInitialBufferConfiguration(), _listenerConfiguration.ReceiveBufferSize);
+            _bufferManager = bufferManager;
             _maxNumberAcceptedClients = new Semaphore(listenerConfiguration.MaxNumberOfConnections, listenerConfiguration.MaxNumberOfConnections);
 
-            Init();
-            StartListen();
+            Log(Init);
+            Log(StartListen);
+
+            logger.WriteLine("-- Socket Listener Constructor Complete --");
+        }
+
+        private void Log(Action action)
+        {
+            _logger.WriteLine(string.Format("Method: {0} executed", action.Method));
+            action.Invoke();
         }
 
         public static List<DataHolder> DataHolders { get; set; }
-        public static int MainSessionId
-        {
-            get { return 1000000000; }
-            set { throw new NotImplementedException(); }
-        }
-
+        public static int MainSessionId { get { return 1000000000; } }
+        
         // Initializes the server by preallocating reusable buffers and  
         // context objects.  These objects do not need to be preallocated  
         // or reused, but it is done this way to illustrate how the API can  
@@ -51,9 +60,9 @@ namespace Risen.Server.Tcp
         // 
         public void Init()
         {
-            InitializeBufferManager();
-            InitializeAcceptEventArgsPool();
-            InitializeSendReceiveEventArgsPool();
+            Log(InitializeBufferManager);
+            Log(InitializeAcceptEventArgsPool);
+            Log(InitializeSendReceiveEventArgsPool);
         }
 
         private void InitializeBufferManager()
@@ -95,10 +104,10 @@ namespace Risen.Server.Tcp
         private SocketAsyncEventArgs CreateNewSaeaForAccept()
         {
             var acceptEventArg = new SocketAsyncEventArgs();
-            acceptEventArg.Completed += AcceptEventArg_Completed;
+            acceptEventArg.Completed += AcceptEventArgCompleted;
             acceptEventArg.UserToken = new AcceptOperationUserToken(_poolOfAcceptEventArgs.AssignTokenId() + 10000);
 
-            return acceptEventArg;
+            return acceptEventArg; // Side note: Accept operations do not need a buffer.
         }
 
         private void StartListen()
@@ -130,7 +139,7 @@ namespace Risen.Server.Tcp
         // This method is the callback method associated with Socket.AcceptAsync  
         // operations and is invoked when an accept operation is complete 
         // 
-        private void AcceptEventArg_Completed(object sender, SocketAsyncEventArgs e)
+        private void AcceptEventArgCompleted(object sender, SocketAsyncEventArgs e)
         {
             ProcessAccept(e);
         }
@@ -140,7 +149,6 @@ namespace Risen.Server.Tcp
             if (acceptEventArgs.SocketError != SocketError.Success)
             {
                 StartAccept(); // Something failed, try again with a new SocketAsyncEventArgs
-                var acceptOperationToken = (AcceptOperationUserToken) acceptEventArgs.UserToken; // wtf is this here for?
                 HandleBadAccept(acceptEventArgs); // Kill socket as it might be in a bad state
                 return;
             }
@@ -180,8 +188,6 @@ namespace Risen.Server.Tcp
 
         private void HandleBadAccept(SocketAsyncEventArgs acceptEventArgs)
         {
-            var acceptOpToken = (acceptEventArgs.UserToken as AcceptOperationUserToken); // again, wtf?
-
             //This method closes the socket and releases all resources, both
             //managed and unmanaged. It internally calls Dispose.
             acceptEventArgs.AcceptSocket.Close();
@@ -382,13 +388,11 @@ namespace Risen.Server.Tcp
         {
             var receiveSendToken = (e.UserToken as DataHoldingUserToken);
 
-            // do a shutdown before you close the socket
-            try
+            try // do a shutdown before you close the socket
             {
                 e.AcceptSocket.Shutdown(SocketShutdown.Both);
             }
-            // throws if socket was already closed
-            catch (Exception)
+            catch (Exception) // throws if socket was already closed
             {
             }
 
@@ -399,9 +403,7 @@ namespace Risen.Server.Tcp
             //Make sure the new DataHolder has been created for the next connection.
             //If it has, then dataMessageReceived should be null.
             if (receiveSendToken != null && receiveSendToken.DataHolder.DataMessageReceived != null)
-            {
                 receiveSendToken.CreateNewDataHolder();
-            }
 
             // Put the SocketAsyncEventArg back into the pool,
             // to be used by another client. This
@@ -423,11 +425,12 @@ namespace Risen.Server.Tcp
 
     public class AcceptOperationUserToken
     {
-        private readonly int _tokenId;
-
         public AcceptOperationUserToken(int tokenId)
         {
-            _tokenId = tokenId;
+            TokenId = tokenId;
         }
+
+        public int TokenId { get; set; }
+        public int SocketHandleNumber { get; set; }
     }
 }

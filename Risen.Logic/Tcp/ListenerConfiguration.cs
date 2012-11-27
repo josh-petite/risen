@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using System.Net;
-using System.Net.Sockets;
 
 namespace Risen.Server.Tcp
 {
@@ -20,6 +19,11 @@ namespace Risen.Server.Tcp
 
     public class ListenerConfiguration : IListenerConfiguration
     {
+        public ListenerConfiguration()
+        {
+            Init();
+        }
+
         public int MaxNumberOfConnections { get; private set; }
         public int Port { get; private set; }
         public int ReceiveBufferSize { get; private set; }
@@ -35,7 +39,7 @@ namespace Risen.Server.Tcp
         public int NumberOfSaeaForRecSend { get; private set; }
         public IPEndPoint LocalEndPoint { get; set; }
 
-        public void Init()
+        private void Init()
         {
             MaxNumberOfConnections = Convert.ToInt32(ConfigurationManager.AppSettings["MaxNumberOfConnections"]);
             Port = Convert.ToInt32(ConfigurationManager.AppSettings["Port"]);
@@ -57,6 +61,11 @@ namespace Risen.Server.Tcp
         public int GetTotalBytesRequiredForInitialBufferConfiguration()
         {
             return ReceiveBufferSize*NumberOfSaeaForRecSend*OperationsToPreallocate;
+        }
+
+        public int GetBufferSize()
+        {
+            return ReceiveBufferSize*OperationsToPreallocate;
         }
     }
 }
