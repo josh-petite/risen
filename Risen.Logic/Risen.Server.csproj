@@ -66,8 +66,10 @@
     <Compile Include="Tcp\AsyncTcpServer.cs" />
     <Compile Include="Tcp\AsyncUserToken.cs" />
     <Compile Include="Tcp\BufferManager.cs" />
+    <Compile Include="Tcp\DataHolder.cs" />
+    <Compile Include="Tcp\ListenerConfiguration.cs" />
     <Compile Include="Tcp\SocketAsyncEventArgsPool.cs" />
-    <Compile Include="Tcp\SocketAsyncEventArgsServer.cs" />
+    <Compile Include="Tcp\SocketListener.cs" />
     <Compile Include="Utility\Point.cs" />
     <Compile Include="Entities\Room.cs" />
     <Compile Include="Entities\World.cs" />

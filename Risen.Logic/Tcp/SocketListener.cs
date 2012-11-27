@@ -10,38 +10,35 @@ namespace Risen.Server.Tcp
     // After accepting a connection, all data read from the client  
     // is sent back to the client. The read and echo back to the client pattern  
     // is continued until the client disconnects.
-    public class SocketAsyncEventArgsServer
+    public class SocketListener
     {
-        private readonly int _numConnections; // the maximum number of connections the sample is designed to handle simultaneously  
-        private int _receiveBufferSize; // buffer size to use for each socket I/O operation 
-        private readonly BufferManager _bufferManager; // represents a large reusable set of buffers for all socket operations 
-        private const int OpsToPreAlloc = 2; // read, write (don't alloc buffer space for accepts)
+        private readonly IBufferManager _bufferManager; // represents a large reusable set of buffers for all socket operations 
         private Socket _listenSocket; // the socket used to listen for incoming connection requests 
-
-        // pool of reusable SocketAsyncEventArgs objects for write, read and accept socket operations
-        private readonly SocketAsyncEventArgsPool _readWritePool;
-        private int _totalBytesRead; // counter of the total # bytes received by the server 
-        private int _numConnectedSockets; // the total number of clients connected to the server 
+        private readonly IListenerConfiguration _listenerConfiguration;
         private readonly Semaphore _maxNumberAcceptedClients;
+        private PrefixHandler _prefixHandler;
+        private MessageHandler _messageHandler;
+
+        // pool of reusable SocketAsyncEventArgs objects for accept operations
+        ISocketAsyncEventArgsPool _poolOfAcceptEventArgs;
+        // pool of reusable SocketAsyncEventArgs objects for receive and send socket operations
+        ISocketAsyncEventArgsPool _poolOfRecSendEventArgs;
 
         // Create an uninitialized server instance.   
         // To start the server listening for connection requests 
         // call the Init method followed by Start method  
         // 
-        // <param name="numConnections">the maximum number of connections the sample is designed to handle simultaneously</param>
-        // <param name="receiveBufferSize">buffer size to use for each socket I/O operation</param>
-        public SocketAsyncEventArgsServer(int numConnections, int receiveBufferSize)
+        public SocketListener(IListenerConfiguration listenerConfiguration, IBufferManager bufferManager, ISocketAsyncEventArgsPool poolOfRecSendEventArgs, ISocketAsyncEventArgsPool poolOfAcceptEventArgs)
         {
-            _totalBytesRead = 0;
-            _numConnectedSockets = 0;
-            _numConnections = numConnections;
-            _receiveBufferSize = receiveBufferSize;
-            // allocate buffers such that the maximum number of sockets can have one outstanding read and  
-            //write posted to the socket simultaneously  
-            _bufferManager = new BufferManager(receiveBufferSize*numConnections*OpsToPreAlloc, receiveBufferSize);
+            _listenerConfiguration = listenerConfiguration;
+            // allocate buffers such that the maximum number of sockets can have one outstanding read and write posted to the socket simultaneously  
+            _bufferManager = bufferManager; // new BufferManager(_listenerConfiguration.GetTotalBytesRequiredForInitialBufferConfiguration(), _listenerConfiguration.ReceiveBufferSize);
+            _poolOfRecSendEventArgs = poolOfRecSendEventArgs;
+            _poolOfAcceptEventArgs = poolOfAcceptEventArgs;
+            _maxNumberAcceptedClients = new Semaphore(listenerConfiguration.MaxNumberOfConnections, listenerConfiguration.MaxNumberOfConnections);
 
-            _readWritePool = new SocketAsyncEventArgsPool(numConnections);
-            _maxNumberAcceptedClients = new Semaphore(numConnections, numConnections);
+            Init();
+            Start();
         }
 
         // Initializes the server by preallocating reusable buffers and  
@@ -56,20 +53,21 @@ namespace Risen.Server.Tcp
             _bufferManager.InitBuffer();
 
             // preallocate pool of SocketAsyncEventArgs objects
-            for (int i = 0; i < _numConnections; i++)
+            for (int i = 0; i < _listenerConfiguration.MaxSimultaneousAcceptOperations; i++)
             {
-                //Pre-allocate a set of reusable SocketAsyncEventArgs
-                var readWriteEventArg = new SocketAsyncEventArgs();
-                readWriteEventArg.Completed += IO_Completed;
-                readWriteEventArg.UserToken = new AsyncUserToken();
-
-                // assign a byte buffer from the buffer pool to the SocketAsyncEventArg object
-                _bufferManager.SetBuffer(readWriteEventArg);
-
                 // add SocketAsyncEventArg to the pool
-                _readWritePool.Push(readWriteEventArg);
+                _poolOfAcceptEventArgs.Push(CreateNewSaeaForAccept());
             }
+        }
 
+        private SocketAsyncEventArgs CreateNewSaeaForAccept()
+        {
+            var acceptEventArg = new SocketAsyncEventArgs();
+            acceptEventArg.Completed += AcceptEventArg_Completed;
+            var acceptOperationToken = new AcceptOperationUserToken(_poolOfAcceptEventArgs.AssignTokenId() + 10000);
+            acceptEventArg.UserToken = acceptOperationToken;
+
+            return acceptEventArg;
         }
 
         // Starts the server such that it is listening for  

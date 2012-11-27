@@ -3,7 +3,13 @@ using System.Net.Sockets;
 
 namespace Risen.Server.Tcp
 {
-    internal class BufferManager
+    public interface IBufferManager
+    {
+        void InitBuffer();
+        bool SetBuffer(SocketAsyncEventArgs socketAsyncEventArgs);
+    }
+
+    public class BufferManager : IBufferManager
     {
         private readonly int _numBytes;        // the total number of bytes controlled by the buffer pool
         private byte[] _buffer;                // the underlying byte array maintained by the Buffer Manager
