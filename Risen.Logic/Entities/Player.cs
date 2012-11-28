@@ -1,7 +1,4 @@
-﻿using Risen.Server.Enums;
-using Risen.Server.Utility;
-
-namespace Risen.Server.Entities
+﻿namespace Risen.Server.Entities
 {
     public sealed class Player : MobileEntity
     {
@@ -14,26 +11,25 @@ namespace Risen.Server.Entities
             CurrentRoom = spawnRoom;
         }
 
-        public Title Title { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public PostTitle PostTitle { get; set; }
         public PlayerClassReferenceType ClassReferenceType { get; set; }
         public byte Level { get; set; }
-        public Room CurrentRoom { get; set; }
-        
-        public void MoveTo(Direction exit)
-        {
-            if (!CurrentRoom.Exits.ContainsKey(exit))
-                return;
+        public long Experience { get; set; }
+        public Stats Statistics { get; set; }
+    }
 
-            CurrentRoom = CurrentRoom.Exits[exit];
-        }
-
-        public Room MoveTo(Point roomCoordinates)
-        {
-            CurrentRoom = ZoneCache.MovePlayerTo(this, roomCoordinates);
-            return CurrentRoom;
-        }
+    public class Stats
+    {
+        public decimal Strength { get; set; }
+        public decimal Endurance { get; set; }
+        public decimal Reflex { get; set; }
+        public decimal Agility { get; set; }
+        public decimal Ingenuity { get; set; }
+        public decimal Wisdom { get; set; }
+        public decimal Aptitude { get; set; }
+        public decimal Memory { get; set; }
+        public decimal Aura { get; set; }
+        public decimal Charisma { get; set; }
+        public decimal Willpower { get; set; }
+        public decimal Faith { get; set; }
     }
 }

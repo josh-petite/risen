@@ -55,6 +55,7 @@
     <Compile Include="Entities\PlayerClassReferenceType.cs" />
     <Compile Include="Entities\Maps\PlayerMap.cs" />
     <Compile Include="Entities\Maps\RoomMap.cs" />
+    <Compile Include="Entities\Party.cs" />
     <Compile Include="Entities\Zone.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\ZoneCache.cs" />

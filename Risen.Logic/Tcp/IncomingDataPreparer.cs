@@ -20,11 +20,11 @@ namespace Risen.Server.Tcp
             _logger = logger;
         }
 
-        private int ReceivedTransMissionIdGetter()
+        private int ReceivedTransmissionIdGetter()
         {
             int mainTransmissionId = _listenerConfiguration.MainTransmissionId;
-            int receivedTransMissionId = Interlocked.Increment(ref mainTransmissionId);
-            return receivedTransMissionId;
+            int receivedTransmissionId = Interlocked.Increment(ref mainTransmissionId);
+            return receivedTransmissionId;
         }
 
         private EndPoint GetRemoteEndpoint()
@@ -40,7 +40,7 @@ namespace Risen.Server.Tcp
 
             _dataHolder = incomingDataHolder;
             _dataHolder.SessionId = receiveToken.SessionId;
-            _dataHolder.ReceivedTransmissionId = ReceivedTransMissionIdGetter();
+            _dataHolder.ReceivedTransmissionId = ReceivedTransmissionIdGetter();
             _dataHolder.RemoteEndpoint = GetRemoteEndpoint();
             AddDataHolder();
 

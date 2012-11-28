@@ -7,7 +7,6 @@ using Risen.Server.Extentions;
 
 namespace Risen.Server.Tcp
 {
-    // sample walkthrough at: http://www.codeproject.com/Articles/83102/C-SocketAsyncEventArgs-High-Performance-Socket-Cod
     // Implements the connection logic for the socket server.   
     // After accepting a connection, all data read from the client is sent back to the client. 
     // The read and echo back to the client pattern is continued until the client disconnects.
@@ -25,6 +24,7 @@ namespace Risen.Server.Tcp
         private SocketAsyncEventArgsPool _poolOfRecSendEventArgs; // pool of reusable SocketAsyncEventArgs objects for receive and send socket operations
 
         public static int MaxSimultaneousClientsThatWereConnected = 0;
+        private const long PacketSizeThreshhold = 50000;
 
         // Create an uninitialized server instance.   
         // To start the server listening for connection requests 
@@ -85,10 +85,7 @@ namespace Risen.Server.Tcp
 
             // preallocate pool of SocketAsyncEventArgs objects
             for (int i = 0; i < _listenerConfiguration.MaxSimultaneousAcceptOperations; i++)
-            {
-                // add SocketAsyncEventArg to the pool
-                _poolOfAcceptEventArgs.Push(CreateNewSaeaForAccept());
-            }
+                _poolOfAcceptEventArgs.Push(CreateNewSaeaForAccept()); // add SocketAsyncEventArg to the pool
         }
 
         private void InitializeSendReceiveEventArgsPool()
@@ -289,6 +286,8 @@ namespace Risen.Server.Tcp
                 return;
 
             var remainingBytesToProcess = receiveSendEventArgs.BytesTransferred;
+
+            if (remainingBytesToProcess > PacketSizeThreshhold)
 
             if (PrefixDataForCurrentMessageStillRemains(receiveSendEventArgs, dataHoldingUserToken, ref remainingBytesToProcess))
                 return;

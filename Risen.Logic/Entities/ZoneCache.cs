@@ -18,10 +18,10 @@ namespace Risen.Server.Entities
             Cache.Add(new Zone()); // call fluent for value in the future
         }
 
-        public static Room MovePlayerTo(Player player, Point roomCoordinates)
+        public static Room MoveMobileEntityTo(MobileEntity mob, Point roomCoordinates)
         {
-            var targetRoom = player.CurrentRoom.Zone.Rooms.First(o => o.Coordinates == roomCoordinates);
-            player.CurrentRoom = targetRoom;
+            var targetRoom = mob.CurrentRoom.Zone.Rooms.First(o => o.Coordinates == roomCoordinates);
+            mob.CurrentRoom = targetRoom;
 
             return targetRoom;
         }
