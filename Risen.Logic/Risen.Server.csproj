@@ -64,6 +64,7 @@
     <Compile Include="Logic\ZoneLogic.cs" />
     <Compile Include="ReferenceTypes\LevelDefinitionReferenceType.cs" />
     <Compile Include="Repository.cs" />
+    <Compile Include="Tcp\AcceptOperationUserToken.cs" />
     <Compile Include="Tcp\AsyncTcpServer.cs" />
     <Compile Include="Tcp\BufferManager.cs" />
     <Compile Include="Tcp\DataHolder.cs" />
@@ -85,7 +86,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

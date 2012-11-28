@@ -9,10 +9,10 @@ namespace Risen.Server.Tcp
         private DataHolder _dataHolder;
         private readonly SocketAsyncEventArgs _saeaObject;
 
-        public Mediator(SocketAsyncEventArgs e)
+        public Mediator(SocketAsyncEventArgs e, IListenerConfiguration listenerConfiguration, ILogger logger)
         {
             _saeaObject = e;
-            _incomingDataPreparer = new IncomingDataPreparer(_saeaObject);
+            _incomingDataPreparer = new IncomingDataPreparer(_saeaObject, listenerConfiguration, logger);
             _outgoingDataPreparer = new OutgoingDataPreparer();
         }
 

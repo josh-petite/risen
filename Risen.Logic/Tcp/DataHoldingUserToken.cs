@@ -41,11 +41,11 @@ namespace Risen.Server.Tcp
         //set up your app to allow it.
         private int _sessionId;
 
-        public DataHoldingUserToken(SocketAsyncEventArgs e, IListenerConfiguration listenerConfiguration, int tokenId)
+        public DataHoldingUserToken(SocketAsyncEventArgs e, IListenerConfiguration listenerConfiguration, ILogger logger, int tokenId)
         {
             _id = tokenId;
 
-            Mediator = new Mediator(e);
+            Mediator = new Mediator(e, listenerConfiguration, logger);
             BufferOffsetReceive = e.Offset;
             BufferOffsetSend = e.Offset + listenerConfiguration.ReceiveBufferSize;
             ReceivePrefixLength = listenerConfiguration.ReceivePrefixLength;

@@ -8,13 +8,14 @@ namespace Risen.Server.Tcp
     {
         int GetTotalBytesRequiredForInitialBufferConfiguration();
         int ReceiveBufferSize { get; }
-        int MaxSimultaneousAcceptOperations { get; }
+        int MaxSimultaneousAcceptOperations { get; set; }
         int MaxNumberOfConnections { get; }
         IPEndPoint LocalEndPoint { get; set; }
         int Backlog { get; }
         int NumberOfSaeaForRecSend { get; }
         int ReceivePrefixLength { get; }
         int SendPrefixLength { get; }
+        int MainTransmissionId { get; }
     }
 
     public class ListenerConfiguration : IListenerConfiguration
@@ -27,7 +28,7 @@ namespace Risen.Server.Tcp
         public int MaxNumberOfConnections { get; private set; }
         public int Port { get; private set; }
         public int ReceiveBufferSize { get; private set; }
-        public int MaxSimultaneousAcceptOperations { get; private set; }
+        public int MaxSimultaneousAcceptOperations { get; set; }
         public int Backlog { get; private set; }
         public int OperationsToPreallocate { get; private set; }
         public int ExcessSaeaObjectsInPool { get; private set; }

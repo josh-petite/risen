@@ -17,7 +17,7 @@ namespace Risen.Client
         private void Init()
         {
             _tcpClient = new TcpClient();
-            _tcpClient.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 4000));
+            _tcpClient.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 4444));
 
             while (true)
             {

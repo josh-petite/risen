@@ -10,16 +10,20 @@ namespace Risen.Server.Tcp
         private static readonly object Mutex = new object();
         private DataHolder _dataHolder;
         private readonly SocketAsyncEventArgs _socketAsyncEventArgs;
+        private readonly IListenerConfiguration _listenerConfiguration;
+        private readonly ILogger _logger;
 
-        public IncomingDataPreparer(SocketAsyncEventArgs socketAsyncEventArgs)
+        public IncomingDataPreparer(SocketAsyncEventArgs socketAsyncEventArgs, IListenerConfiguration listenerConfiguration, ILogger logger)
         {
             _socketAsyncEventArgs = socketAsyncEventArgs;
+            _listenerConfiguration = listenerConfiguration;
+            _logger = logger;
         }
 
         private int ReceivedTransMissionIdGetter()
         {
-            int mainSessionId = SocketListener.MainSessionId;
-            int receivedTransMissionId = Interlocked.Increment(ref mainSessionId);
+            int mainTransmissionId = _listenerConfiguration.MainTransmissionId;
+            int receivedTransMissionId = Interlocked.Increment(ref mainTransmissionId);
             return receivedTransMissionId;
         }
 
@@ -31,6 +35,9 @@ namespace Risen.Server.Tcp
         internal DataHolder HandleReceivedData(DataHolder incomingDataHolder, SocketAsyncEventArgs socketAsyncEventArgs)
         {
             var receiveToken = socketAsyncEventArgs.DataHoldingUserToken();
+
+            _logger.WriteLine(LogCategory.Info, string.Format("IncomingDataPreparer, HandleReceiveData() - Token Id: {0}", receiveToken.TokenId));
+
             _dataHolder = incomingDataHolder;
             _dataHolder.SessionId = receiveToken.SessionId;
             _dataHolder.ReceivedTransmissionId = ReceivedTransMissionIdGetter();

@@ -10,23 +10,31 @@ namespace Risen.Server.Tcp
 
     public class MessageHandler : IMessageHandler
     {
+        private readonly ILogger _logger;
+
+        public MessageHandler(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken receiveSendToken, int remainingBytesToProcess)
         {
-            bool incomingTcpMessageIsReady = false;
+            var incomingTcpMessageIsReady = false;
 
             //Create the array where we'll store the complete message,
             //if it has not been created on a previous receive op.
             if (receiveSendToken.ReceivedMessageBytesDoneCount == 0)
+            {
+                _logger.WriteLine(LogCategory.Info, string.Format("Message Handler: Creating Receive Array on Id: {0}", receiveSendToken.TokenId));
                 receiveSendToken.DataHolder.DataMessageReceived = new Byte[receiveSendToken.LengthOfCurrentIncomingMessage];
+            }
 
             // Remember there is a receiveSendToken.receivedPrefixBytesDoneCount
             // variable, which allowed us to handle the prefix even when it
             // requires multiple receive ops. In the same way, we have a
             // receiveSendToken.ReceivedMessageBytesDoneCount variable, which
-            // helps us handle message data, whether it requires one receive
-            // operation or many.
-            if (remainingBytesToProcess + receiveSendToken.ReceivedMessageBytesDoneCount
-                == receiveSendToken.LengthOfCurrentIncomingMessage)
+            // helps us handle message data, whether it requires one receive operation or many.
+            if (remainingBytesToProcess + receiveSendToken.ReceivedMessageBytesDoneCount == receiveSendToken.LengthOfCurrentIncomingMessage)
             {
                 // If we are inside this if-statement, then we got
                 // the end of the message. In other words,

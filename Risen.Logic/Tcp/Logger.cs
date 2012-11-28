@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Text;
 
 namespace Risen.Server.Tcp
 {
     public interface ILogger
     {
-        void WriteLine(string socketListenerConstructorComplete);
+        void WriteLine(LogCategory logCategory, string line);
     }
 
     public class Logger : ILogger
@@ -24,6 +28,7 @@ namespace Risen.Server.Tcp
         }
 
         public string SaveFile { get; set; }
+        public bool IsEnabled { get; set; }
 
         private string GetSaveFileName()
         {
@@ -49,13 +54,18 @@ namespace Risen.Server.Tcp
             return saveFile;
         }
 
-        public void WriteLine(string lineToWrite)
+        public void WriteLine(LogCategory logCategory, string lineToWrite)
         {
+            if (!IsEnabled)
+                return;
+
+            var formattedLine = string.Format("{0}: {1}", logCategory, lineToWrite);
+
             if (_shouldLogToConsole)
-                Console.WriteLine(lineToWrite);
+                Console.WriteLine(formattedLine);
 
             lock (_mutex)
-                _streamWriter.WriteLine(lineToWrite);
+                _streamWriter.WriteLine(formattedLine);
         }
 
         public void Close()
@@ -67,5 +77,26 @@ namespace Risen.Server.Tcp
             Console.WriteLine();
             Console.WriteLine();
         }
+
+        public void WriteData(List<DataHolder> dataHolders, IListenerConfiguration listenerConfiguration)
+        {
+            WriteLine(LogCategory.Info, "\r\n\r\nData from DataHolders in listOfDataHolders follows:\r\n");
+
+                for (int i = 0; i < dataHolders.Count(); i++)
+                {
+                    DataHolder dataHolder = dataHolders[i];
+                    WriteLine(LogCategory.Info, IPAddress.Parse(((IPEndPoint)dataHolder.RemoteEndpoint).Address.ToString()) + ": " + ((IPEndPoint)dataHolder.RemoteEndpoint).Port.ToString() + ", " + dataHolder.ReceivedTransmissionId + ", " + Encoding.ASCII.GetString(dataHolder.DataMessageReceived));
+                }
+
+                WriteLine(LogCategory.Info, "\r\nHighest # of simultaneous connections was " + SocketListener.MaxSimultaneousClientsThatWereConnected);
+                WriteLine(LogCategory.Info, "# of transmissions received was " + (listenerConfiguration.MainTransmissionId - SocketListener.InitialTransmissionId));
+        }
+    }
+
+    public enum LogCategory
+    {
+        Info,
+        Warning,
+        Error
     }
 }
