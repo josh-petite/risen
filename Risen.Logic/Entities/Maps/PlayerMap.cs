@@ -6,7 +6,7 @@ namespace Risen.Server.Entities.Maps
     {
         public PlayerMap()
         {
-            Id(o => o.Id).Column("PlayerId");
+            Id(o => o.Id, "PlayerId");
             Component(c => c.ClassReferenceType, m =>
                                         {
                                             m.Map(o => o.ImageId);

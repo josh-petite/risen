@@ -6,15 +6,16 @@ namespace Risen.Server.Entities.Maps
     {
         public RoomMap()
         {
-            Id(o => o.Id).Column("RoomId");
+            Table("Rooms");
+            Id(o => o.Id, "RoomId");
             Map(o => o.Name).Not.Nullable();
             Map(o => o.Zone).Not.Nullable();
-            Map(o => o.Exits).Not.Nullable();
             Component(c => c.Coordinates, m =>
                                               {
                                                   m.Map(o => o.X).Column("CoordinateX");
                                                   m.Map(o => o.Y).Column("CoordinateY");
                                               });
+            Join("RoomExits", o => o.Map(x => x.Exits));
         }
     }
 }

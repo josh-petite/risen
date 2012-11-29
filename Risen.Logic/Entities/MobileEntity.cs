@@ -1,4 +1,6 @@
-﻿using Risen.Server.Enums;
+﻿using System.Linq;
+using Risen.Server.Enums;
+using Risen.Server.ReferenceTypes;
 using Risen.Server.Utility;
 
 namespace Risen.Server.Entities
@@ -13,10 +15,10 @@ namespace Risen.Server.Entities
 
         public void MoveTo(Direction exit)
         {
-            if (!CurrentRoom.Exits.ContainsKey(exit))
+            if (CurrentRoom.Exits.All(o => o.Direction != exit))
                 return;
 
-            CurrentRoom = CurrentRoom.Exits[exit];
+            CurrentRoom = CurrentRoom.Exits.Single(o => o.Direction == exit).DestinationRoom;
         }
 
         public Room MoveTo(Point roomCoordinates)

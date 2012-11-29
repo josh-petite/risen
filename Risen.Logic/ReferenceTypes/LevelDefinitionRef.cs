@@ -2,7 +2,7 @@
 
 namespace Risen.Server.ReferenceTypes
 {
-    public class LevelDefinitionReferenceType
+    public class LevelDefinitionRef : ReferenceType
     {
         public Dictionary<byte, int> Definitions { get; set; } 
 

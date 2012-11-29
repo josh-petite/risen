@@ -11,7 +11,7 @@ namespace Risen.Tests.Acceptance.Helpers
     {
         public static Player GetPlayerFromContext()
         {
-            return (Player)ScenarioContext.Current.Single(o => o.Value.GetType() == typeof(Player)).Value;
+            return (Player)ScenarioContext.Current.Single(o => o.Value is Player).Value;
         }
 
         public static Room GetPlayerOriginFromContext()
@@ -52,16 +52,16 @@ namespace Risen.Tests.Acceptance.Helpers
                 switch (step.Key)
                 {
                     case "N":
-                        location = location.Exits[Direction.North];
+                        location = location.GetRoomInDirectionOf(Direction.North);
                         break;
                     case "S":
-                        location = location.Exits[Direction.South];
+                        location = location.GetRoomInDirectionOf(Direction.South);
                         break;
                     case "E":
-                        location = location.Exits[Direction.East];
+                        location = location.GetRoomInDirectionOf(Direction.East);
                         break;
                     case "W":
-                        location = location.Exits[Direction.West];
+                        location = location.GetRoomInDirectionOf(Direction.West);
                         break;
                 }
             }

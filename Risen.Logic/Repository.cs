@@ -13,14 +13,14 @@ namespace Risen.Server
 {
     public interface IRepository
     {
-        T FindOne<T>(Func<T, bool> func);
+        T FindOne<T>(Expression<Func<T, bool>> expression);
         IEnumerable<T> FindMany<T>();
         IEnumerable<T> FindMany<T>(Expression<Func<T, bool>> expression);
     }
 
     public class Repository : IRepository
     {
-        public T FindOne<T>(Func<T, bool> func)
+        public T FindOne<T>(Expression<Func<T, bool>> expression)
         {
             var sessionFactory = CreateSessionFactory();
 
@@ -30,7 +30,7 @@ namespace Risen.Server
                 {
                     try
                     {
-                        return session.Query<T>().Where(func).FirstOrDefault();
+                        return session.Query<T>().Where(expression).FirstOrDefault();
                     }
                     catch (Exception)
                     {

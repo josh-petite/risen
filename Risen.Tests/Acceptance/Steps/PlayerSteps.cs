@@ -10,8 +10,8 @@ namespace Risen.Tests.Acceptance.Steps
     [Binding]
     public class PlayerSteps
     {
-        [Given(@"I have a character")]
-        public void GivenIHaveACharacter()
+        [Given(@"I have a player")]
+        public void GivenIHaveAPlayer()
         {
             ScenarioContext.Current.Add("Player", new Player());
         }
@@ -27,7 +27,7 @@ namespace Risen.Tests.Acceptance.Steps
         [When(@"the player moves (North|South|East|West|Northwest|Northeast|Southwest|Southeast|Up|Down) (.*) rooms?")]
         public void WhenThePlayerMoves(string direction, int numberOfRooms)
         {
-            PlayerHelper.MovePlayer((Direction) Enum.Parse(typeof (Direction), direction), numberOfRooms);
+            PlayerHelper.MovePlayer((Direction)Enum.Parse(typeof(Direction), direction), numberOfRooms);
         }
 
         [Then(@"the player should be (.*) of its origin")]

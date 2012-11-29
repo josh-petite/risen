@@ -3,14 +3,13 @@ using System.Linq;
 
 namespace Risen.Server.Entities
 {
-    public class Zone
+    public class Zone : EntityBase
     {
-        public uint Id { get; set; }
         public string Name { get; set; }
         public List<Player> ActivePlayers { get; set; }
         public IList<Room> Rooms { get; set; }
-        
-        public Room GetRoom(uint roomId)
+
+        public Room GetRoom(long roomId)
         {
             return Rooms.Single(o => o.Id == Id);
         }

@@ -4,18 +4,18 @@ namespace Risen.Server.Logic
 {
     public interface IZoneLogic
     {
-        Zone CacheZone(uint zoneId);
-        Room GetRoom(Zone zone, uint roomId);
+        Zone CacheZone(long zoneId);
+        Room GetRoom(Zone zone, long roomId);
     }
 
     public class ZoneLogic : IZoneLogic
     {
-        public Zone CacheZone(uint zoneId)
+        public Zone CacheZone(long zoneId)
         {
             return new Zone();
         }
 
-        public Room GetRoom(Zone zone, uint roomId)
+        public Room GetRoom(Zone zone, long roomId)
         {
             return zone.GetRoom(roomId);
         }

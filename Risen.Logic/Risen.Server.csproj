@@ -50,20 +50,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\EntityBase.cs" />
+    <Compile Include="Entities\Maps\RoomExitMap.cs" />
+    <Compile Include="Entities\Maps\ZoneMap.cs" />
     <Compile Include="Entities\MobileEntity.cs" />
     <Compile Include="Entities\NonPlayerCharacter.cs" />
     <Compile Include="Entities\PlayerClassReferenceType.cs" />
     <Compile Include="Entities\Maps\PlayerMap.cs" />
     <Compile Include="Entities\Maps\RoomMap.cs" />
     <Compile Include="Entities\Party.cs" />
+    <Compile Include="Entities\RoomExit.cs" />
     <Compile Include="Entities\Zone.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\ZoneCache.cs" />
     <Compile Include="Enums\PostTitle.cs" />
+    <Compile Include="ReferenceTypes\ReferenceType.cs" />
     <Compile Include="Enums\Title.cs" />
     <Compile Include="Extentions\SocketAsyncEventArgsExtensions.cs" />
     <Compile Include="Logic\ZoneLogic.cs" />
-    <Compile Include="ReferenceTypes\LevelDefinitionReferenceType.cs" />
+    <Compile Include="ReferenceTypes\LevelDefinitionRef.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Tcp\AcceptOperationUserToken.cs" />
     <Compile Include="Tcp\AsyncTcpServer.cs" />
@@ -94,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration\" />
+    <Folder Include="ReferenceTypes\Maps\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
