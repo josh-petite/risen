@@ -33,7 +33,8 @@ namespace Risen.Server.Tcp
         private ISocketAsyncEventArgsPool _poolOfRecSendEventArgs; // pool of reusable SocketAsyncEventArgs objects for receive and send socket operations
 
         public static int MaxSimultaneousClientsThatWereConnected = 0;
-        private const long PacketSizeThreshhold = 50000;
+        public const long MainSessionId = 1000000000;
+        public const long PacketSizeThreshhold = 50000;
 
         public SocketListener(IListenerConfiguration listenerConfiguration, IBufferManager bufferManager, IPrefixHandler prefixHandler,
                               IMessageHandler messageHandler, ILogger logger,
@@ -66,7 +67,6 @@ namespace Risen.Server.Tcp
         }
 
         public static List<DataHolder> DataHolders { get; set; }
-        public static int MainSessionId { get { return 1000000000; } }
         public static int InitialTransmissionId { get; set; }
 
         // Initializes the server by preallocating reusable buffers and  
@@ -101,7 +101,7 @@ namespace Risen.Server.Tcp
 
             for (int i = 0; i < _listenerConfiguration.NumberOfSaeaForRecSend; i++)
             {
-                var eventArgForPool = _socketAsyncEventArgsFactory.GenerateReceiveSendSocketAsyncEventArgs(IoCompleted);
+                var eventArgForPool = _socketAsyncEventArgsFactory.GenerateReceiveSendSocketAsyncEventArgs(SendReceiveCompleted);
                 eventArgForPool.UserToken = _dataHoldingUserTokenFactory.GenerateDataHoldingUserToken(eventArgForPool, _poolOfRecSendEventArgs.AssignTokenId());
                 _poolOfRecSendEventArgs.Push(eventArgForPool);
             }
@@ -109,7 +109,7 @@ namespace Risen.Server.Tcp
 
         private SocketAsyncEventArgs CreateNewSaeaForAccept()
         {
-            return _socketAsyncEventArgsFactory.GenerateAcceptSocketAsyncEventArgs(AcceptEventArgCompleted, _poolOfAcceptEventArgs.AssignTokenId());
+            return _socketAsyncEventArgsFactory.GenerateAcceptSocketAsyncEventArgs(AcceptCompleted, _poolOfAcceptEventArgs.AssignTokenId());
         }
 
         public void StartListen()
@@ -132,7 +132,7 @@ namespace Risen.Server.Tcp
 
             var willRaiseEvent = _listenSocket.AcceptAsync(acceptEventArg);
 
-            // AcceptAsync returns true if the I/O operation is pending, i.e. is working asynchronously.
+            // AcceptAsync returns true if the I/O operation is pending, i.socketAsyncEventArgs. is working asynchronously.
             // When it completes it will call the acceptEventArg.Completed event (AcceptEventArg_Completed, as wired above).
             if (!willRaiseEvent)
                 ProcessAccept(acceptEventArg);
@@ -140,10 +140,9 @@ namespace Risen.Server.Tcp
 
         // This method is the callback method associated with Socket.AcceptAsync  
         // operations and is invoked when an accept operation is complete 
-        // 
-        private void AcceptEventArgCompleted(object sender, SocketAsyncEventArgs e)
+        private void AcceptCompleted(object sender, SocketAsyncEventArgs socketAsyncEventArgs)
         {
-            ProcessAccept(e);
+            ProcessAccept(socketAsyncEventArgs);
         }
 
         private void ProcessAccept(SocketAsyncEventArgs acceptEventArgs)
@@ -155,8 +154,10 @@ namespace Risen.Server.Tcp
 
             // Things are good, lets start over
             StartAccept();
+
             var receiveSendEventArgs = _poolOfRecSendEventArgs.Pop();
             receiveSendEventArgs.DataHoldingUserToken().CreateSessionId();
+
             // A new socket was created by the AcceptAsync method. 
             // The SAEA that did the accept operation has that socket info in its AcceptSocket property.
             receiveSendEventArgs.AcceptSocket = acceptEventArgs.AcceptSocket;
@@ -202,18 +203,17 @@ namespace Risen.Server.Tcp
             return false;
         }
 
-        private void IoCompleted(object sender, SocketAsyncEventArgs e)
+        private void SendReceiveCompleted(object sender, SocketAsyncEventArgs socketAsyncEventArgs)
         {
-            // determine which type of operation just
-            // completed and call the associated handler
-            switch (e.LastOperation)
+            // determine which type of operation just completed and call the associated handler
+            switch (socketAsyncEventArgs.LastOperation)
             {
                 case SocketAsyncOperation.Receive:
-                    ProcessReceive(e);
+                    ProcessReceive(socketAsyncEventArgs);
                     break;
 
                 case SocketAsyncOperation.Send:
-                    ProcessSend(e);
+                    ProcessSend(socketAsyncEventArgs);
                     break;
 
                 default:
@@ -285,6 +285,7 @@ namespace Risen.Server.Tcp
             var remainingBytesToProcess = receiveSendEventArgs.BytesTransferred;
 
             if (remainingBytesToProcess > PacketSizeThreshhold)
+                return;
 
             if (PrefixDataForCurrentMessageStillRemains(receiveSendEventArgs, dataHoldingUserToken, ref remainingBytesToProcess))
                 return;

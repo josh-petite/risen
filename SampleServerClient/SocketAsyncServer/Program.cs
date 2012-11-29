@@ -29,7 +29,7 @@ namespace SocketAsyncServer
         //If you make this true, then the above "watch-" variables will print to
         //both Console and log, instead of just to log. I suggest only using this if
         //you are having a problem with an application that is crashing.
-        public static readonly bool consoleWatch = false;
+        public static readonly bool consoleWatch = true;
         
         //This variable determines the number of 
         //SocketAsyncEventArg objects put in the pool of objects for receive/send.

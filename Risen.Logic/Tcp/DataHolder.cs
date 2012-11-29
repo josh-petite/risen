@@ -14,7 +14,7 @@ namespace Risen.Server.Tcp
         //DataHolder has this byte array to which you can copy the data.
         public Byte[] DataMessageReceived;
         public int ReceivedTransmissionId;
-        public int SessionId;
+        public long SessionId;
 
         //for testing. With a packet analyzer this can help you see specific connections.
         public EndPoint RemoteEndpoint;

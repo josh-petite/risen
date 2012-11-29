@@ -7,7 +7,7 @@ namespace Risen.Server.Tcp
 {
     public interface IPrefixHandler
     {
-        int HandlePrefix(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess);
+        int HandlePrefix(SocketAsyncEventArgs socketAsyncEventArgs, DataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess);
     }
 
     public class PrefixHandler : IPrefixHandler
@@ -19,7 +19,7 @@ namespace Risen.Server.Tcp
             _logger = logger;
         }
 
-        public int HandlePrefix(SocketAsyncEventArgs e, DataHoldingUserToken receiveSendToken, Int32 remainingBytesToProcess)
+        public int HandlePrefix(SocketAsyncEventArgs socketAsyncEventArgs, DataHoldingUserToken receiveSendToken, Int32 remainingBytesToProcess)
         {
             //ReceivedPrefixBytesDoneCount tells us how many prefix bytes were
             //processed during previous receive ops which contained data for
@@ -45,7 +45,7 @@ namespace Risen.Server.Tcp
                 //Now copy that many bytes to ByteArrayForPrefix.
                 //We can use the variable receiveMessageOffset as our main
                 //index to show which index to get data from in the TCP buffer.
-                Buffer.BlockCopy(e.Buffer,
+                Buffer.BlockCopy(socketAsyncEventArgs.Buffer,
                                  receiveSendToken.ReceiveMessageOffset - receiveSendToken.ReceivePrefixLength + receiveSendToken.ReceivedPrefixBytesDoneCount,
                                  receiveSendToken.ByteArrayForPrefix,
                                  receiveSendToken.ReceivedPrefixBytesDoneCount,
@@ -57,9 +57,8 @@ namespace Risen.Server.Tcp
                 receiveSendToken.LengthOfCurrentIncomingMessage = BitConverter.ToInt32(receiveSendToken.ByteArrayForPrefix, 0);
                 LogPrefixDetails(receiveSendToken);
             }
-            //This next else-statement deals with the situation
-            //where we have some bytes
-            //of this prefix in this receive operation, but not all.
+                //This next else-statement deals with the situation
+                //where we have some bytes of this prefix in this receive operation, but not all.
             else
             {
                 _logger.WriteLine(LogCategory.Warning, string.Format("PrefixHandler, NOT all of prefix on Token Id: {0}. remainingBytesToProcess = {1}",
@@ -67,7 +66,7 @@ namespace Risen.Server.Tcp
                                                                      remainingBytesToProcess));
                 //Write the bytes to the array where we are putting the
                 //prefix data, to save for the next loop.
-                Buffer.BlockCopy(e.Buffer,
+                Buffer.BlockCopy(socketAsyncEventArgs.Buffer,
                                  receiveSendToken.ReceiveMessageOffset - receiveSendToken.ReceivePrefixLength + receiveSendToken.ReceivedPrefixBytesDoneCount,
                                  receiveSendToken.ByteArrayForPrefix,
                                  receiveSendToken.ReceivedPrefixBytesDoneCount,
@@ -96,10 +95,10 @@ namespace Risen.Server.Tcp
             //Now see what integer the prefix bytes represent, for the length.
             var sb = new StringBuilder(receiveSendToken.ByteArrayForPrefix.Length);
             sb.Append(string.Format("Token Id: {0}. {1} bytes in prefix:", receiveSendToken.TokenId, receiveSendToken.ReceivePrefixLength));
-            
+
             foreach (byte theByte in receiveSendToken.ByteArrayForPrefix)
                 sb.Append(" " + theByte);
-            
+
             sb.Append(string.Format(". Message length: {0}", receiveSendToken.LengthOfCurrentIncomingMessage));
             _logger.WriteLine(LogCategory.Info, sb.ToString());
         }

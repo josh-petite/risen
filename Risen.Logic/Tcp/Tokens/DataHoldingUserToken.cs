@@ -41,7 +41,6 @@ namespace Risen.Server.Tcp.Tokens
         //It is different from the transmission ID in the DataHolder, which relates
         //to one TCP message. A connected session could have many messages, if you
         //set up your app to allow it.
-        private int _sessionId;
 
         public DataHoldingUserToken(IMediatorFactory mediatorFactory, IListenerConfiguration listenerConfiguration)
         {
@@ -59,7 +58,7 @@ namespace Risen.Server.Tcp.Tokens
 
         public void Init()
         {
-            Mediator = _mediatorFactory.GenerateMediatior(SocketAsyncEventArgs);
+            Mediator = _mediatorFactory.GenerateMediator(SocketAsyncEventArgs);
             BufferOffsetReceive = SocketAsyncEventArgs.Offset;
             BufferOffsetSend = SocketAsyncEventArgs.Offset + _listenerConfiguration.ReceiveBufferSize;
             ReceivePrefixLength = _listenerConfiguration.ReceivePrefixLength;
@@ -72,17 +71,11 @@ namespace Risen.Server.Tcp.Tokens
         //Called in ProcessAccept().
         public void CreateSessionId()
         {
-            int mainSessionId = SocketListener.MainSessionId;
-            _sessionId = Interlocked.Increment(ref mainSessionId);
+            long mainSessionId = SocketListener.MainSessionId;
+            SessionId = Interlocked.Increment(ref mainSessionId);
         }
 
-        public int SessionId
-        {
-            get
-            {
-                return _sessionId;
-            }
-        }
+        public long SessionId { get; private set; }
 
         public void Reset()
         {
