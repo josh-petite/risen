@@ -16,6 +16,7 @@ namespace Risen.Server.Tcp
         int ReceivePrefixLength { get; }
         int SendPrefixLength { get; }
         int MainTransmissionId { get; }
+        int GetBufferSize();
     }
 
     public class ListenerConfiguration : IListenerConfiguration

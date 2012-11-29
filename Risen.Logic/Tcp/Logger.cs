@@ -12,6 +12,7 @@ namespace Risen.Server.Tcp
     public interface ILogger
     {
         void WriteLine(LogCategory logCategory, string line);
+        void WriteData(List<DataHolder> dataHolders, IListenerConfiguration listenerConfiguration);
     }
 
     public class Logger : ILogger
@@ -20,11 +21,12 @@ namespace Risen.Server.Tcp
         private readonly StreamWriter _streamWriter;
         private readonly bool _shouldLogToConsole;
 
-        public Logger(bool shouldLogToConsole)
+        public Logger(bool shouldLogToConsole, bool isLoggerEnabled)
         {
             SaveFile = GetSaveFileName(); //We create a new log file every time we run the app.
             _streamWriter = new StreamWriter(SaveFile); // create a writer and open the file
             _shouldLogToConsole = shouldLogToConsole;
+            IsEnabled = isLoggerEnabled;
         }
 
         public string SaveFile { get; set; }

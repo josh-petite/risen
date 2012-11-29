@@ -13,7 +13,7 @@ namespace Risen.Server.Entities
 
         public static List<Zone> Cache { get; set; }
 
-        public void LoadZoneIntoCache(uint zoneId)
+        public void LoadZoneIntoCache(int zoneId)
         {
             Cache.Add(new Zone()); // call fluent for value in the future
         }

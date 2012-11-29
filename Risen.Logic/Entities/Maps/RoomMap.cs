@@ -15,7 +15,7 @@ namespace Risen.Server.Entities.Maps
                                                   m.Map(o => o.X).Column("CoordinateX");
                                                   m.Map(o => o.Y).Column("CoordinateY");
                                               });
-            Join("RoomExits", o => o.Map(x => x.Exits));
+            Join("RoomExits", o => o.Map(x => x.RoomExits));
         }
     }
 }

@@ -48,11 +48,11 @@ namespace Risen.Tests.Acceptance.Helpers
             //var room41 = new Room { Id = 14, Coordinates = new Point(4, 1), Zone = zone };
             //var room42 = new Room { Id = 15, Coordinates = new Point(4, 2), Zone = zone };
 
-            //room01.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.South, room11}};
-            //room11.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room01}, {DirectionRef.South, room21}};
-            //room21.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room11}, {DirectionRef.South, room31}};
-            //room31.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room21}, {DirectionRef.South, room41}};
-            //room41.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room31}};
+            //room01.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.South, room11}};
+            //room11.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room01}, {DirectionRef.South, room21}};
+            //room21.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room11}, {DirectionRef.South, room31}};
+            //room31.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room21}, {DirectionRef.South, room41}};
+            //room41.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room31}};
 
             //zone.Rooms.Add(room00);
             //zone.Rooms.Add(room01);
@@ -88,21 +88,21 @@ namespace Risen.Tests.Acceptance.Helpers
             //var room21 = new Room { Id = 8, Coordinates = new Point(2, 1), Zone = zone };
             //var room22 = new Room { Id = 9, Coordinates = new Point(2, 2), Zone = zone };
 
-            //room00.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.East, room01}, {DirectionRef.South, room10}};
-            //room01.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.East, room02}, {DirectionRef.South, room11}, {DirectionRef.West, room00}};
-            //room02.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.South, room12}, {DirectionRef.West, room01}};
-            //room10.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room00}, {DirectionRef.East, room11}, {DirectionRef.South, room20}};
-            //room11.Exits = new Dictionary<DirectionRef, Room>
+            //room00.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.East, room01}, {DirectionRef.South, room10}};
+            //room01.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.East, room02}, {DirectionRef.South, room11}, {DirectionRef.West, room00}};
+            //room02.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.South, room12}, {DirectionRef.West, room01}};
+            //room10.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room00}, {DirectionRef.East, room11}, {DirectionRef.South, room20}};
+            //room11.RoomExits = new Dictionary<DirectionRef, Room>
             //                   {
             //                       {DirectionRef.North, room01},
             //                       {DirectionRef.East, room12},
             //                       {DirectionRef.South, room21},
             //                       {DirectionRef.West, room10}
             //                   };
-            //room12.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room02}, {DirectionRef.South, room22}, {DirectionRef.West, room11}};
-            //room20.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room10}, {DirectionRef.East, room21}};
-            //room21.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.West, room20}, {DirectionRef.North, room11}, {DirectionRef.East, room22}};
-            //room22.Exits = new Dictionary<DirectionRef, Room> {{DirectionRef.West, room21}, {DirectionRef.North, room12}};
+            //room12.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room02}, {DirectionRef.South, room22}, {DirectionRef.West, room11}};
+            //room20.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.North, room10}, {DirectionRef.East, room21}};
+            //room21.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.West, room20}, {DirectionRef.North, room11}, {DirectionRef.East, room22}};
+            //room22.RoomExits = new Dictionary<DirectionRef, Room> {{DirectionRef.West, room21}, {DirectionRef.North, room12}};
 
             //zone.Rooms.Add(room00);
             //zone.Rooms.Add(room01);

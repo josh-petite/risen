@@ -28,11 +28,11 @@ namespace Risen.Server.Tcp
         private int _currentIndex;
         private readonly int _bufferBytesAllocatedForEachSaea;
 
-        public BufferManager(int totalBytes, int totalBufferBytesInEachSaeaObject)
+        public BufferManager(IListenerConfiguration listenerConfiguration)
         {
-            _totalBytesInBufferBlock = totalBytes;
+            _totalBytesInBufferBlock = listenerConfiguration.GetTotalBytesRequiredForInitialBufferConfiguration();
             _currentIndex = 0;
-            _bufferBytesAllocatedForEachSaea = totalBufferBytesInEachSaeaObject;
+            _bufferBytesAllocatedForEachSaea = listenerConfiguration.GetBufferSize();
             _freeIndexPool = new Stack<int>();
         }
 

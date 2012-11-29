@@ -7,10 +7,17 @@ using Risen.Server.Extentions;
 
 namespace Risen.Server.Tcp
 {
+    public interface ISocketListener
+    {
+        void Init();
+        void StartListen();
+        void CleanUpOnExit();
+    }
+
     // Implements the connection logic for the socket server.   
     // After accepting a connection, all data read from the client is sent back to the client. 
     // The read and echo back to the client pattern is continued until the client disconnects.
-    public class SocketListener
+    public class SocketListener : ISocketListener
     {
         private int _numberOfAcceptedSockets;
         private readonly IBufferManager _bufferManager; // represents a large reusable set of buffers for all socket operations 
@@ -43,9 +50,6 @@ namespace Risen.Server.Tcp
             _maxConnectionsEnforcer = new Semaphore(listenerConfiguration.MaxNumberOfConnections, listenerConfiguration.MaxNumberOfConnections);
             DataHolders = new List<DataHolder>();
             InitialTransmissionId = listenerConfiguration.MainTransmissionId;
-
-            Log(Init);
-            Log(StartListen);
 
             logger.WriteLine(LogCategory.Info, "-- SocketListener Constructor Complete --");
         }
@@ -114,7 +118,7 @@ namespace Risen.Server.Tcp
             return acceptEventArg; // Side note: Accept operations do not need a buffer.
         }
 
-        private void StartListen()
+        public void StartListen()
         {
             // Listens for incoming connections
             _listenSocket = new Socket(_listenerConfiguration.LocalEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -241,6 +245,7 @@ namespace Risen.Server.Tcp
         public void CleanUpOnExit()
         {
             DisposeAllSaeaObjects();
+            _logger.WriteData(DataHolders, _listenerConfiguration);
         }
 
         private void DisposeAllSaeaObjects()

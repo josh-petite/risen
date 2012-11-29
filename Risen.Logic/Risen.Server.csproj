@@ -39,6 +39,9 @@
     <Reference Include="NHibernate">
       <HintPath>..\packages\NHibernate.3.3.2.4000\lib\Net35\NHibernate.dll</HintPath>
     </Reference>
+    <Reference Include="StructureMap">
+      <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -49,7 +52,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\ServerRegistry.cs" />
+    <Compile Include="Entities\Attributes.cs" />
+    <Compile Include="Entities\Comment.cs" />
     <Compile Include="Entities\EntityBase.cs" />
+    <Compile Include="Entities\Maps\CommentMap.cs" />
+    <Compile Include="Entities\Maps\ExitMap.cs" />
+    <Compile Include="ReferenceTypes\Maps\ExitTemplateRefMap.cs" />
     <Compile Include="Entities\Maps\RoomExitMap.cs" />
     <Compile Include="Entities\Maps\ZoneMap.cs" />
     <Compile Include="Entities\MobileEntity.cs" />
@@ -61,14 +70,15 @@
     <Compile Include="Entities\RoomExit.cs" />
     <Compile Include="Entities\Zone.cs" />
     <Compile Include="Entities\Player.cs" />
-    <Compile Include="Entities\ZoneCache.cs" />
+    <Compile Include="Caches\ZoneCache.cs" />
+    <Compile Include="ReferenceTypes\ExitTemplateRef.cs" />
     <Compile Include="Enums\PostTitle.cs" />
     <Compile Include="ReferenceTypes\ReferenceType.cs" />
     <Compile Include="Enums\Title.cs" />
     <Compile Include="Extentions\SocketAsyncEventArgsExtensions.cs" />
     <Compile Include="Logic\ZoneLogic.cs" />
     <Compile Include="ReferenceTypes\LevelDefinitionRef.cs" />
-    <Compile Include="Repository.cs" />
+    <Compile Include="Data\Repository.cs" />
     <Compile Include="Tcp\AcceptOperationUserToken.cs" />
     <Compile Include="Tcp\AsyncTcpServer.cs" />
     <Compile Include="Tcp\BufferManager.cs" />
@@ -86,7 +96,7 @@
     <Compile Include="Utility\Point.cs" />
     <Compile Include="Entities\Room.cs" />
     <Compile Include="Entities\World.cs" />
-    <Compile Include="Enums\Direction.cs" />
+    <Compile Include="Enums\Exit.cs" />
     <Compile Include="Extentions\RoomExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -96,10 +106,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-    <Folder Include="ReferenceTypes\Maps\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

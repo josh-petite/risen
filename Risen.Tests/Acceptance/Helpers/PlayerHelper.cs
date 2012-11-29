@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Risen.Server.Entities;
 using Risen.Server.Enums;
+using Risen.Server.ReferenceTypes;
 using TechTalk.SpecFlow;
 
 namespace Risen.Tests.Acceptance.Helpers
@@ -19,12 +20,12 @@ namespace Risen.Tests.Acceptance.Helpers
             return (Room) ScenarioContext.Current["PlayerOrigin"];
         }
 
-        public static void MovePlayer(Direction direction, int numberOfRooms)
+        public static void MovePlayer(Exit exit, int numberOfRooms)
         {
             var player = GetPlayerFromContext();
 
             for (int i = 0; i < numberOfRooms; i++)
-                player.MoveTo(direction);
+                player.MoveTo(exit);
         }
 
         public static MovementPath ParseMovement(string expectedMovement)
@@ -45,23 +46,23 @@ namespace Risen.Tests.Acceptance.Helpers
         public static Room GetDestinationLocation(Player player, MovementPath movementPath)
         {
             var playerOrigin = GetPlayerOriginFromContext();
-            var location = new Room {Coordinates = playerOrigin.Coordinates, Exits = playerOrigin.Exits};
+            var location = new Room {Coordinates = playerOrigin.Coordinates, RoomExits = playerOrigin.RoomExits};
 
             foreach (var step in movementPath.Steps)
             {
                 switch (step.Key)
                 {
                     case "N":
-                        location = location.GetRoomInDirectionOf(Direction.North);
+                        location = location.GetRoomInDirectionOf(ExitTemplateRef.North);
                         break;
                     case "S":
-                        location = location.GetRoomInDirectionOf(Direction.South);
+                        location = location.GetRoomInDirectionOf(ExitTemplateRef.South);
                         break;
                     case "E":
-                        location = location.GetRoomInDirectionOf(Direction.East);
+                        location = location.GetRoomInDirectionOf(ExitTemplateRef.East);
                         break;
                     case "W":
-                        location = location.GetRoomInDirectionOf(Direction.West);
+                        location = location.GetRoomInDirectionOf(ExitTemplateRef.West);
                         break;
                 }
             }
