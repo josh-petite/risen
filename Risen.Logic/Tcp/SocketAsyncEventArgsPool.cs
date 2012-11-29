@@ -1,17 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Net.Sockets;
 using System.Threading;
 
 namespace Risen.Server.Tcp
 {
-    public class SocketAsyncEventArgsPool
+    public interface ISocketAsyncEventArgsPool
+    {
+        void Init(int capacity);
+        void Push(SocketAsyncEventArgs socketAsyncEventArgs);
+        int AssignTokenId();
+        bool Any();
+        SocketAsyncEventArgs Pop();
+        int Count { get; }
+    }
+
+    public class SocketAsyncEventArgsPool : ISocketAsyncEventArgsPool
     {
         private int _nextTokenId;
-        private readonly Stack<SocketAsyncEventArgs> _pool;
-
-        public SocketAsyncEventArgsPool(int capacity)
+        private Stack<SocketAsyncEventArgs> _pool;
+        
+        public void Init(int capacity)
         {
             _pool = new Stack<SocketAsyncEventArgs>(capacity);
         }
@@ -19,18 +28,18 @@ namespace Risen.Server.Tcp
         /// <summary>
         /// Adds a <see cref="System.Net.Sockets.SocketAsyncEventArgs"/> instance to the pool.
         /// </summary>
-        /// <param name="item">The <see cref="System.Net.Sockets.SocketAsyncEventArgs"/> instance
+        /// <param name="socketAsyncEventArgs">The <see cref="System.Net.Sockets.SocketAsyncEventArgs"/> instance
         /// to add to the pool.</param>
-        /// <exception cref="ArgumentNullException">If <paramref name="item"/> is null.</exception>
-        public void Push(SocketAsyncEventArgs item)
+        /// <exception cref="ArgumentNullException">If <paramref name="socketAsyncEventArgs"/> is null.</exception>
+        public void Push(SocketAsyncEventArgs socketAsyncEventArgs)
         {
-            if (item == null)
-                throw new ArgumentNullException("item");
+            if (socketAsyncEventArgs == null)
+                throw new ArgumentNullException("socketAsyncEventArgs");
             
 
             lock (_pool)
             {
-                _pool.Push(item);
+                _pool.Push(socketAsyncEventArgs);
             }
         }
 

@@ -4,7 +4,12 @@ using Risen.Server.Extentions;
 
 namespace Risen.Server.Tcp
 {
-    public class OutgoingDataPreparer
+    public interface IOutgoingDataPreparer
+    {
+        void PrepareOutgoingData(SocketAsyncEventArgs e, DataHolder handledDataHolder);
+    }
+
+    public class OutgoingDataPreparer : IOutgoingDataPreparer
     {
         private DataHolder _dataHolder;
 

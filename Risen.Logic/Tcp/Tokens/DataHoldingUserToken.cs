@@ -1,17 +1,19 @@
 ﻿using System.Net.Sockets;
 using System.Threading;
+using Risen.Server.Tcp.Factories;
 
-namespace Risen.Server.Tcp
+namespace Risen.Server.Tcp.Tokens
 {
     public class DataHoldingUserToken
     {
-        private readonly int _id;
+        private readonly IMediatorFactory _mediatorFactory;
+        private readonly IListenerConfiguration _listenerConfiguration;
 
-        public Mediator Mediator;
+        public IMediator Mediator;
         public DataHolder DataHolder;
-        public readonly int BufferOffsetReceive;
-        public readonly int PermanentReceiveMessageOffset;
-        public readonly int BufferOffsetSend;
+        public int BufferOffsetReceive;
+        public int PermanentReceiveMessageOffset;
+        public int BufferOffsetSend;
         public int LengthOfCurrentIncomingMessage;
 
         //receiveMessageOffset is used to mark the byte position where the message
@@ -20,7 +22,7 @@ namespace Risen.Server.Tcp
         //code will not access it.
         public int ReceiveMessageOffset;
         public byte[] ByteArrayForPrefix;
-        public readonly int ReceivePrefixLength;
+        public int ReceivePrefixLength;
         public int ReceivedPrefixBytesDoneCount = 0;
         public int ReceivedMessageBytesDoneCount = 0;
 
@@ -31,7 +33,7 @@ namespace Risen.Server.Tcp
         public int RecPrefixBytesDoneThisOperation = 0;
 
         public int SendBytesRemainingCount;
-        public readonly int SendPrefixLength;
+        public int SendPrefixLength;
         public byte[] DataToSend;
         public int BytesSentAlreadyCount;
 
@@ -41,37 +43,34 @@ namespace Risen.Server.Tcp
         //set up your app to allow it.
         private int _sessionId;
 
-        public DataHoldingUserToken(SocketAsyncEventArgs e, IListenerConfiguration listenerConfiguration, ILogger logger, int tokenId)
+        public DataHoldingUserToken(IMediatorFactory mediatorFactory, IListenerConfiguration listenerConfiguration)
         {
-            _id = tokenId;
-
-            Mediator = new Mediator(e, listenerConfiguration, logger);
-            BufferOffsetReceive = e.Offset;
-            BufferOffsetSend = e.Offset + listenerConfiguration.ReceiveBufferSize;
-            ReceivePrefixLength = listenerConfiguration.ReceivePrefixLength;
-            SendPrefixLength = listenerConfiguration.SendPrefixLength;
-            ReceiveMessageOffset = BufferOffsetReceive + ReceivePrefixLength;
-            PermanentReceiveMessageOffset = ReceiveMessageOffset;
+            _mediatorFactory = mediatorFactory;
+            _listenerConfiguration = listenerConfiguration;
         }
 
-        //Let's use an ID for this object during testing, just so we can see what
-        //is happening better if we want to.
-        public int TokenId
-        {
-            get
-            {
-                return _id;
-            }
-        }
+        public int TokenId { get; set; }
+        public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
 
-        internal void CreateNewDataHolder()
+        public void CreateNewDataHolder()
         {
             DataHolder = new DataHolder();
         }
 
+        public void Init()
+        {
+            Mediator = _mediatorFactory.GenerateMediatior(SocketAsyncEventArgs);
+            BufferOffsetReceive = SocketAsyncEventArgs.Offset;
+            BufferOffsetSend = SocketAsyncEventArgs.Offset + _listenerConfiguration.ReceiveBufferSize;
+            ReceivePrefixLength = _listenerConfiguration.ReceivePrefixLength;
+            SendPrefixLength = _listenerConfiguration.SendPrefixLength;
+            ReceiveMessageOffset = BufferOffsetReceive + ReceivePrefixLength;
+            PermanentReceiveMessageOffset = ReceiveMessageOffset;
+        }
+
         //Used to create sessionId variable in DataHoldingUserToken.
         //Called in ProcessAccept().
-        internal void CreateSessionId()
+        public void CreateSessionId()
         {
             int mainSessionId = SocketListener.MainSessionId;
             _sessionId = Interlocked.Increment(ref mainSessionId);

@@ -4,6 +4,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using Risen.Server.Extentions;
+using Risen.Server.Tcp.Factories;
+using Risen.Server.Tcp.Tokens;
 
 namespace Risen.Server.Tcp
 {
@@ -14,29 +16,30 @@ namespace Risen.Server.Tcp
         void CleanUpOnExit();
     }
 
-    // Implements the connection logic for the socket server.   
-    // After accepting a connection, all data read from the client is sent back to the client. 
-    // The read and echo back to the client pattern is continued until the client disconnects.
     public class SocketListener : ISocketListener
     {
         private int _numberOfAcceptedSockets;
-        private readonly IBufferManager _bufferManager; // represents a large reusable set of buffers for all socket operations 
+        private readonly IBufferManager _bufferManager;
         private readonly IListenerConfiguration _listenerConfiguration;
         private readonly IPrefixHandler _prefixHandler;
         private readonly IMessageHandler _messageHandler;
         private readonly ILogger _logger;
+        private readonly IDataHoldingUserTokenFactory _dataHoldingUserTokenFactory;
+        private readonly ISocketAsyncEventArgsFactory _socketAsyncEventArgsFactory;
+        private readonly ISocketAsyncEventArgsPoolFactory _socketAsyncEventArgsPoolFactory;
         private readonly Semaphore _maxConnectionsEnforcer;
         private Socket _listenSocket; // the socket used to listen for incoming connection requests 
-        private SocketAsyncEventArgsPool _poolOfAcceptEventArgs; // pool of reusable SocketAsyncEventArgs objects for accept operations
-        private SocketAsyncEventArgsPool _poolOfRecSendEventArgs; // pool of reusable SocketAsyncEventArgs objects for receive and send socket operations
+        private ISocketAsyncEventArgsPool _poolOfAcceptEventArgs; // pool of reusable SocketAsyncEventArgs objects for accept operations
+        private ISocketAsyncEventArgsPool _poolOfRecSendEventArgs; // pool of reusable SocketAsyncEventArgs objects for receive and send socket operations
 
         public static int MaxSimultaneousClientsThatWereConnected = 0;
         private const long PacketSizeThreshhold = 50000;
 
-        // Create an uninitialized server instance.   
-        // To start the server listening for connection requests 
-        // call the Init method followed by Start method  
-        public SocketListener(IListenerConfiguration listenerConfiguration, IBufferManager bufferManager, IPrefixHandler prefixHandler, IMessageHandler messageHandler, ILogger logger)
+        public SocketListener(IListenerConfiguration listenerConfiguration, IBufferManager bufferManager, IPrefixHandler prefixHandler,
+                              IMessageHandler messageHandler, ILogger logger,
+                              IDataHoldingUserTokenFactory dataHoldingUserTokenFactory,
+                              ISocketAsyncEventArgsFactory socketAsyncEventArgsFactory,
+                              ISocketAsyncEventArgsPoolFactory socketAsyncEventArgsPoolFactory)
         {
             logger.WriteLine(LogCategory.Info, "-- Starting SocketListener Constructor --");
 
@@ -44,9 +47,11 @@ namespace Risen.Server.Tcp
             _prefixHandler = prefixHandler;
             _messageHandler = messageHandler;
             _logger = logger;
-
-            // allocate buffers such that the maximum number of sockets can have one outstanding read and write posted to the socket simultaneously  
+            _dataHoldingUserTokenFactory = dataHoldingUserTokenFactory;
+            _socketAsyncEventArgsFactory = socketAsyncEventArgsFactory;
+            _socketAsyncEventArgsPoolFactory = socketAsyncEventArgsPoolFactory;
             _bufferManager = bufferManager;
+
             _maxConnectionsEnforcer = new Semaphore(listenerConfiguration.MaxNumberOfConnections, listenerConfiguration.MaxNumberOfConnections);
             DataHolders = new List<DataHolder>();
             InitialTransmissionId = listenerConfiguration.MainTransmissionId;
@@ -68,7 +73,6 @@ namespace Risen.Server.Tcp
         // context objects.  These objects do not need to be preallocated  
         // or reused, but it is done this way to illustrate how the API can  
         // easily be used to create reusable objects to increase server performance. 
-        // 
         public void Init()
         {
             Log(InitializeBufferManager);
@@ -85,37 +89,27 @@ namespace Risen.Server.Tcp
 
         private void InitializeAcceptEventArgsPool()
         {
-            _poolOfAcceptEventArgs = new SocketAsyncEventArgsPool(_listenerConfiguration.MaxSimultaneousAcceptOperations);
+            _poolOfAcceptEventArgs = _socketAsyncEventArgsPoolFactory.GenerateSocketAsyncEventArgsPool(_listenerConfiguration.MaxSimultaneousAcceptOperations);
 
-            // preallocate pool of SocketAsyncEventArgs objects
             for (int i = 0; i < _listenerConfiguration.MaxSimultaneousAcceptOperations; i++)
-                _poolOfAcceptEventArgs.Push(CreateNewSaeaForAccept()); // add SocketAsyncEventArg to the pool
+                _poolOfAcceptEventArgs.Push(CreateNewSaeaForAccept());
         }
 
         private void InitializeSendReceiveEventArgsPool()
         {
-            _poolOfRecSendEventArgs = new SocketAsyncEventArgsPool(_listenerConfiguration.NumberOfSaeaForRecSend);
+            _poolOfRecSendEventArgs = _socketAsyncEventArgsPoolFactory.GenerateSocketAsyncEventArgsPool(_listenerConfiguration.NumberOfSaeaForRecSend);
 
             for (int i = 0; i < _listenerConfiguration.NumberOfSaeaForRecSend; i++)
             {
-                var eventArgForPool = new SocketAsyncEventArgs();
-                _bufferManager.SetBuffer(eventArgForPool);
-
-                eventArgForPool.Completed += IoCompleted;
-                var receiveSendUserToken = new DataHoldingUserToken(eventArgForPool, _listenerConfiguration, _logger, _poolOfRecSendEventArgs.AssignTokenId() + 1000000);
-                receiveSendUserToken.CreateNewDataHolder();
-                eventArgForPool.UserToken = receiveSendUserToken;
+                var eventArgForPool = _socketAsyncEventArgsFactory.GenerateReceiveSendSocketAsyncEventArgs(IoCompleted);
+                eventArgForPool.UserToken = _dataHoldingUserTokenFactory.GenerateDataHoldingUserToken(eventArgForPool, _poolOfRecSendEventArgs.AssignTokenId());
                 _poolOfRecSendEventArgs.Push(eventArgForPool);
             }
         }
 
         private SocketAsyncEventArgs CreateNewSaeaForAccept()
         {
-            var acceptEventArg = new SocketAsyncEventArgs();
-            acceptEventArg.Completed += AcceptEventArgCompleted;
-            acceptEventArg.UserToken = new AcceptOperationUserToken(_poolOfAcceptEventArgs.AssignTokenId() + 10000);
-
-            return acceptEventArg; // Side note: Accept operations do not need a buffer.
+            return _socketAsyncEventArgsFactory.GenerateAcceptSocketAsyncEventArgs(AcceptEventArgCompleted, _poolOfAcceptEventArgs.AssignTokenId());
         }
 
         public void StartListen()
@@ -189,9 +183,7 @@ namespace Risen.Server.Tcp
             var numberOfConnectedSockets = Interlocked.Increment(ref _numberOfAcceptedSockets);
 
             if (numberOfConnectedSockets > maxSimultaneousAcceptOperations)
-            {
                 Interlocked.Increment(ref MaxSimultaneousClientsThatWereConnected);
-            }
 
             _logger.WriteLine(LogCategory.Info, string.Format("ProcessAccept, Accept Id: {0}", ((AcceptOperationUserToken)acceptEventArgs.UserToken).TokenId));
         }

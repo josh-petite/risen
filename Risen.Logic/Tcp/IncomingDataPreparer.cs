@@ -5,20 +5,26 @@ using Risen.Server.Extentions;
 
 namespace Risen.Server.Tcp
 {
-    public class IncomingDataPreparer
+    public interface IIncomingDataPreparer
+    {
+        SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
+        DataHolder HandleReceivedData(DataHolder incomingDataHolder, SocketAsyncEventArgs socketAsyncEventArgs);
+    }
+
+    public class IncomingDataPreparer : IIncomingDataPreparer
     {
         private static readonly object Mutex = new object();
         private DataHolder _dataHolder;
-        private readonly SocketAsyncEventArgs _socketAsyncEventArgs;
         private readonly IListenerConfiguration _listenerConfiguration;
         private readonly ILogger _logger;
 
-        public IncomingDataPreparer(SocketAsyncEventArgs socketAsyncEventArgs, IListenerConfiguration listenerConfiguration, ILogger logger)
+        public IncomingDataPreparer(IListenerConfiguration listenerConfiguration, ILogger logger)
         {
-            _socketAsyncEventArgs = socketAsyncEventArgs;
             _listenerConfiguration = listenerConfiguration;
             _logger = logger;
         }
+
+        public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
 
         private int ReceivedTransmissionIdGetter()
         {
@@ -29,10 +35,10 @@ namespace Risen.Server.Tcp
 
         private EndPoint GetRemoteEndpoint()
         {
-            return _socketAsyncEventArgs.AcceptSocket.RemoteEndPoint;
+            return SocketAsyncEventArgs.AcceptSocket.RemoteEndPoint;
         }
 
-        internal DataHolder HandleReceivedData(DataHolder incomingDataHolder, SocketAsyncEventArgs socketAsyncEventArgs)
+        public DataHolder HandleReceivedData(DataHolder incomingDataHolder, SocketAsyncEventArgs socketAsyncEventArgs)
         {
             var receiveToken = socketAsyncEventArgs.DataHoldingUserToken();
 

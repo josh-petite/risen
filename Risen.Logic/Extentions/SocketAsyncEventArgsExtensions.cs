@@ -1,5 +1,6 @@
 ﻿using System.Net.Sockets;
 using Risen.Server.Tcp;
+using Risen.Server.Tcp.Tokens;
 
 namespace Risen.Server.Extentions
 {

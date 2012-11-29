@@ -24,6 +24,7 @@ namespace Risen.ConsoleServer.Configuration
                                                             });
 
                                                  r.For<ILogger>()
+                                                  .Singleton()
                                                   .Use<Logger>()
                                                   .Ctor<bool>("shouldLogToConsole").EqualToAppSetting("ShouldLogToConsole")
                                                   .Ctor<bool>("isLoggerEnabled").EqualToAppSetting("IsLoggerEnabled");
@@ -33,7 +34,6 @@ namespace Risen.ConsoleServer.Configuration
                                                                                                                o.Init();
                                                                                                                o.StartListen();
                                                                                                            });
-
                                              });
             }
         }

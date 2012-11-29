@@ -2,33 +2,42 @@
 
 namespace Risen.Server.Tcp
 {
-    public class Mediator
+    public interface IMediator
     {
-        private readonly IncomingDataPreparer _incomingDataPreparer;
-        private readonly OutgoingDataPreparer _outgoingDataPreparer;
+        SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
+        IIncomingDataPreparer IncomingDataPreparer { get; set; }
+        void HandleData(DataHolder dataHolder);
+        void PrepareOutgoingData();
+        SocketAsyncEventArgs GiveBack();
+    }
+
+    public class Mediator : IMediator
+    {
+        private readonly IOutgoingDataPreparer _outgoingDataPreparer;
         private DataHolder _dataHolder;
-        private readonly SocketAsyncEventArgs _saeaObject;
-
-        public Mediator(SocketAsyncEventArgs e, IListenerConfiguration listenerConfiguration, ILogger logger)
+        
+        public Mediator(IOutgoingDataPreparer outgoingDataPreparer)
         {
-            _saeaObject = e;
-            _incomingDataPreparer = new IncomingDataPreparer(_saeaObject, listenerConfiguration, logger);
-            _outgoingDataPreparer = new OutgoingDataPreparer();
+            _outgoingDataPreparer = outgoingDataPreparer;
         }
 
-        internal void HandleData(DataHolder incomingDataHolder)
+        public IIncomingDataPreparer IncomingDataPreparer { get; set; }
+
+        public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
+
+        public void HandleData(DataHolder incomingDataHolder)
         {
-            _dataHolder = _incomingDataPreparer.HandleReceivedData(incomingDataHolder, _saeaObject);
+            _dataHolder = IncomingDataPreparer.HandleReceivedData(incomingDataHolder, SocketAsyncEventArgs);
         }
 
-        internal void PrepareOutgoingData()
+        public void PrepareOutgoingData()
         {
-            _outgoingDataPreparer.PrepareOutgoingData(_saeaObject, _dataHolder);
+            _outgoingDataPreparer.PrepareOutgoingData(SocketAsyncEventArgs, _dataHolder);
         }
 
-        internal SocketAsyncEventArgs GiveBack()
+        public SocketAsyncEventArgs GiveBack()
         {
-            return _saeaObject;
+            return SocketAsyncEventArgs;
         }
     }
 }
