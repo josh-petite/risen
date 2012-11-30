@@ -1,6 +1,6 @@
 ﻿namespace Risen.Server.ReferenceTypes
 {
-    public class ExitTemplateRef : ReferenceType
+    public class ExitTemplate : ReferenceType
     {
         public const int North = 1;
         public const int South = 2;
@@ -14,5 +14,6 @@
         public const int Down = 10;
         public const int In = 11;
         public const int Out = 12;
+        public const int Door = 13;
     }
 }

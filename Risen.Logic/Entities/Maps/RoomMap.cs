@@ -1,4 +1,5 @@
-﻿using FluentNHibernate.Mapping;
+﻿using System;
+using FluentNHibernate.Mapping;
 
 namespace Risen.Server.Entities.Maps
 {
@@ -9,13 +10,15 @@ namespace Risen.Server.Entities.Maps
             Table("Rooms");
             Id(o => o.Id, "RoomId");
             Map(o => o.Name).Not.Nullable();
-            Map(o => o.Zone).Not.Nullable();
+            References(o => o.Zone, "ZoneId").Not.Nullable();
             Component(c => c.Coordinates, m =>
                                               {
                                                   m.Map(o => o.X).Column("CoordinateX");
                                                   m.Map(o => o.Y).Column("CoordinateY");
                                               });
-            Join("RoomExits", o => o.Map(x => x.RoomExits));
+
+            HasMany(o => o.RoomExits).KeyColumn("SourceRoomId");
+
         }
     }
 }

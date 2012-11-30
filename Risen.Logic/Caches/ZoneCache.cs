@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Risen.Server.Entities;
 using Risen.Server.Utility;
 
-namespace Risen.Server.Entities
+namespace Risen.Server.Caches
 {
     public class ZoneCache
     {

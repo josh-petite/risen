@@ -9,7 +9,8 @@ namespace Risen.Tests.Acceptance.Steps
         [Given(@"I have a (.*) zone")]
         public void GivenIHaveAZone(string mapType)
         {
-            ScenarioContext.Current.Add(string.Format("{0} map", mapType), ZoneHelper.BuildMapFromMapType(mapType));
+            var zone = ZoneHelper.BuildMapFromMapType(mapType);
+            ScenarioContext.Current.Add(string.Format("{0} map", mapType), zone);
         }
 
         [Given(@"the player is in a north to south hallway")]

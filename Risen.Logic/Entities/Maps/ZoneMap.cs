@@ -8,7 +8,7 @@ namespace Risen.Server.Entities.Maps
         {
             Id(o => o.Id, "ZoneId");
             Map(o => o.Name);
-            Map(o => o.Rooms);
+            HasMany(o => o.Rooms).Inverse().KeyColumn("ZoneId");
         }
     }
 }

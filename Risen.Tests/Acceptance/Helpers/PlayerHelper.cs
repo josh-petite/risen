@@ -53,16 +53,16 @@ namespace Risen.Tests.Acceptance.Helpers
                 switch (step.Key)
                 {
                     case "N":
-                        location = location.GetRoomInDirectionOf(ExitTemplateRef.North);
+                        location = location.GetRoomInDirectionOf(ExitTemplate.North);
                         break;
                     case "S":
-                        location = location.GetRoomInDirectionOf(ExitTemplateRef.South);
+                        location = location.GetRoomInDirectionOf(ExitTemplate.South);
                         break;
                     case "E":
-                        location = location.GetRoomInDirectionOf(ExitTemplateRef.East);
+                        location = location.GetRoomInDirectionOf(ExitTemplate.East);
                         break;
                     case "W":
-                        location = location.GetRoomInDirectionOf(ExitTemplateRef.West);
+                        location = location.GetRoomInDirectionOf(ExitTemplate.West);
                         break;
                 }
             }

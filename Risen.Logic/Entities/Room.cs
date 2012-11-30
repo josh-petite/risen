@@ -17,7 +17,7 @@ namespace Risen.Server.Entities
         public virtual Zone Zone { get; set; }
         public virtual Point Coordinates { get; set; }
 
-        public Room GetRoomInDirectionOf(int exitTemplateId)
+        public virtual Room GetRoomInDirectionOf(int exitTemplateId)
         {
             var roomExit = RoomExits.SingleOrDefault(o => o.Exit.ExitTemplate.Id == exitTemplateId);
             return roomExit != null ? roomExit.DestinationRoom : null;

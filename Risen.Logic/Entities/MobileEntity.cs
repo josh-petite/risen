@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Risen.Server.Caches;
 using Risen.Server.Enums;
 using Risen.Server.Utility;
 
@@ -6,13 +7,13 @@ namespace Risen.Server.Entities
 {
     public class MobileEntity : EntityBase
     {
-        public Title Title { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public PostTitle PostTitle { get; set; }
-        public Room CurrentRoom { get; set; }
+        public virtual Title Title { get; set; }
+        public virtual string Name { get; set; }
+        public virtual string Surname { get; set; }
+        public virtual PostTitle PostTitle { get; set; }
+        public virtual Room CurrentRoom { get; set; }
 
-        public void MoveTo(Exit exit)
+        public virtual void MoveTo(Exit exit)
         {
             if (!CurrentRoom.RoomExits.Select(o => o.Exit).Contains(exit))
                 return;
@@ -20,7 +21,7 @@ namespace Risen.Server.Entities
             CurrentRoom = CurrentRoom.RoomExits.Single(o => o.Exit == exit).DestinationRoom;
         }
 
-        public Room MoveTo(Point roomCoordinates)
+        public virtual Room MoveTo(Point roomCoordinates)
         {
             CurrentRoom = ZoneCache.MoveMobileEntityTo(this, roomCoordinates);
             return CurrentRoom;

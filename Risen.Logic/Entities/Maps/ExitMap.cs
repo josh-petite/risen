@@ -1,5 +1,4 @@
 ﻿using FluentNHibernate.Mapping;
-using Risen.Server.Enums;
 
 namespace Risen.Server.Entities.Maps
 {
@@ -7,8 +6,9 @@ namespace Risen.Server.Entities.Maps
     {
         public ExitMap()
         {
+            Table("Exits");
             Id(o => o.Id, "ExitId");
-            Map(o => o.ExitTemplate);
+            References(o => o.ExitTemplate);
             Map(o => o.CustomDescription);
         }
     }

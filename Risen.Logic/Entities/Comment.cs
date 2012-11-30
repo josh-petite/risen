@@ -2,6 +2,6 @@
 {
     public class Comment : EntityBase
     {
-        public string Text { get; set; }
+        public virtual string Text { get; set; }
     }
 }

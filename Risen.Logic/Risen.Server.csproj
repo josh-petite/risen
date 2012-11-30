@@ -58,12 +58,13 @@
     <Compile Include="Entities\EntityBase.cs" />
     <Compile Include="Entities\Maps\CommentMap.cs" />
     <Compile Include="Entities\Maps\ExitMap.cs" />
-    <Compile Include="ReferenceTypes\Maps\ExitTemplateRefMap.cs" />
+    <Compile Include="ReferenceTypes\Maps\ExitTemplateMap.cs" />
     <Compile Include="Entities\Maps\RoomExitMap.cs" />
     <Compile Include="Entities\Maps\ZoneMap.cs" />
     <Compile Include="Entities\MobileEntity.cs" />
     <Compile Include="Entities\NonPlayerCharacter.cs" />
-    <Compile Include="Entities\PlayerClassReferenceType.cs" />
+    <Compile Include="ReferenceTypes\Maps\PlayerClassMap.cs" />
+    <Compile Include="ReferenceTypes\PlayerClass.cs" />
     <Compile Include="Entities\Maps\PlayerMap.cs" />
     <Compile Include="Entities\Maps\RoomMap.cs" />
     <Compile Include="Entities\Party.cs" />
@@ -71,13 +72,13 @@
     <Compile Include="Entities\Zone.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Caches\ZoneCache.cs" />
-    <Compile Include="ReferenceTypes\ExitTemplateRef.cs" />
+    <Compile Include="ReferenceTypes\ExitTemplate.cs" />
     <Compile Include="Enums\PostTitle.cs" />
     <Compile Include="ReferenceTypes\ReferenceType.cs" />
     <Compile Include="Enums\Title.cs" />
     <Compile Include="Extentions\SocketAsyncEventArgsExtensions.cs" />
     <Compile Include="Logic\ZoneLogic.cs" />
-    <Compile Include="ReferenceTypes\LevelDefinitionRef.cs" />
+    <Compile Include="ReferenceTypes\LevelDefinition.cs" />
     <Compile Include="Data\Repository.cs" />
     <Compile Include="Tcp\Tokens\AcceptOperationUserToken.cs" />
     <Compile Include="Tcp\Factories\AcceptOperationUserTokenFactory.cs" />
@@ -103,7 +104,7 @@
     <Compile Include="Utility\Point.cs" />
     <Compile Include="Entities\Room.cs" />
     <Compile Include="Entities\World.cs" />
-    <Compile Include="Enums\Exit.cs" />
+    <Compile Include="Entities\Exit.cs" />
     <Compile Include="Extentions\RoomExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -9,7 +9,7 @@ using NHibernate;
 using NHibernate.Linq;
 using Risen.Server.Entities.Maps;
 
-namespace Risen.Server
+namespace Risen.Server.Data
 {
     public interface IRepository
     {

@@ -7,9 +7,9 @@ namespace Risen.Server.Entities.Maps
         public RoomExitMap()
         {
             Id(o => o.Id, "RoomExitId");
-            Map(o => o.Exit, "DirectionId");
-            Map(o => o.SourceRoom, "RoomId");
-            Map(o => o.DestinationRoom, "DestinationRoomId");
+            References(o => o.Exit, "ExitId");
+            References(o => o.SourceRoom, "SourceRoomId");
+            References(o => o.DestinationRoom, "DestinationRoomId");
         }
     }
 }
