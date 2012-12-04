@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using FluentNHibernate.Cfg;
@@ -27,17 +28,15 @@ namespace Risen.Server.Data
 
             using (var session = sessionFactory.OpenSession())
             {
-                using (var transaction = session.BeginTransaction())
+                using (session.BeginTransaction())
                 {
                     try
                     {
                         result = session.Query<T>().FirstOrDefault(expression);
-                        transaction.Commit();
                     }
                     catch (Exception exception)
                     {
-                        Console.WriteLine(exception);
-                        transaction.Rollback();
+                        Debug.WriteLine(exception);
                     }
                 }
             }

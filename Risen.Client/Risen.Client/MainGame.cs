@@ -6,7 +6,6 @@ using Risen.Client.Tcp;
 
 namespace Risen.Client
 {
-    // how to wire xna in vs2012: http://stackoverflow.com/questions/10881005/how-to-install-xna-game-studio-on-visual-studio-2012
     public interface IMainGame : IDisposable
     {
         void Run();

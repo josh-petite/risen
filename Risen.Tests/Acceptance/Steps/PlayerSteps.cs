@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
 using Risen.Server.Entities;
+using Risen.Server.ReferenceTypes;
 using Risen.Tests.Acceptance.Helpers;
 using TechTalk.SpecFlow;
 
@@ -35,6 +36,28 @@ namespace Risen.Tests.Acceptance.Steps
             var player = PlayerHelper.GetPlayerFromContext();
             var movementPath = PlayerHelper.ParseMovement(expectedMovement);
             var destinationLocation = PlayerHelper.GetDestinationLocation(player, movementPath);
+
+            foreach (var move in movementPath.Steps)
+            {
+                for (int i = 0; i < move.Value; i++)
+                {
+                    switch (move.Key)
+                    {
+                        case "N":
+                            player.CurrentRoom = player.CurrentRoom.GetRoomInDirectionOf(ExitTemplate.North);
+                            break;
+                        case "S":
+                            player.CurrentRoom = player.CurrentRoom.GetRoomInDirectionOf(ExitTemplate.South);
+                            break;
+                        case "E":
+                            player.CurrentRoom = player.CurrentRoom.GetRoomInDirectionOf(ExitTemplate.East);
+                            break;
+                        case "W":
+                            player.CurrentRoom = player.CurrentRoom.GetRoomInDirectionOf(ExitTemplate.West);
+                            break;
+                    }
+                }
+            }
 
             Assert.AreEqual(player.CurrentRoom, destinationLocation);
         }

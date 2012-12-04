@@ -17,7 +17,9 @@ namespace Risen.Server.Entities.Maps
                                                   m.Map(o => o.Y).Column("CoordinateY");
                                               });
 
-            References(o => o.RoomExits, "ExitId")
+            HasMany(o => o.RoomExits)
+                .KeyColumn("SourceRoomId")
+                .Inverse()
                 .Not.LazyLoad();
         }
     }

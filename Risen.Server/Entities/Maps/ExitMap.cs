@@ -8,7 +8,7 @@ namespace Risen.Server.Entities.Maps
         {
             Table("Exits");
             Id(o => o.Id, "ExitId");
-            References(o => o.ExitTemplate);
+            References(o => o.ExitTemplate, "ExitTemplateId").Not.LazyLoad();
             Map(o => o.CustomDescription);
         }
     }
