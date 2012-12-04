@@ -2,7 +2,6 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Risen.Client.Configuration;
 using Risen.Client.Tcp;
 
 namespace Risen.Client
@@ -13,20 +12,17 @@ namespace Risen.Client
         void Run();
     }
 
-    /// <summary>
-    /// This is the main type for your game
-    /// </summary>
     public class MainGame : Game, IMainGame
     {
         private readonly ISocketClient _socketClient;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private SpriteFont _spriteFont;
 
         public MainGame(ISocketClient socketClient)
         {
             _socketClient = socketClient;
-            ClientRegistry.Configure();
-
+            
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -52,6 +48,7 @@ namespace Risen.Client
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteFont = Content.Load<SpriteFont>("Font");
 
             // TODO: use this.Content to load your game content here
         }
@@ -90,6 +87,9 @@ namespace Risen.Client
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(_spriteFont, "Risen, client! woohoo!", new Vector2(250, 250), Color.White);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

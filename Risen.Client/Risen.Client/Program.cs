@@ -1,3 +1,4 @@
+using Risen.Client.Configuration;
 using StructureMap;
 
 namespace Risen.Client
@@ -6,6 +7,8 @@ namespace Risen.Client
     {
         private static void Main(string[] args)
         {
+            ClientRegistry.Configure();
+
             using (var game = ObjectFactory.GetInstance<IMainGame>())
                 game.Run();
         }

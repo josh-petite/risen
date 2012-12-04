@@ -20,8 +20,9 @@ namespace Risen.ConsoleServer.Configuration
                                                  r.Scan(x =>
                                                             {
                                                                 x.TheCallingAssembly();
-                                                                x.WithDefaultConventions();
                                                                 x.AssemblyContainingType<ISocketListener>();
+                                                                x.AssemblyContainingType<ILogger>();
+                                                                x.WithDefaultConventions();
                                                             });
 
                                                  r.For<ILogger>()

@@ -1,4 +1,5 @@
-﻿using StructureMap;
+﻿using Risen.Shared.Tcp;
+using StructureMap;
 using StructureMap.Configuration.DSL;
 
 namespace Risen.Client.Configuration
@@ -13,11 +14,21 @@ namespace Risen.Client.Configuration
             {
                 _isConfigured = true;
 
-                ObjectFactory.Initialize(r => r.Scan(x =>
+                ObjectFactory.Initialize(r =>
                     {
-                        x.TheCallingAssembly();
-                        x.WithDefaultConventions();
-                    }));
+                        r.Scan(x =>
+                            {
+                                x.TheCallingAssembly();
+                                x.AssemblyContainingType<ILogger>();
+                                x.WithDefaultConventions();
+                            });
+
+                        r.For<ILogger>()
+                         .Singleton()
+                         .Use<Logger>()
+                         .Ctor<bool>("shouldLogToConsole").EqualToAppSetting("ShouldLogToConsole")
+                         .Ctor<bool>("isLoggerEnabled").EqualToAppSetting("IsLoggerEnabled");
+                    });
             }
         }
     }

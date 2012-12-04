@@ -20,6 +20,7 @@ namespace Risen.Server.Configuration
                                                             {
                                                                 x.WithDefaultConventions();
                                                                 x.TheCallingAssembly();
+                                                                x.AssemblyContainingType<ILogger>();
                                                             });
 
                                                  r.For<ILogger>()
