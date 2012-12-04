@@ -27,6 +27,11 @@ namespace Risen.Server.Configuration
                                                   .Use<Logger>()
                                                   .Ctor<bool>("shouldLogToConsole").EqualToAppSetting("ShouldLogToConsole")
                                                   .Ctor<bool>("isLoggerEnabled").EqualToAppSetting("IsLoggerEnabled");
+
+                                                 r.For<IBufferManager>()
+                                                  .Singleton()
+                                                  .Use<BufferManager>()
+                                                  .Ctor<IConfiguration>().Is<IListenerConfiguration>();
                                              });
             }
         }

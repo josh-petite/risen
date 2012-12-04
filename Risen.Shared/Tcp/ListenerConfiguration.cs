@@ -4,9 +4,8 @@ using System.Net;
 
 namespace Risen.Shared.Tcp
 {
-    public interface IListenerConfiguration
+    public interface IListenerConfiguration : IConfiguration
     {
-        int GetTotalBytesRequiredForInitialBufferConfiguration();
         int ReceiveBufferSize { get; }
         int MaxSimultaneousAcceptOperations { get; set; }
         int MaxNumberOfConnections { get; }
@@ -16,7 +15,6 @@ namespace Risen.Shared.Tcp
         int ReceivePrefixLength { get; }
         int SendPrefixLength { get; }
         int MainTransmissionId { get; }
-        int GetBufferSize();
     }
 
     public class ListenerConfiguration : IListenerConfiguration

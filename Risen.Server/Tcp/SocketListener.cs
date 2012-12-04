@@ -38,10 +38,8 @@ namespace Risen.Server.Tcp
         public const long PacketSizeThreshhold = 50000;
 
         public SocketListener(IListenerConfiguration listenerConfiguration, IBufferManager bufferManager, IPrefixHandler prefixHandler,
-                              IMessageHandler messageHandler, ILogger logger,
-                              IDataHoldingUserTokenFactory dataHoldingUserTokenFactory,
-                              ISocketAsyncEventArgsFactory socketAsyncEventArgsFactory,
-                              ISocketAsyncEventArgsPoolFactory socketAsyncEventArgsPoolFactory)
+                              IMessageHandler messageHandler, ILogger logger, IDataHoldingUserTokenFactory dataHoldingUserTokenFactory,
+                              ISocketAsyncEventArgsFactory socketAsyncEventArgsFactory, ISocketAsyncEventArgsPoolFactory socketAsyncEventArgsPoolFactory)
         {
             logger.WriteLine(LogCategory.Info, "-- Starting SocketListener Constructor --");
 

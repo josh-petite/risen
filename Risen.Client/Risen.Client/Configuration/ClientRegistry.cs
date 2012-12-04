@@ -1,4 +1,5 @@
-﻿using Risen.Shared.Tcp;
+﻿using Risen.Client.Tcp;
+using Risen.Shared.Tcp;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
@@ -28,6 +29,11 @@ namespace Risen.Client.Configuration
                          .Use<Logger>()
                          .Ctor<bool>("shouldLogToConsole").EqualToAppSetting("ShouldLogToConsole")
                          .Ctor<bool>("isLoggerEnabled").EqualToAppSetting("IsLoggerEnabled");
+
+                        r.For<IBufferManager>()
+                         .Singleton()
+                         .Use<BufferManager>()
+                         .Ctor<IConfiguration>().Is<IClientConfiguration>();
                     });
             }
         }

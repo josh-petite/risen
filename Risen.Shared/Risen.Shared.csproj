@@ -53,6 +53,7 @@
     <Compile Include="Tcp\Factories\MediatorFactory.cs" />
     <Compile Include="Tcp\Factories\SocketAsyncEventArgsFactory.cs" />
     <Compile Include="Tcp\Factories\SocketAsyncEventArgsPoolFactory.cs" />
+    <Compile Include="Tcp\IConfiguration.cs" />
     <Compile Include="Tcp\IncomingDataPreparer.cs" />
     <Compile Include="Tcp\ListenerConfiguration.cs" />
     <Compile Include="Tcp\Logger.cs" />

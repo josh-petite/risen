@@ -36,6 +36,10 @@ namespace Risen.ConsoleServer.Configuration
                                                                                                                o.Init();
                                                                                                                o.StartListen();
                                                                                                            });
+                                                 r.For<IBufferManager>()
+                                                  .Singleton()
+                                                  .Use<BufferManager>()
+                                                  .Ctor<IConfiguration>().Is<IListenerConfiguration>();
                                              });
             }
         }
