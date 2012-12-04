@@ -57,6 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Acceptance\Helpers\ExitHelper.cs" />
     <Compile Include="Acceptance\Helpers\ZoneHelper.cs" />
     <Compile Include="Acceptance\Helpers\MovementPath.cs" />
     <Compile Include="Acceptance\Helpers\PlayerHelper.cs" />
@@ -81,7 +82,7 @@
     <Folder Include="Unit\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Risen.Logic\Risen.Server.csproj">
+    <ProjectReference Include="..\Risen.Server\Risen.Server.csproj">
       <Project>{C5C997D3-C60D-4715-B648-323BE9960C07}</Project>
       <Name>Risen.Server</Name>
     </ProjectReference>

@@ -1,14 +1,13 @@
-﻿using Risen.Server.Tcp;
-using Risen.Shared.Tcp;
+﻿using Risen.Shared.Tcp;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
-namespace Risen.ConsoleServer.Configuration
+namespace Risen.Server.Configuration
 {
-    public class ConsoleServerRegistry : Registry
+    public class ServerRegistry : Registry
     {
         private static bool _isConfigured;
-
+        
         public static void Configure()
         {
             if (!_isConfigured)
@@ -19,22 +18,14 @@ namespace Risen.ConsoleServer.Configuration
                                              {
                                                  r.Scan(x =>
                                                             {
-                                                                x.TheCallingAssembly();
                                                                 x.WithDefaultConventions();
-                                                                x.AssemblyContainingType<ISocketListener>();
+                                                                x.TheCallingAssembly();
                                                             });
 
                                                  r.For<ILogger>()
-                                                  .Singleton()
                                                   .Use<Logger>()
                                                   .Ctor<bool>("shouldLogToConsole").EqualToAppSetting("ShouldLogToConsole")
                                                   .Ctor<bool>("isLoggerEnabled").EqualToAppSetting("IsLoggerEnabled");
-
-                                                 r.For<ISocketListener>().Singleton().OnCreationForAll(o =>
-                                                                                                           {
-                                                                                                               o.Init();
-                                                                                                               o.StartListen();
-                                                                                                           });
                                              });
             }
         }

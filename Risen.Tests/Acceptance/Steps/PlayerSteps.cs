@@ -1,7 +1,6 @@
 using System;
 using NUnit.Framework;
 using Risen.Server.Entities;
-using Risen.Server.Enums;
 using Risen.Tests.Acceptance.Helpers;
 using TechTalk.SpecFlow;
 
@@ -25,9 +24,9 @@ namespace Risen.Tests.Acceptance.Steps
         }
         
         [When(@"the player moves (North|South|East|West|Northwest|Northeast|Southwest|Southeast|Up|Down) (.*) rooms?")]
-        public void WhenThePlayerMoves(string direction, int numberOfRooms)
+        public void WhenThePlayerMoves(string exit, int numberOfRooms)
         {
-            PlayerHelper.MovePlayer((Exit)Enum.Parse(typeof(Exit), direction), numberOfRooms);
+            PlayerHelper.MovePlayer(ExitHelper.GetExitByName(exit), numberOfRooms);
         }
 
         [Then(@"the player should be (.*) of its origin")]

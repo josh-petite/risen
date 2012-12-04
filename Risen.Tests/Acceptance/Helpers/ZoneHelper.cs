@@ -121,7 +121,8 @@ namespace Risen.Tests.Acceptance.Helpers
         private static Zone LoadCubeFromDatabase()
         {
             var repository = new Repository();
-            return repository.FindOne<Zone>(o => o.Name == "Aldest");
+            var zone = repository.FindOne<Zone>(o => o.Name == "Aldest");
+            return zone;
         }
 
         private static Zone CreateEmptyZone(int mapWidth, int mapHeight)
