@@ -1,17 +1,12 @@
 ﻿using System.Net.Sockets;
 using System.Threading;
+using Risen.Server.Tcp.Factories;
+using Risen.Shared.Tcp;
 using Risen.Shared.Tcp.Factories;
+using Risen.Shared.Tcp.Tokens;
 
-namespace Risen.Shared.Tcp.Tokens
+namespace Risen.Server.Tcp.Tokens
 {
-    public interface IDataHoldingUserToken
-    {
-        SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
-        int TokenId { get; set; }
-        void Init();
-        void CreateNewDataHolder();
-    }
-
     public class DataHoldingUserToken : IDataHoldingUserToken
     {
         private readonly IMediatorFactory _mediatorFactory;

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Risen.Shared.Extensions;
+using Risen.Server.Extentions;
+using Risen.Server.Tcp.Factories;
+using Risen.Server.Tcp.Tokens;
 using Risen.Shared.Tcp;
 using Risen.Shared.Tcp.Factories;
-using Risen.Shared.Tcp.Tokens;
 
 namespace Risen.Server.Tcp
 {

@@ -1,6 +1,7 @@
 ﻿using System.Net.Sockets;
+using Risen.Shared.Tcp;
 
-namespace Risen.Shared.Tcp
+namespace Risen.Server.Tcp
 {
     public interface IMediator
     {

@@ -6,7 +6,7 @@ namespace Risen.Shared.Tcp
 {
     public interface IMessageHandler
     {
-        bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess);
+        bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, IDataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess);
     }
 
     public class MessageHandler : IMessageHandler
@@ -18,7 +18,7 @@ namespace Risen.Shared.Tcp
             _logger = logger;
         }
 
-        public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken receiveSendToken, int remainingBytesToProcess)
+        public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, IDataHoldingUserToken receiveSendToken, int remainingBytesToProcess)
         {
             var incomingTcpMessageIsReady = false;
 

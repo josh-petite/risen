@@ -1,9 +1,10 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Risen.Shared.Extensions;
+using Risen.Server.Extentions;
+using Risen.Shared.Tcp;
 
-namespace Risen.Shared.Tcp
+namespace Risen.Server.Tcp
 {
     public interface IIncomingDataPreparer
     {

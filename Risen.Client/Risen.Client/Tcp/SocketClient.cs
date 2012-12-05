@@ -67,7 +67,19 @@ namespace Risen.Client.Tcp
 
         private void InitializePoolOfRecSendEventArgs()
         {
+            _poolOfRecSendEventArgs = _socketAsyncEventArgsPoolFactory.GenerateSocketAsyncEventArgsPool(_clientConfiguration.NumberOfSaeaForRecSend);
 
+            for (int i = 0; i < _clientConfiguration.NumberOfSaeaForRecSend; i++)
+            {
+                var eventArgForPool = _socketAsyncEventArgsFactory.GenerateReceiveSendSocketAsyncEventArgs(SendReceiveCompleted);
+                eventArgForPool.UserToken = _dataHoldingUserTokenFactory.GenerateDataHoldingUserToken(eventArgForPool, _poolOfRecSendEventArgs.AssignTokenId());
+                _poolOfRecSendEventArgs.Push(eventArgForPool);
+            }
+        }
+
+        private void SendReceiveCompleted(object sender, SocketAsyncEventArgs e)
+        {
+            
         }
 
         private SocketAsyncEventArgs CreateNewSaeaForAccept()
@@ -98,7 +110,7 @@ namespace Risen.Client.Tcp
                     break;
                 default:
                     {
-                        var receiveSendToken = (DataHoldingUserToken) socketAsyncEventArgs.UserToken;
+                        var receiveSendToken = (IDataHoldingUserToken) socketAsyncEventArgs.UserToken;
                         throw new ArgumentException("\r\nError in I/O Completed, id = " + receiveSendToken.TokenId);
                     }
             }
@@ -116,7 +128,7 @@ namespace Risen.Client.Tcp
                 //Earlier, in the UserToken of connectEventArgs we put an array 
                 //of messages to send. Now we move that array to the DataHolder in
                 //the UserToken of receiveSendEventArgs.
-                var receiveSendToken = (DataHoldingUserToken)receiveSendEventArgs.UserToken;
+                var receiveSendToken = (IDataHoldingUserToken)receiveSendEventArgs.UserToken;
                 receiveSendToken.DataHolder.PutMessagesToSend(theConnectingToken.OutgoingMessageHolder.ArrayOfMessages);
 
                 if (Program.showConnectAndDisconnect == true)

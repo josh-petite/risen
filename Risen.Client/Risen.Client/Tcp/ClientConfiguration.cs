@@ -7,6 +7,7 @@ namespace Risen.Client.Tcp
     {
         int MaxNumberOfConnections { get; }
         int MaxSimultaneousAcceptOperations { get; }
+        int NumberOfSaeaForRecSend { get; }
     }
 
     public class ClientConfiguration : IClientConfiguration

@@ -2,7 +2,7 @@
 using Risen.Shared.Tcp.Tokens;
 using StructureMap;
 
-namespace Risen.Shared.Tcp.Factories
+namespace Risen.Server.Tcp.Factories
 {
     public interface IDataHoldingUserTokenFactory
     {

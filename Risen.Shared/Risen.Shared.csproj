@@ -43,28 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\SocketAsyncEventArgsExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tcp\BufferManager.cs" />
     <Compile Include="Tcp\DataHolder.cs" />
-    <Compile Include="Tcp\Factories\AcceptOperationUserTokenFactory.cs" />
-    <Compile Include="Tcp\Factories\DataHoldingUserTokenFactory.cs" />
-    <Compile Include="Tcp\Factories\IncomingDataPreparerFactory.cs" />
-    <Compile Include="Tcp\Factories\MediatorFactory.cs" />
     <Compile Include="Tcp\Factories\SocketAsyncEventArgsFactory.cs" />
     <Compile Include="Tcp\Factories\SocketAsyncEventArgsPoolFactory.cs" />
     <Compile Include="Tcp\IConfiguration.cs" />
-    <Compile Include="Tcp\IncomingDataPreparer.cs" />
     <Compile Include="Tcp\ListenerConfiguration.cs" />
     <Compile Include="Tcp\Logger.cs" />
-    <Compile Include="Tcp\Mediator.cs" />
     <Compile Include="Tcp\MessageHandler.cs" />
-    <Compile Include="Tcp\OutgoingDataPreparer.cs" />
     <Compile Include="Tcp\PrefixHandler.cs" />
     <Compile Include="Tcp\SocketAsyncEventArgsPool.cs" />
-    <Compile Include="Tcp\Tokens\AcceptOperationUserToken.cs" />
-    <Compile Include="Tcp\Tokens\DataHoldingUserToken.cs" />
-    <Compile Include="Tcp\Tokens\IUserToken.cs" />
+    <Compile Include="Tcp\Tokens\IDataHoldingUserToken.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

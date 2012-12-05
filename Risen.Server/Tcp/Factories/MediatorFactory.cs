@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using StructureMap;
 
-namespace Risen.Shared.Tcp.Factories
+namespace Risen.Server.Tcp.Factories
 {
     public interface IMediatorFactory
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net.Sockets;
-using Risen.Shared.Extensions;
+using Risen.Shared.Tcp;
 
-namespace Risen.Shared.Tcp
+namespace Risen.Server.Tcp
 {
     public interface IOutgoingDataPreparer
     {

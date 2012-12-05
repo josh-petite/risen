@@ -89,6 +89,7 @@
     <Compile Include="Tcp\MessagePreparer.cs" />
     <Compile Include="Tcp\OutgoingMessageHolder.cs" />
     <Compile Include="Tcp\SocketClient.cs" />
+    <Compile Include="Tcp\Tokens\ClientDataUserToken.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
