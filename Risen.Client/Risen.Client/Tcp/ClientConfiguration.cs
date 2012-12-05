@@ -12,6 +12,7 @@ namespace Risen.Client.Tcp
         bool ContinuallyRetryConnectIfSocketError { get; }
         int ReceivePrefixLength { get; set; }
         int NumberOfMessagesPerConnection { get; set; }
+        EndPoint ServerEndPoint { get; set; }
     }
 
     public class ClientConfiguration : IClientConfiguration
@@ -23,6 +24,7 @@ namespace Risen.Client.Tcp
 
         public bool ContinuallyRetryConnectIfSocketError { get; private set; }
         public int NumberOfMessagesPerConnection { get; set; }
+        public EndPoint ServerEndPoint { get; set; }
         public int MaxNumberOfConnections { get; private set; }
         public int Port { get; private set; }
         public int BufferSize { get; set; }
@@ -35,8 +37,7 @@ namespace Risen.Client.Tcp
         public int MainTransmissionId { get; private set; }
         public int StartingId { get; private set; }
         public int NumberOfSaeaForRecSend { get; private set; }
-        public IPEndPoint LocalEndPoint { get; set; }
-
+        
         private void Init()
         {
             ContinuallyRetryConnectIfSocketError = true;
@@ -53,7 +54,12 @@ namespace Risen.Client.Tcp
             StartingId = 0;
             
             NumberOfSaeaForRecSend = MaxNumberOfConnections + ExcessSaeaObjectsInPool;
-            LocalEndPoint = new IPEndPoint(IPAddress.Any, Port);
+            ServerEndPoint = GetHost();
+        }
+
+        private EndPoint GetHost()
+        {
+            return new IPEndPoint(IPAddress.Parse("127.0.0.1"), Port);
         }
 
         public int GetTotalBytesRequiredForInitialBufferConfiguration()

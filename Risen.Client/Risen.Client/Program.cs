@@ -9,7 +9,7 @@ namespace Risen.Client
         {
             ClientRegistry.Configure();
 
-            using (var game = ObjectFactory.GetInstance<IMainGame>())
+            using (var game = ObjectFactory.GetInstance<IGameMain>())
                 game.Run();
         }
     }

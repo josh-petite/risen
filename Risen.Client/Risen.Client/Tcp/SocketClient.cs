@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
@@ -19,8 +20,6 @@ namespace Risen.Client.Tcp
 
     public class SocketClient : ISocketClient
     {
-        private readonly object _mutex = new object();
-
         private readonly IClientConfiguration _clientConfiguration;
         private readonly IBufferManager _bufferManager;
         private readonly IPrefixHandler _prefixHandler;
@@ -54,6 +53,62 @@ namespace Risen.Client.Tcp
 
         public const int PrefixLength = 4; // number of bytes in both send/receive prefix length
 
+        public void GetMessages(Stack<OutgoingMessageHolder> outgoingMessageHolders)
+        {
+            _outgoingMessages = new BlockingStack<OutgoingMessageHolder>(outgoingMessageHolders);
+
+            var t = new Thread(CheckStack);
+            t.Start();
+        }
+
+        private void CheckStack()
+        {
+            var outgoingMessageHolder = _outgoingMessages.Pop();
+
+            //only relevant when the test has finished.
+            if (outgoingMessageHolder == null)
+                return;
+
+            _maxConnectionsEnforcer.WaitOne();
+
+            //We got outgoingMessageHolder. Pass it along.
+            PushMessageArray(outgoingMessageHolder);
+        }
+
+        private void PushMessageArray(OutgoingMessageHolder theOutgoingMessageHolder)
+        {
+            var connectEventArgs = _poolOfConnectEventArgs.Pop() ?? CreateNewSaeaForConnect();
+            var connectOperationUserToken = (ConnectOperationUserToken) connectEventArgs.UserToken;
+            connectOperationUserToken.OutgoingMessageHolder = theOutgoingMessageHolder;
+
+            StartConnect(connectEventArgs);
+            //Loop back to get message(s) for next connection.           
+            CheckStack();
+        }
+
+        private void StartConnect(SocketAsyncEventArgs connectEventArgs)
+        {
+            //Cast SocketAsyncEventArgs.UserToken to our state object.
+            var theConnectingToken = (ConnectOperationUserToken)connectEventArgs.UserToken;
+            
+            //SocketAsyncEventArgs object that do connect operations on the client
+            //are different from those that do accept operations on the server.
+            //On the server the listen socket had EndPoint info. And that info was
+            //passed from the listen socket to the SocketAsyncEventArgs object 
+            //that did the accept operation.
+            //But on the client there is no listen socket. The connect socket 
+            //needs the info on the Remote Endpoint.
+            connectEventArgs.RemoteEndPoint = _clientConfiguration.ServerEndPoint;
+            connectEventArgs.AcceptSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            //Post the connect operation on the socket.
+            //A local port is assigned by the Windows OS during connect op.            
+            var willRaiseEvent = connectEventArgs.AcceptSocket.ConnectAsync(connectEventArgs);
+            
+            if (!willRaiseEvent)
+                ProcessConnect(connectEventArgs);
+        }
+
         private void Init()
         {
             InitializeBuffer();
@@ -71,7 +126,7 @@ namespace Risen.Client.Tcp
             _poolOfConnectEventArgs = _socketAsyncEventArgsPoolFactory.GenerateSocketAsyncEventArgsPool(_clientConfiguration.MaxConnectOperations);
 
             for (int i = 0; i < _clientConfiguration.MaxConnectOperations; i++)
-                _poolOfConnectEventArgs.Push(CreateNewSaeaForAccept());
+                _poolOfConnectEventArgs.Push(CreateNewSaeaForConnect());
         }
 
         private void InitializePoolOfRecSendEventArgs()
@@ -89,7 +144,7 @@ namespace Risen.Client.Tcp
             }
         }
         
-        private SocketAsyncEventArgs CreateNewSaeaForAccept()
+        private SocketAsyncEventArgs CreateNewSaeaForConnect()
         {
             return _socketAsyncEventArgsFactory.GenerateAcceptSocketAsyncEventArgs(SocketIoCompleted, _poolOfConnectEventArgs.AssignTokenId());
         }

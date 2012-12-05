@@ -6,22 +6,22 @@ using Risen.Client.Tcp;
 
 namespace Risen.Client
 {
-    public interface IMainGame : IDisposable
+    public interface IGameMain : IDisposable
     {
         void Run();
     }
 
-    public class MainGame : Game, IMainGame
+    public class GameMain : Game, IGameMain
     {
         private readonly ISocketClient _socketClient;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private SpriteFont _spriteFont;
 
-        public MainGame(ISocketClient socketClient)
+        public GameMain(ISocketClient socketClient)
         {
             _socketClient = socketClient;
-            
+            // _socketClient.GetMessages() <--- implement this piece
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
