@@ -28,7 +28,7 @@ namespace Risen.Shared.Tcp
         public int Port { get; private set; }
         public int ReceiveBufferSize { get; private set; }
         public int MaxSimultaneousAcceptOperations { get; set; }
-        public int Backlog { get; private set; }
+        public int Backlog { get; private set; } // The backlog value represents the number of excess clients that can queue up to wait for an open connection.
         public int OperationsToPreallocate { get; private set; }
         public int ExcessSaeaObjectsInPool { get; private set; }
         public int ReceivePrefixLength { get; private set; }
@@ -63,7 +63,7 @@ namespace Risen.Shared.Tcp
             return ReceiveBufferSize*NumberOfSaeaForRecSend*OperationsToPreallocate;
         }
 
-        public int GetBufferSize()
+        public int GetTotalBufferSize()
         {
             return ReceiveBufferSize*OperationsToPreallocate;
         }

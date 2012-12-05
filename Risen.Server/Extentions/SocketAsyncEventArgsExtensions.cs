@@ -1,13 +1,18 @@
 ﻿using System.Net.Sockets;
-using Risen.Shared.Tcp.Tokens;
+using Risen.Server.Tcp.Tokens;
 
 namespace Risen.Server.Extentions
 {
     public static class SocketAsyncEventArgsExtensions
     {
-        public static IDataHoldingUserToken GetDataHoldingUserToken(this SocketAsyncEventArgs socketAsyncEventArgs)
+        public static DataHoldingUserToken GetDataHoldingUserToken(this SocketAsyncEventArgs socketAsyncEventArgs)
         {
-            return (IDataHoldingUserToken) socketAsyncEventArgs.UserToken;
+            return (DataHoldingUserToken) socketAsyncEventArgs.UserToken;
+        }
+
+        public static void ClearAcceptSocket(this SocketAsyncEventArgs socketAsyncEventArgs)
+        {
+            socketAsyncEventArgs.AcceptSocket = null;
         }
     }
 }

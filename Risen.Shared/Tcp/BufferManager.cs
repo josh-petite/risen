@@ -31,7 +31,7 @@ namespace Risen.Shared.Tcp
         {
             _totalBytesInBufferBlock = configuration.GetTotalBytesRequiredForInitialBufferConfiguration();
             _currentIndex = 0;
-            _bufferBytesAllocatedForEachSaea = configuration.GetBufferSize();
+            _bufferBytesAllocatedForEachSaea = configuration.GetTotalBufferSize();
             _freeIndexPool = new Stack<int>();
         }
 

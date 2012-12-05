@@ -1,6 +1,6 @@
 ﻿namespace Risen.Server.Tcp.Tokens
 {
-    public interface IAcceptOperationUserToken : IUserToken
+    public interface IAcceptOperationUserToken
     {
         int TokenId { get; set; }
         int SocketHandleNumber { get; set; }

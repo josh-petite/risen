@@ -8,6 +8,7 @@ using Risen.Server.Tcp.Factories;
 using Risen.Server.Tcp.Tokens;
 using Risen.Shared.Tcp;
 using Risen.Shared.Tcp.Factories;
+using Risen.Shared.Tcp.Tokens;
 
 namespace Risen.Server.Tcp
 {
@@ -30,12 +31,13 @@ namespace Risen.Server.Tcp
         private readonly ISocketAsyncEventArgsFactory _socketAsyncEventArgsFactory;
         private readonly ISocketAsyncEventArgsPoolFactory _socketAsyncEventArgsPoolFactory;
         private readonly Semaphore _maxConnectionsEnforcer;
-        private Socket _listenSocket; // the socket used to listen for incoming connection requests 
-        private ISocketAsyncEventArgsPool _poolOfAcceptEventArgs; // pool of reusable SocketAsyncEventArgs objects for accept operations
-        private ISocketAsyncEventArgsPool _poolOfRecSendEventArgs; // pool of reusable SocketAsyncEventArgs objects for receive and send socket operations
+        
+        private Socket _listenSocket;
+        private ISocketAsyncEventArgsPool _poolOfAcceptEventArgs;
+        private ISocketAsyncEventArgsPool _poolOfRecSendEventArgs;
 
         public static int MaxSimultaneousClientsThatWereConnected = 0;
-        public long MainSessionId = 1000000000;
+        public long MainSessionId = 1000;
         public const long PacketSizeThreshhold = 50000;
 
         public SocketListener(IListenerConfiguration listenerConfiguration, IBufferManager bufferManager, IPrefixHandler prefixHandler,
@@ -112,12 +114,10 @@ namespace Risen.Server.Tcp
 
         public void StartListen()
         {
-            // Listens for incoming connections
             _listenSocket = new Socket(_listenerConfiguration.LocalEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            // Bind it to specified port (in configuration)
             _listenSocket.Bind(_listenerConfiguration.LocalEndPoint);
-            // The backlog value represents the number of excess clients that can queue up to wait for an open connection.
             _listenSocket.Listen(_listenerConfiguration.Backlog);
+
             StartAccept();
         }
 
@@ -169,7 +169,7 @@ namespace Risen.Server.Tcp
                                             ((IPEndPoint) receiveSendEventArgs.AcceptSocket.RemoteEndPoint).Port,
                                             _numberOfAcceptedSockets));
 
-            acceptEventArgs.AcceptSocket = null; // clear out accept and push it back on the queue for further accept requests
+            acceptEventArgs.ClearAcceptSocket();
             _poolOfAcceptEventArgs.Push(acceptEventArgs);
             _logger.WriteLine(LogCategory.Info, string.Format("Accept Id: {0} goes back to pool.", ((AcceptOperationUserToken)acceptEventArgs.UserToken).TokenId));
 
@@ -256,7 +256,7 @@ namespace Risen.Server.Tcp
 
         private void StartReceive(SocketAsyncEventArgs receiveSendEventArgs)
         {
-            receiveSendEventArgs.SetBuffer(((DataHoldingUserToken)receiveSendEventArgs.UserToken).BufferOffsetReceive, _listenerConfiguration.ReceiveBufferSize);
+            receiveSendEventArgs.SetBuffer(((DataHoldingUserToken)receiveSendEventArgs.UserToken).BufferReceiveOffset, _listenerConfiguration.ReceiveBufferSize);
 
             var willRaiseEvent = receiveSendEventArgs.AcceptSocket.ReceiveAsync(receiveSendEventArgs);
 
@@ -293,25 +293,25 @@ namespace Risen.Server.Tcp
             ProcessReceive(receiveSendEventArgs, dataHoldingUserToken, remainingBytesToProcess);
         }
 
-        private void ProcessReceive(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess)
+        private void ProcessReceive(SocketAsyncEventArgs receiveSendEventArgs, IUserToken userToken, int remainingBytesToProcess)
         {
-            bool incomingTcpMessageIsReady = _messageHandler.HandleMessage(receiveSendEventArgs, dataHoldingUserToken, remainingBytesToProcess);
+            bool incomingTcpMessageIsReady = _messageHandler.HandleMessage(receiveSendEventArgs, userToken, remainingBytesToProcess);
 
             if (incomingTcpMessageIsReady)
             {
                 // Pass the DataHolder object to the Mediator here. The data in
                 // this DataHolder can be used for all kinds of things that an
                 // intelligent and creative person like you might think of.
-                dataHoldingUserToken.Mediator.HandleData(dataHoldingUserToken.DataHolder);
+                userToken.AsDataHoldingUserToken().Mediator.HandleData(userToken.DataHolder);
 
                 // Create a new DataHolder for next message.
-                dataHoldingUserToken.CreateNewDataHolder();
+                userToken.CreateNewDataHolder();
 
                 //Reset the variables in the UserToken, to be ready for the
                 //next message that will be received on the socket in this SAEA object.
-                dataHoldingUserToken.Reset();
-                dataHoldingUserToken.Mediator.PrepareOutgoingData();
-                StartSend(dataHoldingUserToken.Mediator.GiveBack());
+                userToken.Reset();
+                userToken.AsDataHoldingUserToken().Mediator.PrepareOutgoingData();
+                StartSend(userToken.AsDataHoldingUserToken().Mediator.GiveBack());
             }
             else
             {
@@ -322,11 +322,11 @@ namespace Risen.Server.Tcp
                 // message. None of it will be prefix. So, we need to move the
                 // receiveSendToken.receiveMessageOffset to the beginning of the
                 // receive buffer space for this SAEA.
-                dataHoldingUserToken.ReceiveMessageOffset = dataHoldingUserToken.BufferOffsetReceive;
+                userToken.ReceiveMessageOffset = userToken.BufferReceiveOffset;
 
                 // Do NOT reset receiveSendToken.receivedPrefixBytesDoneCount here.
                 // Just reset recPrefixBytesDoneThisOp.
-                dataHoldingUserToken.RecPrefixBytesDoneThisOperation = 0;
+                userToken.RecPrefixBytesDoneThisOperation = 0;
 
                 // Since we have not gotten enough bytes for the whole message,
                 // we need to do another receive op.

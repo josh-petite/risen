@@ -1,9 +1,9 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
+using Risen.Shared.Tcp;
 
-namespace Risen.Shared.Tcp
+namespace Risen.Server.Tcp
 {
-    public class DataHolder
+    public class DataHolder : IDataHolder
     {
         //Remember, if a socket uses a byte array for its buffer, that byte array is
         //unmanaged in .NET and can cause memory fragmentation. So, first write to the
@@ -12,11 +12,9 @@ namespace Risen.Shared.Tcp
         //the SAEA object back in the pool quickly, or continue with the data
         //transmission quickly.
         //DataHolder has this byte array to which you can copy the data.
-        public Byte[] DataMessageReceived;
-        public int ReceivedTransmissionId;
-        public long SessionId;
-
-        //for testing. With a packet analyzer this can help you see specific connections.
-        public EndPoint RemoteEndpoint;
+        public byte[] DataMessageReceived { get; set; }
+        public int ReceivedTransmissionId { get; set; }
+        public long SessionId { get; set; }
+        public EndPoint RemoteEndpoint { get; set; } //for testing. With a packet analyzer this can help you see specific connections.
     }
 }

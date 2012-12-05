@@ -1,19 +1,18 @@
-﻿using System.Net.Sockets;
-
-namespace Risen.Shared.Tcp.Tokens
+﻿namespace Risen.Shared.Tcp.Tokens
 {
-    public interface IDataHoldingUserToken
+    public interface IUserToken 
     {
-        SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
-        int TokenId { get; set; }
-        int ReceivedMessageBytesDoneCount { get; }
         int ReceivedPrefixBytesDoneCount { get; set; }
         byte[] ByteArrayForPrefix { get; set; }
         int ReceivePrefixLength { get; set; }
+        int TokenId { get; set; }
         int ReceiveMessageOffset { get; set; }
         int RecPrefixBytesDoneThisOperation { get; set; }
         int LengthOfCurrentIncomingMessage { get; set; }
-        void Init();
+        int ReceivedMessageBytesDoneCount { get; set; }
+        IDataHolder DataHolder { get; set; }
+        int BufferReceiveOffset { get; set; }
         void CreateNewDataHolder();
+        void Reset();
     }
 }

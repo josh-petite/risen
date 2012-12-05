@@ -2,6 +2,6 @@
 {
     public interface IConfiguration {
         int GetTotalBytesRequiredForInitialBufferConfiguration();
-        int GetBufferSize();
+        int GetTotalBufferSize();
     }
 }

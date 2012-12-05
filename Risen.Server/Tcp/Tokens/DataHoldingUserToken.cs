@@ -2,38 +2,37 @@
 using System.Threading;
 using Risen.Server.Tcp.Factories;
 using Risen.Shared.Tcp;
-using Risen.Shared.Tcp.Factories;
 using Risen.Shared.Tcp.Tokens;
 
 namespace Risen.Server.Tcp.Tokens
 {
-    public class DataHoldingUserToken : IDataHoldingUserToken
+    public class DataHoldingUserToken : IUserToken
     {
         private readonly IMediatorFactory _mediatorFactory;
         private readonly IListenerConfiguration _listenerConfiguration;
 
         public IMediator Mediator;
-        public DataHolder DataHolder;
-        public int BufferOffsetReceive;
+        public IDataHolder DataHolder { get; set; }
+        public int BufferReceiveOffset { get; set; }
         public int PermanentReceiveMessageOffset;
         public int BufferOffsetSend;
-        public int LengthOfCurrentIncomingMessage;
+        public int LengthOfCurrentIncomingMessage { get; set; }
 
         //receiveMessageOffset is used to mark the byte position where the message
         //begins in the receive buffer. This value can sometimes be out of
         //bounds for the data stream just received. But, if it is out of bounds, the
         //code will not access it.
-        public int ReceiveMessageOffset;
-        public byte[] ByteArrayForPrefix;
-        public int ReceivePrefixLength;
-        public int ReceivedPrefixBytesDoneCount = 0;
-        public int ReceivedMessageBytesDoneCount = 0;
+        public int ReceiveMessageOffset { get; set; }
+        public byte[] ByteArrayForPrefix { get; set; }
+        public int ReceivePrefixLength { get; set; }
+        public int ReceivedPrefixBytesDoneCount { get; set; }
+        public int ReceivedMessageBytesDoneCount { get; set; }
 
         //This variable will be needed to calculate the value of the
         //receiveMessageOffset variable in one situation. Notice that the
         //name is similar but the usage is different from the variable
         //receiveSendToken.receivePrefixBytesDone.
-        public int RecPrefixBytesDoneThisOperation = 0;
+        public int RecPrefixBytesDoneThisOperation { get; set; }
 
         public int SendBytesRemainingCount;
         public int SendPrefixLength;
@@ -49,6 +48,9 @@ namespace Risen.Server.Tcp.Tokens
         {
             _mediatorFactory = mediatorFactory;
             _listenerConfiguration = listenerConfiguration;
+            ReceivedPrefixBytesDoneCount = 0;
+            RecPrefixBytesDoneThisOperation = 0;
+            ReceivedMessageBytesDoneCount = 0;
         }
 
         public long SessionId { get; private set; }
@@ -63,11 +65,11 @@ namespace Risen.Server.Tcp.Tokens
         public void Init()
         {
             Mediator = _mediatorFactory.GenerateMediator(SocketAsyncEventArgs);
-            BufferOffsetReceive = SocketAsyncEventArgs.Offset;
+            BufferReceiveOffset = SocketAsyncEventArgs.Offset;
             BufferOffsetSend = SocketAsyncEventArgs.Offset + _listenerConfiguration.ReceiveBufferSize;
             ReceivePrefixLength = _listenerConfiguration.ReceivePrefixLength;
             SendPrefixLength = _listenerConfiguration.SendPrefixLength;
-            ReceiveMessageOffset = BufferOffsetReceive + ReceivePrefixLength;
+            ReceiveMessageOffset = BufferReceiveOffset + ReceivePrefixLength;
             PermanentReceiveMessageOffset = ReceiveMessageOffset;
         }
 

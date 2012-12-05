@@ -6,7 +6,7 @@ namespace Risen.Shared.Tcp
 {
     public interface IMessageHandler
     {
-        bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, IDataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess);
+        bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, IUserToken userToken, int remainingBytesToProcess);
     }
 
     public class MessageHandler : IMessageHandler
@@ -18,24 +18,24 @@ namespace Risen.Shared.Tcp
             _logger = logger;
         }
 
-        public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, IDataHoldingUserToken receiveSendToken, int remainingBytesToProcess)
+        public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, IUserToken userToken, int remainingBytesToProcess)
         {
             var incomingTcpMessageIsReady = false;
 
             //Create the array where we'll store the complete message,
             //if it has not been created on a previous receive op.
-            if (receiveSendToken.ReceivedMessageBytesDoneCount == 0)
+            if (userToken.ReceivedMessageBytesDoneCount == 0)
             {
-                _logger.WriteLine(LogCategory.Info, string.Format("Message Handler: Creating Receive Array on Id: {0}", receiveSendToken.TokenId));
-                receiveSendToken.DataHolder.DataMessageReceived = new Byte[receiveSendToken.LengthOfCurrentIncomingMessage];
+                _logger.WriteLine(LogCategory.Info, string.Format("Message Handler: Creating Receive Array on Id: {0}", userToken.TokenId));
+                userToken.DataHolder.DataMessageReceived = new Byte[userToken.LengthOfCurrentIncomingMessage];
             }
 
-            // Remember there is a receiveSendToken.receivedPrefixBytesDoneCount
+            // Remember there is a userToken.receivedPrefixBytesDoneCount
             // variable, which allowed us to handle the prefix even when it
             // requires multiple receive ops. In the same way, we have a
-            // receiveSendToken.ReceivedMessageBytesDoneCount variable, which
+            // userToken.ReceivedMessageBytesDoneCount variable, which
             // helps us handle message data, whether it requires one receive operation or many.
-            if (remainingBytesToProcess + receiveSendToken.ReceivedMessageBytesDoneCount == receiveSendToken.LengthOfCurrentIncomingMessage)
+            if (remainingBytesToProcess + userToken.ReceivedMessageBytesDoneCount == userToken.LengthOfCurrentIncomingMessage)
             {
                 // If we are inside this if-statement, then we got
                 // the end of the message. In other words,
@@ -45,9 +45,9 @@ namespace Risen.Shared.Tcp
                 // Write/append the bytes received to the byte array in the
                 // DataHolder object that we are using to store our data.
                 Buffer.BlockCopy(receiveSendEventArgs.Buffer,
-                                 receiveSendToken.ReceiveMessageOffset,
-                                 receiveSendToken.DataHolder.DataMessageReceived,
-                                 receiveSendToken.ReceivedMessageBytesDoneCount,
+                                 userToken.ReceiveMessageOffset,
+                                 userToken.DataHolder.DataMessageReceived,
+                                 userToken.ReceivedMessageBytesDoneCount,
                                  remainingBytesToProcess);
 
                 incomingTcpMessageIsReady = true;
@@ -61,13 +61,13 @@ namespace Risen.Shared.Tcp
                 // StartReceive to do another receive op to receive more data.
 
                 Buffer.BlockCopy(receiveSendEventArgs.Buffer,
-                                 receiveSendToken.ReceiveMessageOffset,
-                                 receiveSendToken.DataHolder.DataMessageReceived,
-                                 receiveSendToken.ReceivedMessageBytesDoneCount,
+                                 userToken.ReceiveMessageOffset,
+                                 userToken.DataHolder.DataMessageReceived,
+                                 userToken.ReceivedMessageBytesDoneCount,
                                  remainingBytesToProcess);
 
-                receiveSendToken.ReceiveMessageOffset = receiveSendToken.ReceiveMessageOffset - receiveSendToken.RecPrefixBytesDoneThisOperation;
-                receiveSendToken.ReceivedMessageBytesDoneCount += remainingBytesToProcess;
+                userToken.ReceiveMessageOffset = userToken.ReceiveMessageOffset - userToken.RecPrefixBytesDoneThisOperation;
+                userToken.ReceivedMessageBytesDoneCount += remainingBytesToProcess;
             }
 
             return incomingTcpMessageIsReady;

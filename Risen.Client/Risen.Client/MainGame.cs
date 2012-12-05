@@ -92,5 +92,12 @@ namespace Risen.Client
 
             base.Draw(gameTime);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            _socketClient.CleanUpOnExit();
+        }
     }
 }

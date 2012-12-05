@@ -7,7 +7,7 @@ namespace Risen.Server.Tcp
     {
         SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
         IIncomingDataPreparer IncomingDataPreparer { get; set; }
-        void HandleData(DataHolder dataHolder);
+        void HandleData(IDataHolder dataHolder);
         void PrepareOutgoingData();
         SocketAsyncEventArgs GiveBack();
     }
@@ -15,7 +15,7 @@ namespace Risen.Server.Tcp
     public class Mediator : IMediator
     {
         private readonly IOutgoingDataPreparer _outgoingDataPreparer;
-        private DataHolder _dataHolder;
+        private IDataHolder _dataHolder;
         
         public Mediator(IOutgoingDataPreparer outgoingDataPreparer)
         {
@@ -26,7 +26,7 @@ namespace Risen.Server.Tcp
 
         public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
 
-        public void HandleData(DataHolder incomingDataHolder)
+        public void HandleData(IDataHolder incomingDataHolder)
         {
             _dataHolder = IncomingDataPreparer.HandleReceivedData(incomingDataHolder, SocketAsyncEventArgs);
         }

@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Net.Sockets;
+using Risen.Server.Extentions;
 using Risen.Shared.Tcp;
 
 namespace Risen.Server.Tcp
 {
     public interface IOutgoingDataPreparer
     {
-        void PrepareOutgoingData(SocketAsyncEventArgs e, DataHolder handledDataHolder);
+        void PrepareOutgoingData(SocketAsyncEventArgs e, IDataHolder handledDataHolder);
     }
 
     public class OutgoingDataPreparer : IOutgoingDataPreparer
     {
-        private DataHolder _dataHolder;
+        private IDataHolder _dataHolder;
 
-        public void PrepareOutgoingData(SocketAsyncEventArgs e, DataHolder handledDataHolder)
+        public void PrepareOutgoingData(SocketAsyncEventArgs e, IDataHolder handledDataHolder)
         {
             var userToken = e.GetDataHoldingUserToken();
             _dataHolder = handledDataHolder;

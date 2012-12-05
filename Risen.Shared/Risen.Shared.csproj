@@ -45,16 +45,15 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tcp\BufferManager.cs" />
-    <Compile Include="Tcp\DataHolder.cs" />
-    <Compile Include="Tcp\Factories\SocketAsyncEventArgsFactory.cs" />
     <Compile Include="Tcp\Factories\SocketAsyncEventArgsPoolFactory.cs" />
     <Compile Include="Tcp\IConfiguration.cs" />
+    <Compile Include="Tcp\IDataHolder.cs" />
     <Compile Include="Tcp\ListenerConfiguration.cs" />
     <Compile Include="Tcp\Logger.cs" />
     <Compile Include="Tcp\MessageHandler.cs" />
     <Compile Include="Tcp\PrefixHandler.cs" />
     <Compile Include="Tcp\SocketAsyncEventArgsPool.cs" />
-    <Compile Include="Tcp\Tokens\IDataHoldingUserToken.cs" />
+    <Compile Include="Tcp\Tokens\IUserToken.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

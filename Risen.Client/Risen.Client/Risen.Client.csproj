@@ -84,12 +84,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="MainGame.cs" />
+    <Compile Include="Tcp\BlockingStack.cs" />
     <Compile Include="Tcp\ClientConfiguration.cs" />
-    <Compile Include="Tcp\ConnectOpUserToken.cs" />
+    <Compile Include="Tcp\Extensions\DataHolderExtensions.cs" />
+    <Compile Include="Tcp\Factories\ClientDataUserTokenFactory.cs" />
+    <Compile Include="Tcp\Factories\ConnectOperationUserTokenFactory.cs" />
+    <Compile Include="Tcp\Factories\SocketAsyncEventArgsFactory.cs" />
     <Compile Include="Tcp\MessagePreparer.cs" />
     <Compile Include="Tcp\OutgoingMessageHolder.cs" />
     <Compile Include="Tcp\SocketClient.cs" />
     <Compile Include="Tcp\Tokens\ClientDataUserToken.cs" />
+    <Compile Include="Tcp\Tokens\ClientDataHolder.cs" />
+    <Compile Include="Tcp\Tokens\ConnectOperationUserToken.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

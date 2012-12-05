@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Net.Sockets;
+using Risen.Shared.Tcp;
 using StructureMap;
 
-namespace Risen.Shared.Tcp.Factories
+namespace Risen.Server.Tcp.Factories
 {
     public interface ISocketAsyncEventArgsFactory
     {

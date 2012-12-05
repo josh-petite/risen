@@ -9,12 +9,12 @@ namespace Risen.Server.Tcp
     public interface IIncomingDataPreparer
     {
         SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
-        DataHolder HandleReceivedData(DataHolder incomingDataHolder, SocketAsyncEventArgs socketAsyncEventArgs);
+        IDataHolder HandleReceivedData(IDataHolder incomingDataHolder, SocketAsyncEventArgs socketAsyncEventArgs);
     }
 
     public class IncomingDataPreparer : IIncomingDataPreparer
     {
-        private DataHolder _dataHolder;
+        private IDataHolder _dataHolder;
         private readonly IListenerConfiguration _listenerConfiguration;
         private readonly ILogger _logger;
 
@@ -38,7 +38,7 @@ namespace Risen.Server.Tcp
             return SocketAsyncEventArgs.AcceptSocket.RemoteEndPoint;
         }
 
-        public DataHolder HandleReceivedData(DataHolder incomingDataHolder, SocketAsyncEventArgs socketAsyncEventArgs)
+        public IDataHolder HandleReceivedData(IDataHolder incomingDataHolder, SocketAsyncEventArgs socketAsyncEventArgs)
         {
             var receiveToken = socketAsyncEventArgs.GetDataHoldingUserToken();
 
