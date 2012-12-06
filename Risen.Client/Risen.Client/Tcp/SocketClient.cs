@@ -16,6 +16,7 @@ namespace Risen.Client.Tcp
     public interface ISocketClient
     {
         void CleanUpOnExit();
+        void GetMessages(Stack<OutgoingMessageHolder> outgoingMessageHolders);
     }
 
     public class SocketClient : ISocketClient
@@ -88,9 +89,6 @@ namespace Risen.Client.Tcp
 
         private void StartConnect(SocketAsyncEventArgs connectEventArgs)
         {
-            //Cast SocketAsyncEventArgs.UserToken to our state object.
-            var theConnectingToken = (ConnectOperationUserToken)connectEventArgs.UserToken;
-            
             //SocketAsyncEventArgs object that do connect operations on the client
             //are different from those that do accept operations on the server.
             //On the server the listen socket had EndPoint info. And that info was
@@ -101,8 +99,7 @@ namespace Risen.Client.Tcp
             connectEventArgs.RemoteEndPoint = _clientConfiguration.ServerEndPoint;
             connectEventArgs.AcceptSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-            //Post the connect operation on the socket.
-            //A local port is assigned by the Windows OS during connect op.            
+            //Post the connect operation on the socket. A local port is assigned by the Windows OS during connect op.            
             var willRaiseEvent = connectEventArgs.AcceptSocket.ConnectAsync(connectEventArgs);
             
             if (!willRaiseEvent)
@@ -191,7 +188,8 @@ namespace Risen.Client.Tcp
                 //of messages to send. Now we move that array to the DataHolder in
                 //the UserToken of receiveSendEventArgs.
                 var receiveSendToken = (IClientDataUserToken)receiveSendEventArgs.UserToken;
-                receiveSendToken.DataHolder.AsClientDataHolder().SetMessagesToSend(connectOperationUserToken.OutgoingMessageHolder.ArrayOfMessages);
+                var clientDataHolder = receiveSendToken.DataHolder.AsClientDataHolder();
+                clientDataHolder.SetMessagesToSend(connectOperationUserToken.OutgoingMessageHolder.Messages);
 
                 _messagePreparer.GetDataToSend(receiveSendEventArgs);
                 StartSend(receiveSendEventArgs);

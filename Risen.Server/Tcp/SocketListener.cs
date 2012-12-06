@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using Risen.Server.Extentions;
 using Risen.Server.Tcp.Factories;
@@ -289,19 +290,20 @@ namespace Risen.Server.Tcp
             // If we have processed the prefix, we can work on the message now.
             // We'll arrive here when we have received enough bytes to read
             // the first byte after the prefix.
-            ProcessReceive(receiveSendEventArgs, dataHoldingUserToken, remainingBytesToProcess);
+            ProcessReceivedMessage(receiveSendEventArgs, dataHoldingUserToken, remainingBytesToProcess);
         }
 
-        private void ProcessReceive(SocketAsyncEventArgs receiveSendEventArgs, IUserToken userToken, int remainingBytesToProcess)
+        private void ProcessReceivedMessage(SocketAsyncEventArgs receiveSendEventArgs, IUserToken userToken, int remainingBytesToProcess)
         {
             bool incomingTcpMessageIsReady = _messageHandler.HandleMessage(receiveSendEventArgs, userToken, remainingBytesToProcess);
 
             if (incomingTcpMessageIsReady)
             {
-                // Pass the DataHolder object to the Mediator here. The data in
-                // this DataHolder can be used for all kinds of things that an
-                // intelligent and creative person like you might think of.
-                userToken.AsDataHoldingUserToken().Mediator.HandleData(userToken.DataHolder);
+                var dataToken = userToken.AsDataHoldingUserToken();
+                dataToken.Mediator.HandleData(userToken.DataHolder);
+
+                // at this point, use the data
+                var receivedData = Encoding.Default.GetString(dataToken.Mediator.IncomingDataPreparer.);
 
                 // Create a new DataHolder for next message.
                 userToken.CreateNewDataHolder();

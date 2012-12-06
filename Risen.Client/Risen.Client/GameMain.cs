@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -21,7 +23,11 @@ namespace Risen.Client
         public GameMain(ISocketClient socketClient)
         {
             _socketClient = socketClient;
-            // _socketClient.GetMessages() <--- implement this piece
+
+            var mac = new MessageArrayController();
+            var x = mac.CreateMessageStack(new[] {"test"});
+            _socketClient.GetMessages(x);
+
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }

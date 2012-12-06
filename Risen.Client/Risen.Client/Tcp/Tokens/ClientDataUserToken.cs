@@ -7,7 +7,6 @@ namespace Risen.Client.Tcp.Tokens
     public interface IClientDataUserToken : IUserToken
     {
         byte[] DataToSend { get; set; }
-        int PrefixLength { get; }
         int SendBytesRemaining { get; set; }
         int BytesSentAlready { get; set; }
         int ReceivePrefixBytesDoneThisOperation { get; set; }
@@ -19,19 +18,17 @@ namespace Risen.Client.Tcp.Tokens
 
         public ClientDataUserToken(int receiveOffset, int sendOffset, int tokenId)
         {
-            PrefixLength = SocketClient.PrefixLength;
+            ReceivePrefixLength = SocketClient.PrefixLength;
             TokenId = tokenId;
             BufferReceiveOffset = receiveOffset;
             BufferSendOffset = sendOffset;
-            ReceiveMessageOffset = BufferReceiveOffset + PrefixLength;
+            ReceiveMessageOffset = BufferReceiveOffset + ReceivePrefixLength;
             _receiveMessageOffsetPlaceholder = ReceiveMessageOffset;
         }
-
         
         public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
         public IDataHolder DataHolder { get; set; }
         public byte[] DataToSend { get; set; }
-        public int PrefixLength { get; private set; }
         public int SendBytesRemaining { get; set; }
         public int BytesSentAlready { get; set; }
         public int ReceivedMessageBytesDoneCount { get; set; }

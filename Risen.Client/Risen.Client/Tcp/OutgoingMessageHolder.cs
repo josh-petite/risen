@@ -4,12 +4,12 @@ namespace Risen.Client.Tcp
 {
     public class OutgoingMessageHolder
     {
-        internal string[] ArrayOfMessages;
+        internal string[] Messages;
         internal Int32 CountOfConnectionsRetries = 0;
 
-        public OutgoingMessageHolder(string[] theArrayOfMessages)
+        public OutgoingMessageHolder(string[] messages)
         {
-            ArrayOfMessages = theArrayOfMessages;
+            Messages = messages;
         }
     }
 }

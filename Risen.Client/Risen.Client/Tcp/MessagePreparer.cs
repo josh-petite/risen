@@ -36,13 +36,13 @@ namespace Risen.Client.Tcp
             Byte[] arrayOfBytesInPrefix = BitConverter.GetBytes(lengthOfCurrentOutgoingMessage);
 
             //Create the byte array to send.
-            userToken.DataToSend = new Byte[userToken.PrefixLength + lengthOfCurrentOutgoingMessage];
+            userToken.DataToSend = new Byte[userToken.ReceivePrefixLength + lengthOfCurrentOutgoingMessage];
 
             //Now copy the 2 things to the theUserToken.dataToSend.
-            Buffer.BlockCopy(arrayOfBytesInPrefix, 0, userToken.DataToSend, 0, userToken.PrefixLength);
-            Buffer.BlockCopy(arrayOfBytesInMessage, 0, userToken.DataToSend, userToken.PrefixLength, lengthOfCurrentOutgoingMessage);
+            Buffer.BlockCopy(arrayOfBytesInPrefix, 0, userToken.DataToSend, 0, userToken.ReceivePrefixLength);
+            Buffer.BlockCopy(arrayOfBytesInMessage, 0, userToken.DataToSend, userToken.ReceivePrefixLength, lengthOfCurrentOutgoingMessage);
 
-            userToken.SendBytesRemaining = userToken.PrefixLength + lengthOfCurrentOutgoingMessage;
+            userToken.SendBytesRemaining = userToken.ReceivePrefixLength + lengthOfCurrentOutgoingMessage;
             userToken.BytesSentAlready = 0;
         }
     }
