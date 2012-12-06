@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -256,7 +255,7 @@ namespace Risen.Server.Tcp
 
         private void StartReceive(SocketAsyncEventArgs receiveSendEventArgs)
         {
-            receiveSendEventArgs.SetBuffer(((DataHoldingUserToken)receiveSendEventArgs.UserToken).BufferReceiveOffset, _listenerConfiguration.ReceiveBufferSize);
+            receiveSendEventArgs.SetBuffer(((DataHoldingUserToken)receiveSendEventArgs.UserToken).BufferReceiveOffset, _listenerConfiguration.BufferSize);
 
             var willRaiseEvent = receiveSendEventArgs.AcceptSocket.ReceiveAsync(receiveSendEventArgs);
 
@@ -342,7 +341,7 @@ namespace Risen.Server.Tcp
             //the buffer or not. If it is larger than the buffer, then we will have
             //to post more than one send operation. If it is less than or equal to the
             //size of the send buffer, then we can accomplish it in one send op.
-            if (dataHoldingUserToken.SendBytesRemainingCount <= _listenerConfiguration.ReceiveBufferSize)
+            if (dataHoldingUserToken.SendBytesRemainingCount <= _listenerConfiguration.BufferSize)
             {
                 receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferOffsetSend, dataHoldingUserToken.SendBytesRemainingCount);
                 CopyDataToBufferAssociatedWithSaeaObject(receiveSendEventArgs, dataHoldingUserToken);
@@ -352,7 +351,7 @@ namespace Risen.Server.Tcp
                 //We cannot try to set the buffer any larger than its size.
                 //So since receiveSendToken.sendBytesRemainingCount > BufferSize, we just
                 //set it to the maximum size, to send the most data possible.
-                receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferOffsetSend, _listenerConfiguration.ReceiveBufferSize);
+                receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferOffsetSend, _listenerConfiguration.BufferSize);
                 CopyDataToBufferAssociatedWithSaeaObject(receiveSendEventArgs, dataHoldingUserToken);
 
                 //We'll change the value of sendUserToken.sendBytesRemainingCount in the ProcessSend method.

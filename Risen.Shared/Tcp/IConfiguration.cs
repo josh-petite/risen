@@ -1,6 +1,7 @@
 ﻿namespace Risen.Shared.Tcp
 {
-    public interface IConfiguration {
+    public interface IConfiguration 
+    {
         int GetTotalBytesRequiredForInitialBufferConfiguration();
         int GetTotalBufferSize();
     }

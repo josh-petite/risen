@@ -6,7 +6,7 @@ namespace Risen.Shared.Tcp
 {
     public interface IListenerConfiguration : IConfiguration
     {
-        int ReceiveBufferSize { get; }
+        int BufferSize { get; }
         int MaxSimultaneousAcceptOperations { get; set; }
         int MaxNumberOfConnections { get; }
         IPEndPoint LocalEndPoint { get; set; }
@@ -26,7 +26,7 @@ namespace Risen.Shared.Tcp
 
         public int MaxNumberOfConnections { get; private set; }
         public int Port { get; private set; }
-        public int ReceiveBufferSize { get; private set; }
+        public int BufferSize { get; private set; }
         public int MaxSimultaneousAcceptOperations { get; set; }
         public int Backlog { get; private set; } // The backlog value represents the number of excess clients that can queue up to wait for an open connection.
         public int OperationsToPreallocate { get; private set; }
@@ -43,7 +43,7 @@ namespace Risen.Shared.Tcp
         {
             MaxNumberOfConnections = Convert.ToInt32(ConfigurationManager.AppSettings["MaxNumberOfConnections"]);
             Port = Convert.ToInt32(ConfigurationManager.AppSettings["Port"]);
-            ReceiveBufferSize = Convert.ToInt32(ConfigurationManager.AppSettings["ReceiveBufferSize"]);
+            BufferSize = Convert.ToInt32(ConfigurationManager.AppSettings["BufferSize"]);
             MaxSimultaneousAcceptOperations = Convert.ToInt32(ConfigurationManager.AppSettings["MaxSimultaneousAcceptOperations"]);
             Backlog = Convert.ToInt32(ConfigurationManager.AppSettings["Backlog"]);
             OperationsToPreallocate = Convert.ToInt32(ConfigurationManager.AppSettings["OperationsToPreallocate"]);
@@ -60,12 +60,12 @@ namespace Risen.Shared.Tcp
 
         public int GetTotalBytesRequiredForInitialBufferConfiguration()
         {
-            return ReceiveBufferSize*NumberOfSaeaForRecSend*OperationsToPreallocate;
+            return BufferSize*NumberOfSaeaForRecSend*OperationsToPreallocate;
         }
 
         public int GetTotalBufferSize()
         {
-            return ReceiveBufferSize*OperationsToPreallocate;
+            return BufferSize*OperationsToPreallocate;
         }
     }
 }

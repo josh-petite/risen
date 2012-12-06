@@ -18,8 +18,8 @@ namespace Risen.Shared.Tcp
 
         public Logger(bool shouldLogToConsole, bool isLoggerEnabled)
         {
-            //SaveFile = GetSaveFileName(); // *** NEED TO REFACTOR TO LOG TO THE DB INSTEAD OF THIS FILE GARBAGE
-            //_streamWriter = new StreamWriter(SaveFile); // create a writer and open the file
+            SaveFile = GetSaveFileName(); // *** NEED TO REFACTOR TO LOG TO THE DB INSTEAD OF THIS FILE GARBAGE
+            _streamWriter = new StreamWriter(SaveFile); // create a writer and open the file
             _shouldLogToConsole = shouldLogToConsole;
             IsEnabled = isLoggerEnabled;
         }

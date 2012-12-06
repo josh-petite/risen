@@ -66,7 +66,7 @@ namespace Risen.Server.Tcp.Tokens
         {
             Mediator = _mediatorFactory.GenerateMediator(SocketAsyncEventArgs);
             BufferReceiveOffset = SocketAsyncEventArgs.Offset;
-            BufferOffsetSend = SocketAsyncEventArgs.Offset + _listenerConfiguration.ReceiveBufferSize;
+            BufferOffsetSend = SocketAsyncEventArgs.Offset + _listenerConfiguration.BufferSize;
             ReceivePrefixLength = _listenerConfiguration.ReceivePrefixLength;
             SendPrefixLength = _listenerConfiguration.SendPrefixLength;
             ReceiveMessageOffset = BufferReceiveOffset + ReceivePrefixLength;

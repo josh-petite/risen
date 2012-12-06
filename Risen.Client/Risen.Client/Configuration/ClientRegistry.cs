@@ -33,7 +33,7 @@ namespace Risen.Client.Configuration
                         r.For<IBufferManager>()
                          .Singleton()
                          .Use<BufferManager>()
-                         .Ctor<IConfiguration>().Is<IClientConfiguration>();
+                         .Ctor<IConfiguration>().Is<ClientConfiguration>();
                     });
             }
         }
