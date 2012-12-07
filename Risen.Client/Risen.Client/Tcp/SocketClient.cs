@@ -201,6 +201,9 @@ namespace Risen.Client.Tcp
                 var receiveSendEventArgs = _poolOfRecSendEventArgs.Pop();
                 receiveSendEventArgs.AcceptSocket = connectEventArgs.AcceptSocket;
 
+                // establish keepalive for socket that has connected to server
+                receiveSendEventArgs.AcceptSocket.SetKeepAlive(1, 1);
+
                 //Earlier, in the UserToken of connectEventArgs we put an array 
                 //of messages to send. Now we move that array to the DataHolder in
                 //the UserToken of receiveSendEventArgs.
@@ -347,7 +350,7 @@ namespace Risen.Client.Tcp
                 var arraySegment = new ArraySegment<byte>(data, 0, 4);
                 var sessionId = BitConverter.ToInt32(arraySegment.Array, 0);
                 OnMessageReceived(new MessageReceivedArgs {Message = sessionId + " - " + Encoding.Default.GetString(data, 4, 4)});
-
+                
                 //null out the byte array, for the next message
                 receiveSendToken.DataHolder.DataMessageReceived = null;
 

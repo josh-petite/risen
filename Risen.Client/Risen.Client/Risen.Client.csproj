@@ -88,6 +88,7 @@
     <Compile Include="Tcp\BlockingStack.cs" />
     <Compile Include="Tcp\ClientConfiguration.cs" />
     <Compile Include="Tcp\Extensions\DataHolderExtensions.cs" />
+    <Compile Include="Tcp\Extensions\SocketExtensions.cs" />
     <Compile Include="Tcp\Factories\ClientDataUserTokenFactory.cs" />
     <Compile Include="Tcp\Factories\ConnectOperationUserTokenFactory.cs" />
     <Compile Include="Tcp\Factories\SocketAsyncEventArgsFactory.cs" />

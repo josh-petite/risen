@@ -394,8 +394,8 @@ namespace Risen.Server.Tcp
             if (receiveSendEventArgs.BytesTransferred == 0)
             {
                 _logger.WriteLine(LogCategory.Info, string.Format("ProcessReceive, NO DATA on Token Id: {0}", dataHoldingUserToken.TokenId));
-                dataHoldingUserToken.Reset();
-                CloseClientSocket(receiveSendEventArgs);
+                //dataHoldingUserToken.Reset();
+                //CloseClientSocket(receiveSendEventArgs);
                 return true;
             }
 
