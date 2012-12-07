@@ -19,17 +19,24 @@ namespace Risen.Client
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private SpriteFont _spriteFont;
+        private string _serverMessage;
 
         public GameMain(ISocketClient socketClient)
         {
             _socketClient = socketClient;
+            _socketClient.MessageReceivedEvent += SocketClient_OnMessageReceivedEvent;
 
             var mac = new MessageArrayController();
             var x = mac.CreateMessageStack(new[] {"test"});
             _socketClient.GetMessages(x);
-
+            
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+        }
+
+        private void SocketClient_OnMessageReceivedEvent(object sender, MessageReceivedArgs args)
+        {
+            _serverMessage = args.Message;
         }
 
         /// <summary>
@@ -93,7 +100,7 @@ namespace Risen.Client
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(_spriteFont, "Risen, client! woohoo!", new Vector2(250, 250), Color.White);
+            _spriteBatch.DrawString(_spriteFont, _serverMessage, new Vector2(250, 250), Color.White);
             _spriteBatch.End();
 
             base.Draw(gameTime);

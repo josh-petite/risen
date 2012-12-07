@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -13,10 +12,18 @@ using Risen.Shared.Tcp.Factories;
 
 namespace Risen.Client.Tcp
 {
+    public delegate void OnMessageReceived(object sender, MessageReceivedArgs args);
+
+    public class MessageReceivedArgs
+    {
+        public string Message { get; set; }
+    }
+
     public interface ISocketClient
     {
         void CleanUpOnExit();
         void GetMessages(Stack<OutgoingMessageHolder> outgoingMessageHolders);
+        event OnMessageReceived MessageReceivedEvent;
     }
 
     public class SocketClient : ISocketClient
@@ -35,6 +42,8 @@ namespace Risen.Client.Tcp
         private ISocketAsyncEventArgsPool _poolOfRecSendEventArgs; // pool of reusable SocketAsyncEventArgs objects for receive and send socket operations
         private int _totalNumberOfConnectionRetries;
         private BlockingStack<OutgoingMessageHolder> _outgoingMessages;
+
+        public event OnMessageReceived MessageReceivedEvent;
 
         public SocketClient(IClientConfiguration clientConfiguration, IPrefixHandler prefixHandler, IMessageHandler messageHandler, IMessagePreparer messagePreparer, IBufferManager bufferManager,
             ISocketAsyncEventArgsFactory socketAsyncEventArgsFactory, ISocketAsyncEventArgsPoolFactory socketAsyncEventArgsPoolFactory, IClientDataUserTokenFactory clientDataUserTokenFactory)
@@ -60,6 +69,14 @@ namespace Risen.Client.Tcp
 
             var t = new Thread(CheckStack);
             t.Start();
+        }
+
+        protected virtual void OnMessageReceived(MessageReceivedArgs args)
+        {
+            var handler = MessageReceivedEvent;
+
+            if (handler != null)
+                handler(this, args);
         }
 
         private void CheckStack()
@@ -323,14 +340,13 @@ namespace Risen.Client.Tcp
                 //write it when runLongTest == false.
                 
                 //Write to DataHolder.
-                receiveSendToken.DataHolder.AsClientDataHolder().MessagesReceived.Add(receiveSendToken.DataHolder.DataMessageReceived);
+                var clientDataHolder = receiveSendToken.DataHolder.AsClientDataHolder();
+                clientDataHolder.MessagesReceived.Add(receiveSendToken.DataHolder.DataMessageReceived);
 
-                // ******
-                // ******
-                // need to do something with the data here
-                // ******
-                // ******
-
+                var data = clientDataHolder.DataMessageReceived;
+                var arraySegment = new ArraySegment<byte>(data, 0, 4);
+                var sessionId = BitConverter.ToInt32(arraySegment.Array, 0);
+                OnMessageReceived(new MessageReceivedArgs {Message = sessionId + " - " + Encoding.Default.GetString(data, 4, 4)});
 
                 //null out the byte array, for the next message
                 receiveSendToken.DataHolder.DataMessageReceived = null;
@@ -513,5 +529,4 @@ namespace Risen.Client.Tcp
             }
         }
     }
-    
 }

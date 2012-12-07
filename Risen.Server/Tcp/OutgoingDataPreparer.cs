@@ -31,20 +31,19 @@ namespace Risen.Server.Tcp
             //That is our communication protocol. The client must know the protocol.
 
             //Convert the receivedTransMissionId to byte array.
-            Byte[] idByteArray = BitConverter.GetBytes(_dataHolder.ReceivedTransmissionId);
+            var idByteArray = BitConverter.GetBytes(_dataHolder.ReceivedTransmissionId);
 
             //Determine the length of all the data that we will send back.
             int lengthOfCurrentOutgoingMessage = idByteArray.Length + _dataHolder.DataMessageReceived.Length;
 
             //So, now we convert the length integer into a byte array.
-            //Aren't byte arrays wonderful? Maybe you'll dream about byte arrays tonight!
-            Byte[] arrayOfBytesInPrefix = BitConverter.GetBytes(lengthOfCurrentOutgoingMessage);
+            var prefixInBytes = BitConverter.GetBytes(lengthOfCurrentOutgoingMessage);
 
             //Create the byte array to send.
             userToken.DataToSend = new Byte[userToken.SendPrefixLength + lengthOfCurrentOutgoingMessage];
 
             //Now copy the 3 things to the theUserToken.dataToSend.
-            Buffer.BlockCopy(arrayOfBytesInPrefix,
+            Buffer.BlockCopy(prefixInBytes,
                              0,
                              userToken.DataToSend,
                              0,

@@ -303,16 +303,15 @@ namespace Risen.Server.Tcp
                 dataToken.Mediator.HandleData(userToken.DataHolder);
 
                 // at this point, use the data
-                var receivedData = Encoding.Default.GetString(dataToken.Mediator.IncomingDataPreparer.);
-
+                
                 // Create a new DataHolder for next message.
-                userToken.CreateNewDataHolder();
+                dataToken.CreateNewDataHolder();
 
                 //Reset the variables in the UserToken, to be ready for the
                 //next message that will be received on the socket in this SAEA object.
-                userToken.Reset();
-                userToken.AsDataHoldingUserToken().Mediator.PrepareOutgoingData();
-                StartSend(userToken.AsDataHoldingUserToken().Mediator.GiveBack());
+                dataToken.Reset();
+                dataToken.Mediator.PrepareOutgoingData();
+                StartSend(dataToken.Mediator.GiveBack());
             }
             else
             {
