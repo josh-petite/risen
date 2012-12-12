@@ -40,11 +40,11 @@ namespace Risen.Client.Tcp.Extensions
 				}
 
 				// Create bytestruct for result (bytes pending on server socket).
-                byte[] outValue = BitConverter.GetBytes(0);
+                //var outValue = BitConverter.GetBytes(0);
                 
                 // Write SIO_VALS to Socket IOControl.
                 socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true); // SocketOptionLevel.Tcp perhaps
-				socket.IOControl(IOControlCode.KeepAliveValues, inValue, outValue);
+				socket.IOControl(IOControlCode.KeepAliveValues, inValue, null);
 			}
 			catch (SocketException e)
 			{
