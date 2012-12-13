@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Threading;
 using Risen.Server.Extentions;
+using Risen.Shared.Msmq;
 using Risen.Shared.Tcp;
 
 namespace Risen.Server.Tcp
@@ -15,12 +16,12 @@ namespace Risen.Server.Tcp
     public class IncomingDataPreparer : IIncomingDataPreparer
     {
         private IDataHolder _dataHolder;
-        private readonly IListenerConfiguration _listenerConfiguration;
+        private readonly ISharedConfiguration _sharedConfiguration;
         private readonly ILogger _logger;
 
-        public IncomingDataPreparer(IListenerConfiguration listenerConfiguration, ILogger logger)
+        public IncomingDataPreparer(ISharedConfiguration sharedConfiguration, ILogger logger)
         {
-            _listenerConfiguration = listenerConfiguration;
+            _sharedConfiguration = sharedConfiguration;
             _logger = logger;
         }
 
@@ -28,7 +29,7 @@ namespace Risen.Server.Tcp
 
         private int ReceivedTransmissionIdGetter()
         {
-            int mainTransmissionId = _listenerConfiguration.MainTransmissionId;
+            int mainTransmissionId = _sharedConfiguration.MainTransmissionId;
             int receivedTransmissionId = Interlocked.Increment(ref mainTransmissionId);
             return receivedTransmissionId;
         }
@@ -42,7 +43,7 @@ namespace Risen.Server.Tcp
         {
             var receiveToken = socketAsyncEventArgs.GetDataHoldingUserToken();
 
-            _logger.WriteLine(LogCategory.Info, string.Format("IncomingDataPreparer, HandleReceiveData() - Token Id: {0}", receiveToken.TokenId));
+            _logger.QueueLogItem(LogCategory.Info, string.Format("IncomingDataPreparer, HandleReceiveData() - Token Id: {0}", receiveToken.TokenId));
 
             _dataHolder = incomingDataHolder;
             _dataHolder.SessionId = receiveToken.SessionId;

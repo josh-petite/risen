@@ -37,7 +37,7 @@ namespace Risen.Client.Tcp
         public int MainTransmissionId { get; private set; }
         public int StartingId { get; private set; }
         public int NumberOfSaeaForRecSend { get; private set; }
-        
+
         private void Init()
         {
             ContinuallyRetryConnectIfSocketError = true;

@@ -4,7 +4,7 @@ using System.Net;
 
 namespace Risen.Shared.Tcp
 {
-    public interface IListenerConfiguration : IConfiguration
+    public interface ISharedConfiguration : IConfiguration
     {
         int BufferSize { get; }
         int MaxSimultaneousAcceptOperations { get; set; }
@@ -15,11 +15,13 @@ namespace Risen.Shared.Tcp
         int ReceivePrefixLength { get; }
         int SendPrefixLength { get; }
         int MainTransmissionId { get; }
+        bool IsLoggerEnabled { get; }
+        string LogQueue { get; }
     }
 
-    public class ListenerConfiguration : IListenerConfiguration
+    public class SharedConfiguration : ISharedConfiguration
     {
-        public ListenerConfiguration()
+        public SharedConfiguration()
         {
             Init();
         }
@@ -38,6 +40,8 @@ namespace Risen.Shared.Tcp
         public int MaxSimultaneousClientsThatWereConnected { get; private set; }
         public int NumberOfSaeaForRecSend { get; private set; }
         public IPEndPoint LocalEndPoint { get; set; }
+        public bool IsLoggerEnabled { get; private set; }
+        public string LogQueue { get; private set; }
 
         private void Init()
         {
@@ -53,6 +57,8 @@ namespace Risen.Shared.Tcp
             MainTransmissionId = Convert.ToInt32(ConfigurationManager.AppSettings["MainTransmissionId"]);
             StartingId = Convert.ToInt32(ConfigurationManager.AppSettings["StartingId"]);
             MaxSimultaneousClientsThatWereConnected = Convert.ToInt32(ConfigurationManager.AppSettings["MaxSimultaneousClientsThatWereConnected"]);
+            IsLoggerEnabled = Convert.ToBoolean(ConfigurationManager.AppSettings["IsLoggerEnabled"]);
+            LogQueue = ConfigurationManager.AppSettings["LogQueue"];
 
             NumberOfSaeaForRecSend = MaxNumberOfConnections + ExcessSaeaObjectsInPool;
             LocalEndPoint = new IPEndPoint(IPAddress.Any, Port);

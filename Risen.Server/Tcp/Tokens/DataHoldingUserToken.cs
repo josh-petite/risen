@@ -9,7 +9,7 @@ namespace Risen.Server.Tcp.Tokens
     public class DataHoldingUserToken : IUserToken
     {
         private readonly IMediatorFactory _mediatorFactory;
-        private readonly IListenerConfiguration _listenerConfiguration;
+        private readonly ISharedConfiguration _sharedConfiguration;
 
         public IMediator Mediator;
         public IDataHolder DataHolder { get; set; }
@@ -44,10 +44,10 @@ namespace Risen.Server.Tcp.Tokens
         //to one TCP message. A connected session could have many messages, if you
         //set up your app to allow it.
 
-        public DataHoldingUserToken(IMediatorFactory mediatorFactory, IListenerConfiguration listenerConfiguration)
+        public DataHoldingUserToken(IMediatorFactory mediatorFactory, ISharedConfiguration sharedConfiguration)
         {
             _mediatorFactory = mediatorFactory;
-            _listenerConfiguration = listenerConfiguration;
+            _sharedConfiguration = sharedConfiguration;
             ReceivedPrefixBytesDoneCount = 0;
             RecPrefixBytesDoneThisOperation = 0;
             ReceivedMessageBytesDoneCount = 0;
@@ -66,9 +66,9 @@ namespace Risen.Server.Tcp.Tokens
         {
             Mediator = _mediatorFactory.GenerateMediator(SocketAsyncEventArgs);
             BufferReceiveOffset = SocketAsyncEventArgs.Offset;
-            BufferOffsetSend = SocketAsyncEventArgs.Offset + _listenerConfiguration.BufferSize;
-            ReceivePrefixLength = _listenerConfiguration.ReceivePrefixLength;
-            SendPrefixLength = _listenerConfiguration.SendPrefixLength;
+            BufferOffsetSend = SocketAsyncEventArgs.Offset + _sharedConfiguration.BufferSize;
+            ReceivePrefixLength = _sharedConfiguration.ReceivePrefixLength;
+            SendPrefixLength = _sharedConfiguration.SendPrefixLength;
             ReceiveMessageOffset = BufferReceiveOffset + ReceivePrefixLength;
             PermanentReceiveMessageOffset = ReceiveMessageOffset;
         }

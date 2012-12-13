@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
+using Risen.Shared.Msmq;
 using Risen.Shared.Tcp.Tokens;
 
 namespace Risen.Shared.Tcp
@@ -30,7 +31,7 @@ namespace Risen.Shared.Tcp
             //already done it in a previous loop.
             if (userToken.ReceivedPrefixBytesDoneCount == 0)
             {
-                _logger.WriteLine(LogCategory.Info, string.Format("Prefix Handler: Creating prefix array: {0}", userToken.TokenId));
+                _logger.QueueLogItem(LogCategory.Info, string.Format("Prefix Handler: Creating prefix array: {0}", userToken.TokenId));
                 userToken.ByteArrayForPrefix = new byte[userToken.ReceivePrefixLength];
             }
 
@@ -39,7 +40,7 @@ namespace Risen.Shared.Tcp
             //length of the message that we are working on.
             if (remainingBytesToProcess >= userToken.ReceivePrefixLength - userToken.ReceivedPrefixBytesDoneCount)
             {
-                _logger.WriteLine(LogCategory.Info, string.Format("PrefixHandler, enough for prefix on Token Id: {0}. remainingBytesToProcess = {1}",
+                _logger.QueueLogItem(LogCategory.Info, string.Format("PrefixHandler, enough for prefix on Token Id: {0}. remainingBytesToProcess = {1}",
                                                                   userToken.TokenId,
                                                                   remainingBytesToProcess));
                 //Now copy that many bytes to ByteArrayForPrefix.
@@ -61,7 +62,7 @@ namespace Risen.Shared.Tcp
                 //where we have some bytes of this prefix in this receive operation, but not all.
             else
             {
-                _logger.WriteLine(LogCategory.Warning, string.Format("PrefixHandler, NOT all of prefix on Token Id: {0}. remainingBytesToProcess = {1}",
+                _logger.QueueLogItem(LogCategory.Warning, string.Format("PrefixHandler, NOT all of prefix on Token Id: {0}. remainingBytesToProcess = {1}",
                                                                      userToken.TokenId,
                                                                      remainingBytesToProcess));
                 //Write the bytes to the array where we are putting the
@@ -100,7 +101,7 @@ namespace Risen.Shared.Tcp
                 sb.Append(" " + theByte);
 
             sb.Append(string.Format(". Message length: {0}", receiveSendToken.LengthOfCurrentIncomingMessage));
-            _logger.WriteLine(LogCategory.Info, sb.ToString());
+            _logger.QueueLogItem(LogCategory.Info, sb.ToString());
         }
     }
 }

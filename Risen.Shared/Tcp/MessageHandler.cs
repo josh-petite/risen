@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using Risen.Shared.Msmq;
 using Risen.Shared.Tcp.Tokens;
 
 namespace Risen.Shared.Tcp
@@ -26,7 +27,7 @@ namespace Risen.Shared.Tcp
             //if it has not been created on a previous receive op.
             if (userToken.ReceivedMessageBytesDoneCount == 0)
             {
-                _logger.WriteLine(LogCategory.Info, string.Format("Message Handler: Creating Receive Array on Id: {0}", userToken.TokenId));
+                _logger.QueueLogItem(LogCategory.Info, string.Format("Message Handler: Creating Receive Array on Id: {0}", userToken.TokenId));
                 userToken.DataHolder.DataMessageReceived = new Byte[userToken.LengthOfCurrentIncomingMessage];
             }
 

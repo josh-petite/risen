@@ -1,4 +1,5 @@
 ﻿using Risen.Server.Tcp;
+using Risen.Shared.Msmq;
 using Risen.Shared.Tcp;
 using StructureMap;
 using StructureMap.Configuration.DSL;
@@ -25,22 +26,15 @@ namespace Risen.ConsoleServer.Configuration
                                                                 x.WithDefaultConventions();
                                                             });
 
-                                                 r.For<ILogger>()
-                                                  .Singleton()
-                                                  .Use<Logger>()
-                                                  .Ctor<bool>("shouldLogToConsole").EqualToAppSetting("ShouldLogToConsole")
-                                                  .Ctor<bool>("isLoggerEnabled").EqualToAppSetting("IsLoggerEnabled");
+                                                 r.For<ILogger>().Singleton().Use<Logger>();
+                                                 r.For<IBufferManager>().Singleton().Use<BufferManager>().Ctor<IConfiguration>().Is<SharedConfiguration>();
+                                                 r.For<ILogMessageQueue>().Singleton().Use<LogMessageQueue>();
 
                                                  r.For<ISocketListener>().Singleton().OnCreationForAll(o =>
-                                                                                                           {
-                                                                                                               o.Init();
-                                                                                                               o.StartListen();
-                                                                                                           });
-
-                                                 r.For<IBufferManager>()
-                                                  .Singleton()
-                                                  .Use<BufferManager>()
-                                                  .Ctor<IConfiguration>().Is<ListenerConfiguration>();
+                                                     {
+                                                         o.Init();
+                                                         o.StartListen();
+                                                     });
                                              });
             }
         }
