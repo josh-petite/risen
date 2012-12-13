@@ -33,7 +33,7 @@ namespace Risen.Shared.Msmq
             Console.WriteLine(formattedLine);
 
             lock (_mutex)
-                _logMessageQueue.Send(new Message {Body = formattedLine, Label = "Log"});
+                _logMessageQueue.Send(new Message {Body = formattedLine, Label = "Log", UseDeadLetterQueue = true});
         }
     }
 

@@ -25,7 +25,7 @@ namespace Risen.Shared.Msmq
 
                     try
                     {
-                        base.Send(message);
+                        Send(message, MessageQueueTransactionType.Single);
                         transaction.Commit();
                     }
                     catch (Exception)
