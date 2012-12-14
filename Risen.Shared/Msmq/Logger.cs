@@ -6,7 +6,7 @@ namespace Risen.Shared.Msmq
 {
     public interface ILogger
     {
-        void QueueLogItem(LogCategory logCategory, string line, params object[] formatArguments);
+        void QueueMessage(LogMessage logMessage);
     }
 
     public class Logger : ILogger
@@ -23,24 +23,15 @@ namespace Risen.Shared.Msmq
 
         public bool IsEnabled { get { return _sharedConfiguration.IsLoggerEnabled; } }
 
-        public void QueueLogItem(LogCategory logCategory, string format, params object[] formatArguments)
+        public void QueueMessage(LogMessage logMessage)
         {
             if (!IsEnabled)
                 return;
 
-            var formattedLine = string.Format("{0}: {1}", logCategory, string.Format(format, formatArguments));
-
-            Console.WriteLine(formattedLine);
+            Console.WriteLine(logMessage.ToString());
 
             lock (_mutex)
-                _logMessageQueue.Send(new Message {Body = formattedLine, Label = "Log", UseDeadLetterQueue = true});
+                _logMessageQueue.Send(new Message {Body = logMessage, Label = "LogMessage", UseDeadLetterQueue = true});
         }
-    }
-
-    public enum LogCategory
-    {
-        Info,
-        Warning,
-        Error
     }
 }

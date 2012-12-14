@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Messaging;
 using Risen.Shared.Tcp;
 
@@ -7,6 +8,7 @@ namespace Risen.Shared.Msmq
     public interface ILogMessageQueue
     {
         void Send(Message message);
+        IEnumerable<Message> ReceiveMessages();
     }
 
     public class LogMessageQueue : MessageQueue, ILogMessageQueue
@@ -36,6 +38,15 @@ namespace Risen.Shared.Msmq
             }
             else
                 base.Send(message);
+        }
+
+        public IEnumerable<Message> ReceiveMessages()
+        {
+            return new Message[0];
+
+            // maybe add something using parallel processing here to grab messages quick?
+            //while ()
+            //var message = Receive();
         }
     }
 }

@@ -100,7 +100,7 @@ namespace Risen.Client
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(_spriteFont, _serverMessage, new Vector2(250, 250), Color.White);
+            _spriteBatch.DrawString(_spriteFont, _serverMessage ?? "server value was null", new Vector2(250, 250), Color.White);
             _spriteBatch.End();
 
             base.Draw(gameTime);

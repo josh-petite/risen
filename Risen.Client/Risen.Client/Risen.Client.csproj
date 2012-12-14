@@ -111,8 +111,9 @@
       <Name>Risen.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\Risen.ClientContent\Risen.ClientContent.contentproj">
-      <Name>Risen.ClientContent</Name>
+      <Name>Risen.ClientContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{00C8E55A-EE70-404A-A472-2595AAE4DF36}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

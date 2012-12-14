@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5A6F7B4D-B262-4FD8-8CB0-82CAA4CDCD71}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{2E5C7210-3C96-483A-BF9F-86A3ACC9065C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Risen.Shared</RootNamespace>
-    <AssemblyName>Risen.Shared</AssemblyName>
+    <RootNamespace>Risen.LogQueueConsumer</RootNamespace>
+    <AssemblyName>Risen.LogQueueConsumer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -44,24 +46,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Msmq\LogMessage.cs" />
-    <Compile Include="Msmq\LogMessageQueue.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Configuration\ConsumerRegistry.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tcp\BufferManager.cs" />
-    <Compile Include="Tcp\Factories\SocketAsyncEventArgsPoolFactory.cs" />
-    <Compile Include="Tcp\IConfiguration.cs" />
-    <Compile Include="Tcp\IDataHolder.cs" />
-    <Compile Include="Tcp\SharedConfiguration.cs" />
-    <Compile Include="Msmq\Logger.cs" />
-    <Compile Include="Tcp\MessageHandler.cs" />
-    <Compile Include="Tcp\PrefixHandler.cs" />
-    <Compile Include="Tcp\SocketAsyncEventArgsPool.cs" />
-    <Compile Include="Tcp\Tokens\IUserToken.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Risen.Shared\Risen.Shared.csproj">
+      <Project>{5A6F7B4D-B262-4FD8-8CB0-82CAA4CDCD71}</Project>
+      <Name>Risen.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

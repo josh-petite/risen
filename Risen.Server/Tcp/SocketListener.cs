@@ -44,8 +44,6 @@ namespace Risen.Server.Tcp
                               IMessageHandler messageHandler, ILogger logger, IDataHoldingUserTokenFactory dataHoldingUserTokenFactory,
                               ISocketAsyncEventArgsFactory socketAsyncEventArgsFactory, ISocketAsyncEventArgsPoolFactory socketAsyncEventArgsPoolFactory)
         {
-            logger.QueueLogItem(LogCategory.Info, "-- Starting SocketListener Constructor --");
-
             _sharedConfiguration = sharedConfiguration;
             _prefixHandler = prefixHandler;
             _messageHandler = messageHandler;
@@ -57,15 +55,13 @@ namespace Risen.Server.Tcp
 
             _maxConnectionsEnforcer = new Semaphore(sharedConfiguration.MaxNumberOfConnections, sharedConfiguration.MaxNumberOfConnections);
             InitialTransmissionId = sharedConfiguration.MainTransmissionId;
-
-            logger.QueueLogItem(LogCategory.Info, "-- SocketListener Constructor Complete --");
         }
 
         public static int InitialTransmissionId { get; set; }
 
         private void Log(Action action)
         {
-            _logger.QueueLogItem(LogCategory.Info, string.Format("Method: {0} executed", action.Method));
+            _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug, string.Format("Method: {0} executed", action.Method)));
             action.Invoke();
         }
 
@@ -161,17 +157,18 @@ namespace Risen.Server.Tcp
             receiveSendEventArgs.AcceptSocket = acceptEventArgs.AcceptSocket;
 
             var acceptOperationUserToken = (AcceptOperationUserToken)acceptEventArgs.UserToken;
-            _logger.QueueLogItem(LogCategory.Info,
-                              string.Format("Accept Id: {0}, RecSend Id: {1}, Remote Endpoint: {2}:{3} *** Client(s) connected = {4}",
-                                            acceptOperationUserToken.TokenId,
-                                            ((DataHoldingUserToken) receiveSendEventArgs.UserToken).TokenId,
-                                            IPAddress.Parse(((IPEndPoint) receiveSendEventArgs.AcceptSocket.RemoteEndPoint).Address.ToString()),
-                                            ((IPEndPoint) receiveSendEventArgs.AcceptSocket.RemoteEndPoint).Port,
-                                            _numberOfAcceptedSockets));
+            _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
+                                                   string.Format("Accept Id: {0}, RecSend Id: {1}, Remote Endpoint: {2}:{3} *** Client(s) connected = {4}",
+                                                                 acceptOperationUserToken.TokenId,
+                                                                 ((DataHoldingUserToken) receiveSendEventArgs.UserToken).TokenId,
+                                                                 IPAddress.Parse(((IPEndPoint) receiveSendEventArgs.AcceptSocket.RemoteEndPoint).Address.ToString()),
+                                                                 ((IPEndPoint) receiveSendEventArgs.AcceptSocket.RemoteEndPoint).Port,
+                                                                 _numberOfAcceptedSockets)));
 
             acceptEventArgs.ClearAcceptSocket();
             _poolOfAcceptEventArgs.Push(acceptEventArgs);
-            _logger.QueueLogItem(LogCategory.Info, string.Format("Accept Id: {0} goes back to pool.", ((AcceptOperationUserToken)acceptEventArgs.UserToken).TokenId));
+            _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
+                                                   string.Format("Accept Id: {0} goes back to pool.", ((AcceptOperationUserToken) acceptEventArgs.UserToken).TokenId)));
 
             StartReceive(receiveSendEventArgs);
         }
@@ -184,7 +181,8 @@ namespace Risen.Server.Tcp
             if (numberOfConnectedSockets > maxSimultaneousAcceptOperations)
                 Interlocked.Increment(ref MaxSimultaneousClientsThatWereConnected);
 
-            _logger.QueueLogItem(LogCategory.Info, string.Format("ProcessAccept, Accept Id: {0}", ((AcceptOperationUserToken)acceptEventArgs.UserToken).TokenId));
+            _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
+                                                   string.Format("ProcessAccept, Accept Id: {0}", ((AcceptOperationUserToken) acceptEventArgs.UserToken).TokenId)));
         }
 
         private bool EventArgsAreInInvalidState(SocketAsyncEventArgs acceptEventArgs)
@@ -193,7 +191,8 @@ namespace Risen.Server.Tcp
             {
                 StartAccept(); // Something failed, try again with a new SocketAsyncEventArgs
                 var acceptOperationUserToken = (AcceptOperationUserToken) acceptEventArgs.UserToken;
-                _logger.QueueLogItem(LogCategory.Error, string.Format("*** SocketError *** Accept Id: {0}", acceptOperationUserToken.TokenId));
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Error,
+                                                       string.Format("*** SocketError *** Accept Id: {0}", acceptOperationUserToken.TokenId)));
                 HandleBadAccept(acceptEventArgs); // Kill socket as it might be in a bad state
                 return true;
             }
@@ -222,7 +221,8 @@ namespace Risen.Server.Tcp
 
         private void HandleBadAccept(SocketAsyncEventArgs acceptEventArgs)
         {
-            _logger.QueueLogItem(LogCategory.Error, string.Format("Closing socket of Accept Id: {0}", ((AcceptOperationUserToken) acceptEventArgs.UserToken).TokenId));
+            _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Error,
+                                                   string.Format("Closing socket of Accept Id: {0}", ((AcceptOperationUserToken) acceptEventArgs.UserToken).TokenId)));
 
             //This method closes the socket and releases all resources, both
             //managed and unmanaged. It internally calls Dispose.
@@ -378,7 +378,8 @@ namespace Risen.Server.Tcp
         {
             if (receiveSendEventArgs.SocketError != SocketError.Success)
             {
-                _logger.QueueLogItem(LogCategory.Error, string.Format("ProcessReceive, ReceiveSendToken Id: {0}", dataHoldingUserToken.TokenId));
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Error,
+                                                       string.Format("ProcessReceive, ReceiveSendToken Id: {0}", dataHoldingUserToken.TokenId)));
                 dataHoldingUserToken.Reset();
                 CloseClientSocket(receiveSendEventArgs);
                 return true;
@@ -393,7 +394,8 @@ namespace Risen.Server.Tcp
             // situation that shows when the client has finished sending data.
             if (receiveSendEventArgs.BytesTransferred == 0)
             {
-                _logger.QueueLogItem(LogCategory.Info, string.Format("ProcessReceive, NO DATA on Token Id: {0}", dataHoldingUserToken.TokenId));
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
+                                                       string.Format("ProcessReceive, NO DATA on Token Id: {0}", dataHoldingUserToken.TokenId)));
                 return true;
             }
 
@@ -406,9 +408,10 @@ namespace Risen.Server.Tcp
             if (dataHoldingUserToken.ReceivedPrefixBytesDoneCount < _sharedConfiguration.ReceivePrefixLength)
             {
                 remainingBytesToProcess = _prefixHandler.HandlePrefix(receiveSendEventArgs, dataHoldingUserToken, remainingBytesToProcess);
-                _logger.QueueLogItem(LogCategory.Info, string.Format("ProcessReceive, after prefix work token Id: {0}. RemainingBytesToProcess = {1}",
-                                                                  dataHoldingUserToken.TokenId,
-                                                                  remainingBytesToProcess));
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
+                                                       string.Format("ProcessReceive, after prefix work token Id: {0}. RemainingBytesToProcess = {1}",
+                                                                     dataHoldingUserToken.TokenId,
+                                                                     remainingBytesToProcess)));
                 if (remainingBytesToProcess == 0)
                 {
                     // We need to do another receive op, since we do not have the message yet, but remainingBytesToProcess == 0.
@@ -458,8 +461,9 @@ namespace Risen.Server.Tcp
             }
             catch (Exception) // throws if socket was already closed
             {
-                if (receiveSendToken != null) 
-                    _logger.QueueLogItem(LogCategory.Error, string.Format("Close client socket attempt failed on Id: {0}", receiveSendToken.TokenId));
+                if (receiveSendToken != null)
+                    _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Error,
+                                                           string.Format("Close client socket attempt failed on Id: {0}", receiveSendToken.TokenId)));
             }
 
             // This method closes the socket and releases all resources, both
@@ -477,7 +481,8 @@ namespace Risen.Server.Tcp
             Interlocked.Decrement(ref _numberOfAcceptedSockets);
 
             if (receiveSendToken != null)
-                _logger.QueueLogItem(LogCategory.Info, string.Format("Id: {0} disconnected. {1} client(s) connected.", receiveSendToken.TokenId, _numberOfAcceptedSockets));
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
+                                                       string.Format("Id: {0} disconnected. {1} client(s) connected.", receiveSendToken.TokenId, _numberOfAcceptedSockets)));
 
             // Release Semaphore so that its connection counter will be decremented.
             // This must be done AFTER putting the SocketAsyncEventArg back into the pool, 

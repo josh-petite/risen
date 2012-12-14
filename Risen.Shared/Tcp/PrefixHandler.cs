@@ -31,7 +31,7 @@ namespace Risen.Shared.Tcp
             //already done it in a previous loop.
             if (userToken.ReceivedPrefixBytesDoneCount == 0)
             {
-                _logger.QueueLogItem(LogCategory.Info, string.Format("Prefix Handler: Creating prefix array: {0}", userToken.TokenId));
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug, string.Format("Prefix Handler: Creating prefix array: {0}", userToken.TokenId)));
                 userToken.ByteArrayForPrefix = new byte[userToken.ReceivePrefixLength];
             }
 
@@ -40,9 +40,10 @@ namespace Risen.Shared.Tcp
             //length of the message that we are working on.
             if (remainingBytesToProcess >= userToken.ReceivePrefixLength - userToken.ReceivedPrefixBytesDoneCount)
             {
-                _logger.QueueLogItem(LogCategory.Info, string.Format("PrefixHandler, enough for prefix on Token Id: {0}. remainingBytesToProcess = {1}",
-                                                                  userToken.TokenId,
-                                                                  remainingBytesToProcess));
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
+                                                       string.Format("PrefixHandler, enough for prefix on Token Id: {0}. remainingBytesToProcess = {1}",
+                                                                     userToken.TokenId,
+                                                                     remainingBytesToProcess)));
                 //Now copy that many bytes to ByteArrayForPrefix.
                 //We can use the variable receiveMessageOffset as our main
                 //index to show which index to get data from in the TCP buffer.
@@ -62,9 +63,10 @@ namespace Risen.Shared.Tcp
                 //where we have some bytes of this prefix in this receive operation, but not all.
             else
             {
-                _logger.QueueLogItem(LogCategory.Warning, string.Format("PrefixHandler, NOT all of prefix on Token Id: {0}. remainingBytesToProcess = {1}",
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Warning,
+                                                       string.Format("PrefixHandler, NOT all of prefix on Token Id: {0}. remainingBytesToProcess = {1}",
                                                                      userToken.TokenId,
-                                                                     remainingBytesToProcess));
+                                                                     remainingBytesToProcess)));
                 //Write the bytes to the array where we are putting the
                 //prefix data, to save for the next loop.
                 Buffer.BlockCopy(socketAsyncEventArgs.Buffer,
@@ -101,7 +103,7 @@ namespace Risen.Shared.Tcp
                 sb.Append(" " + theByte);
 
             sb.Append(string.Format(". Message length: {0}", receiveSendToken.LengthOfCurrentIncomingMessage));
-            _logger.QueueLogItem(LogCategory.Info, sb.ToString());
+            _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug, sb.ToString()));
         }
     }
 }

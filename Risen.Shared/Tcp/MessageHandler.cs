@@ -27,7 +27,9 @@ namespace Risen.Shared.Tcp
             //if it has not been created on a previous receive op.
             if (userToken.ReceivedMessageBytesDoneCount == 0)
             {
-                _logger.QueueLogItem(LogCategory.Info, string.Format("Message Handler: Creating Receive Array on Id: {0}", userToken.TokenId));
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
+                                                       string.Format("Message Handler: Creating Receive Array on Id: {0}", userToken.TokenId)));
+
                 userToken.DataHolder.DataMessageReceived = new Byte[userToken.LengthOfCurrentIncomingMessage];
             }
 
