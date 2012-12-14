@@ -13,7 +13,7 @@ namespace Risen.Shared.Msmq
 
     public class LogMessageQueue : MessageQueue, ILogMessageQueue
     {
-        public LogMessageQueue(ISharedConfiguration configuration) : base(configuration.LogQueue)
+        public LogMessageQueue(IConfiguration configuration) : base(configuration.LogQueue)
         {
         }
 

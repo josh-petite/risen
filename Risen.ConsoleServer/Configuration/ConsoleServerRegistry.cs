@@ -28,7 +28,7 @@ namespace Risen.ConsoleServer.Configuration
 
                                                  r.For<ILogger>().Singleton().Use<Logger>();
                                                  r.For<IBufferManager>().Singleton().Use<BufferManager>().Ctor<IConfiguration>().Is<SharedConfiguration>();
-                                                 r.For<ILogMessageQueue>().Singleton().Use<LogMessageQueue>();
+                                                 r.For<ILogMessageQueue>().Singleton().Use<LogMessageQueue>().Ctor<IConfiguration>().Is<SharedConfiguration>();
 
                                                  r.For<ISocketListener>().Singleton().OnCreationForAll(o =>
                                                      {

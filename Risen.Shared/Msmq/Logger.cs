@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Messaging;
-using Risen.Shared.Tcp;
 
 namespace Risen.Shared.Msmq
 {
@@ -13,21 +12,15 @@ namespace Risen.Shared.Msmq
     {
         private readonly object _mutex = new object();
         private readonly ILogMessageQueue _logMessageQueue;
-        private readonly ISharedConfiguration _sharedConfiguration;
 
-        public Logger(ILogMessageQueue logMessageQueue, ISharedConfiguration sharedConfiguration)
+        public Logger(ILogMessageQueue logMessageQueue)
         {
-            _sharedConfiguration = sharedConfiguration;
             _logMessageQueue = logMessageQueue;
         }
 
-        public bool IsEnabled { get { return _sharedConfiguration.IsLoggerEnabled; } }
-
         public void QueueMessage(LogMessage logMessage)
         {
-            if (!IsEnabled)
-                return;
-
+         
             Console.WriteLine(logMessage.ToString());
 
             lock (_mutex)

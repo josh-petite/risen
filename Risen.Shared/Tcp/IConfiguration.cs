@@ -4,5 +4,6 @@
     {
         int GetTotalBytesRequiredForInitialBufferConfiguration();
         int GetTotalBufferSize();
+        string LogQueue { get; }
     }
 }

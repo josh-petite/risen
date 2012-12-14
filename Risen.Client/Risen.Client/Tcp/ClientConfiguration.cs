@@ -19,7 +19,22 @@ namespace Risen.Client.Tcp
     {
         public ClientConfiguration()
         {
-            Init();
+            ContinuallyRetryConnectIfSocketError = true;
+            MaxNumberOfConnections = 5;
+            Port = 4444;
+            BufferSize = 100;
+            MaxConnectOperations = 5;
+            Backlog = 10;
+            OperationsToPreallocate = 2;
+            ExcessSaeaObjectsInPool = 1;
+            ReceivePrefixLength = 4;
+            SendPrefixLength = 4;
+            MainTransmissionId = 100;
+            StartingId = 0;
+            LogQueue = @".\PRIVATE$\LogQueue";
+
+            NumberOfSaeaForRecSend = MaxNumberOfConnections + ExcessSaeaObjectsInPool;
+            ServerEndPoint = GetHost();
         }
 
         public bool ContinuallyRetryConnectIfSocketError { get; private set; }
@@ -37,25 +52,7 @@ namespace Risen.Client.Tcp
         public int MainTransmissionId { get; private set; }
         public int StartingId { get; private set; }
         public int NumberOfSaeaForRecSend { get; private set; }
-
-        private void Init()
-        {
-            ContinuallyRetryConnectIfSocketError = true;
-            MaxNumberOfConnections = 5;
-            Port = 4444;
-            BufferSize = 100;
-            MaxConnectOperations = 5;
-            Backlog = 10;
-            OperationsToPreallocate = 2;
-            ExcessSaeaObjectsInPool = 1;
-            ReceivePrefixLength = 4;
-            SendPrefixLength = 4;
-            MainTransmissionId = 100;
-            StartingId = 0;
-            
-            NumberOfSaeaForRecSend = MaxNumberOfConnections + ExcessSaeaObjectsInPool;
-            ServerEndPoint = GetHost();
-        }
+        public string LogQueue { get; private set; }
 
         private EndPoint GetHost()
         {
@@ -71,5 +68,7 @@ namespace Risen.Client.Tcp
         {
             return BufferSize * OperationsToPreallocate;
         }
+
+        
     }
 }

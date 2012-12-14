@@ -15,7 +15,6 @@ namespace Risen.Shared.Tcp
         int ReceivePrefixLength { get; }
         int SendPrefixLength { get; }
         int MainTransmissionId { get; }
-        bool IsLoggerEnabled { get; }
         string LogQueue { get; }
     }
 
@@ -30,7 +29,7 @@ namespace Risen.Shared.Tcp
         public int Port { get; private set; }
         public int BufferSize { get; private set; }
         public int MaxSimultaneousAcceptOperations { get; set; }
-        public int Backlog { get; private set; } // The backlog value represents the number of excess clients that can queue up to wait for an open connection.
+        public int Backlog { get; private set; }
         public int OperationsToPreallocate { get; private set; }
         public int ExcessSaeaObjectsInPool { get; private set; }
         public int ReceivePrefixLength { get; private set; }
