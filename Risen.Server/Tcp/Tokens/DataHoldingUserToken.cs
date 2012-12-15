@@ -1,15 +1,13 @@
 ﻿using System.Net.Sockets;
 using System.Threading;
 using Risen.Server.Tcp.Factories;
-using Risen.Shared.Tcp;
-using Risen.Shared.Tcp.Tokens;
 
 namespace Risen.Server.Tcp.Tokens
 {
     public class DataHoldingUserToken : IUserToken
     {
         private readonly IMediatorFactory _mediatorFactory;
-        private readonly ISharedConfiguration _sharedConfiguration;
+        private readonly IServerConfiguration _serverConfiguration;
 
         public IMediator Mediator;
         public IDataHolder DataHolder { get; set; }
@@ -44,10 +42,10 @@ namespace Risen.Server.Tcp.Tokens
         //to one TCP message. A connected session could have many messages, if you
         //set up your app to allow it.
 
-        public DataHoldingUserToken(IMediatorFactory mediatorFactory, ISharedConfiguration sharedConfiguration)
+        public DataHoldingUserToken(IMediatorFactory mediatorFactory, IServerConfiguration serverConfiguration)
         {
             _mediatorFactory = mediatorFactory;
-            _sharedConfiguration = sharedConfiguration;
+            _serverConfiguration = serverConfiguration;
             ReceivedPrefixBytesDoneCount = 0;
             RecPrefixBytesDoneThisOperation = 0;
             ReceivedMessageBytesDoneCount = 0;
@@ -66,9 +64,9 @@ namespace Risen.Server.Tcp.Tokens
         {
             Mediator = _mediatorFactory.GenerateMediator(SocketAsyncEventArgs);
             BufferReceiveOffset = SocketAsyncEventArgs.Offset;
-            BufferOffsetSend = SocketAsyncEventArgs.Offset + _sharedConfiguration.BufferSize;
-            ReceivePrefixLength = _sharedConfiguration.ReceivePrefixLength;
-            SendPrefixLength = _sharedConfiguration.SendPrefixLength;
+            BufferOffsetSend = SocketAsyncEventArgs.Offset + _serverConfiguration.BufferSize;
+            ReceivePrefixLength = _serverConfiguration.ReceivePrefixLength;
+            SendPrefixLength = _serverConfiguration.SendPrefixLength;
             ReceiveMessageOffset = BufferReceiveOffset + ReceivePrefixLength;
             PermanentReceiveMessageOffset = ReceiveMessageOffset;
         }

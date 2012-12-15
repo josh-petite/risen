@@ -2,8 +2,7 @@
 using System.Net.Sockets;
 using System.Threading;
 using Risen.Server.Extentions;
-using Risen.Shared.Msmq;
-using Risen.Shared.Tcp;
+using Risen.Server.Msmq;
 
 namespace Risen.Server.Tcp
 {
@@ -16,12 +15,12 @@ namespace Risen.Server.Tcp
     public class IncomingDataPreparer : IIncomingDataPreparer
     {
         private IDataHolder _dataHolder;
-        private readonly ISharedConfiguration _sharedConfiguration;
+        private readonly IServerConfiguration _serverConfiguration;
         private readonly ILogger _logger;
 
-        public IncomingDataPreparer(ISharedConfiguration sharedConfiguration, ILogger logger)
+        public IncomingDataPreparer(IServerConfiguration serverConfiguration, ILogger logger)
         {
-            _sharedConfiguration = sharedConfiguration;
+            _serverConfiguration = serverConfiguration;
             _logger = logger;
         }
 
@@ -29,7 +28,7 @@ namespace Risen.Server.Tcp
 
         private int ReceivedTransmissionIdGetter()
         {
-            int mainTransmissionId = _sharedConfiguration.MainTransmissionId;
+            int mainTransmissionId = _serverConfiguration.MainTransmissionId;
             int receivedTransmissionId = Interlocked.Increment(ref mainTransmissionId);
             return receivedTransmissionId;
         }

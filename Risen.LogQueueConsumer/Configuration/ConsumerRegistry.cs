@@ -1,14 +1,13 @@
 ﻿using Risen.Server.Msmq;
-using Risen.Server.Tcp;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
-namespace Risen.Server.Configuration
+namespace Risen.LogQueueConsumer.Configuration
 {
-    public class ServerRegistry : Registry
+    public class ConsumerRegistry : Registry
     {
         private static bool _isConfigured;
-        
+
         public static void Configure()
         {
             if (!_isConfigured)
@@ -19,13 +18,13 @@ namespace Risen.Server.Configuration
                                              {
                                                  r.Scan(x =>
                                                             {
-                                                                x.WithDefaultConventions();
                                                                 x.TheCallingAssembly();
                                                                 x.AssemblyContainingType<ILogger>();
+                                                                x.WithDefaultConventions();
                                                             });
 
                                                  r.For<ILogger>().Singleton().Use<Logger>();
-                                                 r.For<IBufferManager>().Singleton().Use<BufferManager>();
+                                                 r.For<ILogMessageQueue>().Singleton().Use<LogMessageQueue>();
                                              });
             }
         }

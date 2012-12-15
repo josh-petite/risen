@@ -1,6 +1,5 @@
 using System;
-using System.Globalization;
-using System.Text;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -16,27 +15,17 @@ namespace Risen.Client
     public class GameMain : Game, IGameMain
     {
         private readonly ISocketClient _socketClient;
+        private readonly IInputManager _inputManager;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private SpriteFont _spriteFont;
-        private string _serverMessage;
-
-        public GameMain(ISocketClient socketClient)
+        
+        public GameMain(ISocketClient socketClient, IInputManager inputManager)
         {
             _socketClient = socketClient;
-            _socketClient.MessageReceivedEvent += SocketClient_OnMessageReceivedEvent;
-
-            var mac = new MessageArrayController();
-            var x = mac.CreateMessageStack(new[] {"test"});
-            _socketClient.GetMessages(x);
-            
+            _inputManager = inputManager;
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-        }
-
-        private void SocketClient_OnMessageReceivedEvent(object sender, MessageReceivedArgs args)
-        {
-            _serverMessage = args.Message;
         }
 
         /// <summary>
@@ -47,8 +36,7 @@ namespace Risen.Client
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
+            _socketClient.Connect();
             base.Initialize();
         }
 
@@ -81,11 +69,11 @@ namespace Risen.Client
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            _inputManager.Update(Keyboard.GetState());
+            var newlyPressedKeys = _inputManager.GetNewlyPressedKeys();
 
-            // TODO: Add your update logic here
+            if (newlyPressedKeys.Any())
+                _socketClient.Send(newlyPressedKeys.Aggregate(string.Empty, (current, keyPressed) => current + keyPressed));
 
             base.Update(gameTime);
         }
@@ -100,7 +88,7 @@ namespace Risen.Client
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(_spriteFont, _serverMessage ?? "server value was null", new Vector2(250, 250), Color.White);
+            _spriteBatch.DrawString(_spriteFont, "testing...", new Vector2(250, 250), Color.White);
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -109,8 +97,6 @@ namespace Risen.Client
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-
-            _socketClient.CleanUpOnExit();
         }
     }
 }

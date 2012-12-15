@@ -45,6 +45,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Messaging" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\ServerRegistry.cs" />
@@ -55,6 +56,11 @@
     <Compile Include="Entities\Maps\ExitMap.cs" />
     <Compile Include="Extentions\SocketAsyncEventArgsExtensions.cs" />
     <Compile Include="Extentions\UserTokenExtensions.cs" />
+    <Compile Include="Msmq\Logger.cs" />
+    <Compile Include="Msmq\LogMessage.cs" />
+    <Compile Include="Msmq\LogMessageQueue.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ReferenceTypes\Maps\ExitTemplateMap.cs" />
     <Compile Include="Entities\Maps\RoomExitMap.cs" />
     <Compile Include="Entities\Maps\ZoneMap.cs" />
@@ -77,18 +83,26 @@
     <Compile Include="ReferenceTypes\LevelDefinition.cs" />
     <Compile Include="Data\Repository.cs" />
     <Compile Include="Tcp\AsyncTcpServer.cs" />
+    <Compile Include="Tcp\BufferManager.cs" />
     <Compile Include="Tcp\DataHolder.cs" />
     <Compile Include="Tcp\Factories\AcceptOperationUserTokenFactory.cs" />
     <Compile Include="Tcp\Factories\DataHoldingUserTokenFactory.cs" />
     <Compile Include="Tcp\Factories\IncomingDataPreparerFactory.cs" />
     <Compile Include="Tcp\Factories\MediatorFactory.cs" />
     <Compile Include="Tcp\Factories\SocketAsyncEventArgsFactory.cs" />
+    <Compile Include="Tcp\Factories\SocketAsyncEventArgsPoolFactory.cs" />
+    <Compile Include="Tcp\IDataHolder.cs" />
     <Compile Include="Tcp\IncomingDataPreparer.cs" />
     <Compile Include="Tcp\Mediator.cs" />
+    <Compile Include="Tcp\MessageHandler.cs" />
     <Compile Include="Tcp\OutgoingDataPreparer.cs" />
+    <Compile Include="Tcp\PrefixHandler.cs" />
+    <Compile Include="Tcp\ServerConfiguration.cs" />
+    <Compile Include="Tcp\SocketAsyncEventArgsPool.cs" />
     <Compile Include="Tcp\SocketListener.cs" />
     <Compile Include="Tcp\Tokens\AcceptOperationUserToken.cs" />
     <Compile Include="Tcp\Tokens\DataHoldingUserToken.cs" />
+    <Compile Include="Tcp\Tokens\IUserToken.cs" />
     <Compile Include="Utility\Point.cs" />
     <Compile Include="Entities\Room.cs" />
     <Compile Include="Entities\World.cs" />

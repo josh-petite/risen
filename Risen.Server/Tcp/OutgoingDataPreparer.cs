@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
 using Risen.Server.Extentions;
-using Risen.Shared.Tcp;
 
 namespace Risen.Server.Tcp
 {

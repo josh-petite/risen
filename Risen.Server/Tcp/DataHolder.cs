@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Risen.Shared.Tcp;
 
 namespace Risen.Server.Tcp
 {

@@ -3,12 +3,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using Risen.Server.Extentions;
+using Risen.Server.Msmq;
 using Risen.Server.Tcp.Factories;
 using Risen.Server.Tcp.Tokens;
-using Risen.Shared.Msmq;
-using Risen.Shared.Tcp;
-using Risen.Shared.Tcp.Factories;
-using Risen.Shared.Tcp.Tokens;
 
 namespace Risen.Server.Tcp
 {
@@ -23,7 +20,7 @@ namespace Risen.Server.Tcp
     {
         private int _numberOfAcceptedSockets;
         private readonly IBufferManager _bufferManager;
-        private readonly ISharedConfiguration _sharedConfiguration;
+        private readonly IServerConfiguration _serverConfiguration;
         private readonly IPrefixHandler _prefixHandler;
         private readonly IMessageHandler _messageHandler;
         private readonly ILogger _logger;
@@ -40,11 +37,11 @@ namespace Risen.Server.Tcp
         public long MainSessionId = 1000;
         public const long PacketSizeThreshhold = 50000;
 
-        public SocketListener(ISharedConfiguration sharedConfiguration, IBufferManager bufferManager, IPrefixHandler prefixHandler,
+        public SocketListener(IServerConfiguration serverConfiguration, IBufferManager bufferManager, IPrefixHandler prefixHandler,
                               IMessageHandler messageHandler, ILogger logger, IDataHoldingUserTokenFactory dataHoldingUserTokenFactory,
                               ISocketAsyncEventArgsFactory socketAsyncEventArgsFactory, ISocketAsyncEventArgsPoolFactory socketAsyncEventArgsPoolFactory)
         {
-            _sharedConfiguration = sharedConfiguration;
+            _serverConfiguration = serverConfiguration;
             _prefixHandler = prefixHandler;
             _messageHandler = messageHandler;
             _logger = logger;
@@ -53,8 +50,8 @@ namespace Risen.Server.Tcp
             _socketAsyncEventArgsPoolFactory = socketAsyncEventArgsPoolFactory;
             _bufferManager = bufferManager;
 
-            _maxConnectionsEnforcer = new Semaphore(sharedConfiguration.MaxNumberOfConnections, sharedConfiguration.MaxNumberOfConnections);
-            InitialTransmissionId = sharedConfiguration.MainTransmissionId;
+            _maxConnectionsEnforcer = new Semaphore(serverConfiguration.MaxNumberOfConnections, serverConfiguration.MaxNumberOfConnections);
+            InitialTransmissionId = serverConfiguration.MainTransmissionId;
         }
 
         public static int InitialTransmissionId { get; set; }
@@ -85,17 +82,17 @@ namespace Risen.Server.Tcp
 
         private void InitializeAcceptEventArgsPool()
         {
-            _poolOfAcceptEventArgs = _socketAsyncEventArgsPoolFactory.GenerateSocketAsyncEventArgsPool(_sharedConfiguration.MaxSimultaneousAcceptOperations);
+            _poolOfAcceptEventArgs = _socketAsyncEventArgsPoolFactory.GenerateSocketAsyncEventArgsPool(_serverConfiguration.MaxSimultaneousAcceptOperations);
 
-            for (int i = 0; i < _sharedConfiguration.MaxSimultaneousAcceptOperations; i++)
+            for (int i = 0; i < _serverConfiguration.MaxSimultaneousAcceptOperations; i++)
                 _poolOfAcceptEventArgs.Push(CreateNewSaeaForAccept());
         }
 
         private void InitializeSendReceiveEventArgsPool()
         {
-            _poolOfRecSendEventArgs = _socketAsyncEventArgsPoolFactory.GenerateSocketAsyncEventArgsPool(_sharedConfiguration.NumberOfSaeaForRecSend);
+            _poolOfRecSendEventArgs = _socketAsyncEventArgsPoolFactory.GenerateSocketAsyncEventArgsPool(_serverConfiguration.NumberOfSaeaForRecSend);
 
-            for (int i = 0; i < _sharedConfiguration.NumberOfSaeaForRecSend; i++)
+            for (int i = 0; i < _serverConfiguration.NumberOfSaeaForRecSend; i++)
             {
                 var eventArgForPool = _socketAsyncEventArgsFactory.GenerateReceiveSendSocketAsyncEventArgs(SendReceiveCompleted);
                 eventArgForPool.UserToken = _dataHoldingUserTokenFactory.GenerateDataHoldingUserToken(eventArgForPool, _poolOfRecSendEventArgs.AssignTokenId());
@@ -110,9 +107,9 @@ namespace Risen.Server.Tcp
 
         public void StartListen()
         {
-            _listenSocket = new Socket(_sharedConfiguration.LocalEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            _listenSocket.Bind(_sharedConfiguration.LocalEndPoint);
-            _listenSocket.Listen(_sharedConfiguration.Backlog);
+            _listenSocket = new Socket(_serverConfiguration.LocalEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            _listenSocket.Bind(_serverConfiguration.LocalEndPoint);
+            _listenSocket.Listen(_serverConfiguration.Backlog);
 
             StartAccept();
         }
@@ -256,7 +253,7 @@ namespace Risen.Server.Tcp
 
         private void StartReceive(SocketAsyncEventArgs receiveSendEventArgs)
         {
-            receiveSendEventArgs.SetBuffer(((DataHoldingUserToken)receiveSendEventArgs.UserToken).BufferReceiveOffset, _sharedConfiguration.BufferSize);
+            receiveSendEventArgs.SetBuffer(((DataHoldingUserToken)receiveSendEventArgs.UserToken).BufferReceiveOffset, _serverConfiguration.BufferSize);
 
             var willRaiseEvent = receiveSendEventArgs.AcceptSocket.ReceiveAsync(receiveSendEventArgs);
 
@@ -342,7 +339,7 @@ namespace Risen.Server.Tcp
             //the buffer or not. If it is larger than the buffer, then we will have
             //to post more than one send operation. If it is less than or equal to the
             //size of the send buffer, then we can accomplish it in one send op.
-            if (dataHoldingUserToken.SendBytesRemainingCount <= _sharedConfiguration.BufferSize)
+            if (dataHoldingUserToken.SendBytesRemainingCount <= _serverConfiguration.BufferSize)
             {
                 receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferOffsetSend, dataHoldingUserToken.SendBytesRemainingCount);
                 CopyDataToBufferAssociatedWithSaeaObject(receiveSendEventArgs, dataHoldingUserToken);
@@ -352,7 +349,7 @@ namespace Risen.Server.Tcp
                 //We cannot try to set the buffer any larger than its size.
                 //So since receiveSendToken.sendBytesRemainingCount > BufferSize, we just
                 //set it to the maximum size, to send the most data possible.
-                receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferOffsetSend, _sharedConfiguration.BufferSize);
+                receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferOffsetSend, _serverConfiguration.BufferSize);
                 CopyDataToBufferAssociatedWithSaeaObject(receiveSendEventArgs, dataHoldingUserToken);
 
                 //We'll change the value of sendUserToken.sendBytesRemainingCount in the ProcessSend method.
@@ -405,7 +402,7 @@ namespace Risen.Server.Tcp
         private bool PrefixDataForCurrentMessageStillRemains(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken, ref int remainingBytesToProcess)
         {
             //If we have not got all of the prefix already, then we need to work on it here.
-            if (dataHoldingUserToken.ReceivedPrefixBytesDoneCount < _sharedConfiguration.ReceivePrefixLength)
+            if (dataHoldingUserToken.ReceivedPrefixBytesDoneCount < _serverConfiguration.ReceivePrefixLength)
             {
                 remainingBytesToProcess = _prefixHandler.HandlePrefix(receiveSendEventArgs, dataHoldingUserToken, remainingBytesToProcess);
                 _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using Risen.Shared.Tcp;
 using StructureMap;
 
 namespace Risen.Server.Tcp.Factories

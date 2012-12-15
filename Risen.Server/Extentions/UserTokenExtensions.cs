@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Risen.Server.Tcp.Tokens;
-using Risen.Shared.Tcp.Tokens;
 
 namespace Risen.Server.Extentions
 {

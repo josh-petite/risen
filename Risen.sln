@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risen.ClientContent", "Rise
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risen.Shared", "Risen.Shared\Risen.Shared.csproj", "{5A6F7B4D-B262-4FD8-8CB0-82CAA4CDCD71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risen.LogQueueConsumer", "LogQueueConsumer\Risen.LogQueueConsumer.csproj", "{2E5C7210-3C96-483A-BF9F-86A3ACC9065C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risen.LogQueueConsumer", "Risen.LogQueueConsumer\Risen.LogQueueConsumer.csproj", "{2E5C7210-3C96-483A-BF9F-86A3ACC9065C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
