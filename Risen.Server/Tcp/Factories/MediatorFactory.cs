@@ -5,7 +5,7 @@ namespace Risen.Server.Tcp.Factories
 {
     public interface IMediatorFactory
     {
-        IMediator GenerateMediator(SocketAsyncEventArgs eventArgs);
+        Mediator GenerateMediator(SocketAsyncEventArgs eventArgs);
     }
 
     public class MediatorFactory : IMediatorFactory
@@ -17,11 +17,11 @@ namespace Risen.Server.Tcp.Factories
             _incomingDataPreparerFactory = incomingDataPreparerFactory;
         }
 
-        public IMediator GenerateMediator(SocketAsyncEventArgs eventArgs)
+        public Mediator GenerateMediator(SocketAsyncEventArgs eventArgs)
         {
             var incomingDataPreparer = _incomingDataPreparerFactory.GenerateIncomingDataPreparer(eventArgs);
 
-            var mediator = ObjectFactory.GetInstance<IMediator>();
+            var mediator = ObjectFactory.GetInstance<Mediator>();
             mediator.SocketAsyncEventArgs = eventArgs;
             mediator.IncomingDataPreparer = incomingDataPreparer;
 

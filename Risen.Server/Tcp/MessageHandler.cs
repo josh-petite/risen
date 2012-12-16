@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Threading;
 using Risen.Server.Msmq;
 using Risen.Server.Tcp.Tokens;
 
@@ -7,7 +8,7 @@ namespace Risen.Server.Tcp
 {
     public interface IMessageHandler
     {
-        bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, IUserToken userToken, int remainingBytesToProcess);
+        bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken userToken, int remainingBytesToProcess);
     }
 
     public class MessageHandler : IMessageHandler
@@ -19,7 +20,7 @@ namespace Risen.Server.Tcp
             _logger = logger;
         }
 
-        public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, IUserToken userToken, int remainingBytesToProcess)
+        public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken userToken, int remainingBytesToProcess)
         {
             var incomingTcpMessageIsReady = false;
 
@@ -63,12 +64,20 @@ namespace Risen.Server.Tcp
                 // Not a problem. In SocketListener.ProcessReceive we will just call
                 // StartReceive to do another receive op to receive more data.
 
+                if (userToken.DataHolder.DataMessageReceived.Length < remainingBytesToProcess + userToken.ReceivedMessageBytesDoneCount)
+                {
+                    var received = userToken.DataHolder.DataMessageReceived;
+                    Array.Resize(ref received, remainingBytesToProcess + userToken.ReceivedMessageBytesDoneCount);
+                    userToken.DataHolder.DataMessageReceived = received;
+                    Console.WriteLine("Thread: {0} *** HAD TO RESIZE DATAHOLDER!! ***", Thread.CurrentThread.ManagedThreadId);
+                }
+                
                 Buffer.BlockCopy(receiveSendEventArgs.Buffer,
                                  userToken.ReceiveMessageOffset,
                                  userToken.DataHolder.DataMessageReceived,
                                  userToken.ReceivedMessageBytesDoneCount,
                                  remainingBytesToProcess);
-
+                
                 userToken.ReceiveMessageOffset = userToken.ReceiveMessageOffset - userToken.RecPrefixBytesDoneThisOperation;
                 userToken.ReceivedMessageBytesDoneCount += remainingBytesToProcess;
             }

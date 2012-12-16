@@ -290,7 +290,7 @@ namespace Risen.Server.Tcp
             ProcessReceivedMessage(receiveSendEventArgs, dataHoldingUserToken, remainingBytesToProcess);
         }
 
-        private void ProcessReceivedMessage(SocketAsyncEventArgs receiveSendEventArgs, IUserToken userToken, int remainingBytesToProcess)
+        private void ProcessReceivedMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken userToken, int remainingBytesToProcess)
         {
             bool incomingTcpMessageIsReady = _messageHandler.HandleMessage(receiveSendEventArgs, userToken, remainingBytesToProcess);
 

@@ -91,7 +91,6 @@
     <Compile Include="Tcp\Factories\MediatorFactory.cs" />
     <Compile Include="Tcp\Factories\SocketAsyncEventArgsFactory.cs" />
     <Compile Include="Tcp\Factories\SocketAsyncEventArgsPoolFactory.cs" />
-    <Compile Include="Tcp\IDataHolder.cs" />
     <Compile Include="Tcp\IncomingDataPreparer.cs" />
     <Compile Include="Tcp\Mediator.cs" />
     <Compile Include="Tcp\MessageHandler.cs" />
@@ -102,7 +101,6 @@
     <Compile Include="Tcp\SocketListener.cs" />
     <Compile Include="Tcp\Tokens\AcceptOperationUserToken.cs" />
     <Compile Include="Tcp\Tokens\DataHoldingUserToken.cs" />
-    <Compile Include="Tcp\Tokens\IUserToken.cs" />
     <Compile Include="Utility\Point.cs" />
     <Compile Include="Entities\Room.cs" />
     <Compile Include="Entities\World.cs" />

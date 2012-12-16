@@ -9,7 +9,7 @@ namespace Risen.Server.Extentions
 {
     public static class UserTokenExtensions
     {
-        public static DataHoldingUserToken AsDataHoldingUserToken(this IUserToken userToken)
+        public static DataHoldingUserToken AsDataHoldingUserToken(this DataHoldingUserToken userToken)
         {
             return (DataHoldingUserToken) userToken;
         }

@@ -1,4 +1,6 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Diagnostics;
+using System.Net.Sockets;
 using System.Text;
 
 namespace Risen.Client.Tcp
@@ -20,9 +22,22 @@ namespace Risen.Client.Tcp
 
         public void Send(string message)
         {
-            var bytes = Encoding.Default.GetBytes(message);
+            var preparedMessage = PrepareMessage(message);
             var stream = _tcpClient.GetStream();
-            stream.Write(bytes, 0, bytes.Length);
+
+            stream.Write(preparedMessage, 0, preparedMessage.Length);
+        }
+
+        private byte[] PrepareMessage(string message)
+        {
+            var messageInBytes = Encoding.Default.GetBytes(message);
+            var prefix = BitConverter.GetBytes(messageInBytes.Length);
+            var result = new byte[prefix.Length + messageInBytes.Length];
+
+            Buffer.BlockCopy(prefix, 0, result, 0, prefix.Length);
+            Buffer.BlockCopy(messageInBytes, 0, result, prefix.Length, messageInBytes.Length);
+            
+            return result;
         }
     }
 }

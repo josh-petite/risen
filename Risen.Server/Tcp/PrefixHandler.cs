@@ -8,7 +8,7 @@ namespace Risen.Server.Tcp
 {
     public interface IPrefixHandler
     {
-        int HandlePrefix(SocketAsyncEventArgs socketAsyncEventArgs, IUserToken userToken, int remainingBytesToProcess);
+        int HandlePrefix(SocketAsyncEventArgs socketAsyncEventArgs, DataHoldingUserToken userToken, int remainingBytesToProcess);
     }
 
     public class PrefixHandler : IPrefixHandler
@@ -20,7 +20,7 @@ namespace Risen.Server.Tcp
             _logger = logger;
         }
 
-        public int HandlePrefix(SocketAsyncEventArgs socketAsyncEventArgs, IUserToken userToken, Int32 remainingBytesToProcess)
+        public int HandlePrefix(SocketAsyncEventArgs socketAsyncEventArgs, DataHoldingUserToken userToken, Int32 remainingBytesToProcess)
         {
             //ReceivedPrefixBytesDoneCount tells us how many prefix bytes were
             //processed during previous receive ops which contained data for
@@ -93,7 +93,7 @@ namespace Risen.Server.Tcp
             return remainingBytesToProcess;
         }
 
-        private void LogPrefixDetails(IUserToken receiveSendToken)
+        private void LogPrefixDetails(DataHoldingUserToken receiveSendToken)
         {
             //Now see what integer the prefix bytes represent, for the length.
             var sb = new StringBuilder(receiveSendToken.ByteArrayForPrefix.Length);

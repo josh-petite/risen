@@ -4,16 +4,25 @@ using Risen.Server.Tcp.Factories;
 
 namespace Risen.Server.Tcp.Tokens
 {
-    public class DataHoldingUserToken : IUserToken
+    public class DataHoldingUserToken
     {
         private readonly IMediatorFactory _mediatorFactory;
         private readonly IServerConfiguration _serverConfiguration;
 
-        public IMediator Mediator;
-        public IDataHolder DataHolder { get; set; }
+        public DataHoldingUserToken(IMediatorFactory mediatorFactory, IServerConfiguration serverConfiguration)
+        {
+            _mediatorFactory = mediatorFactory;
+            _serverConfiguration = serverConfiguration;
+            ReceivedPrefixBytesDoneCount = 0;
+            RecPrefixBytesDoneThisOperation = 0;
+            ReceivedMessageBytesDoneCount = 0;
+        }
+
+        public Mediator Mediator;
+        public DataHolder DataHolder { get; set; }
         public int BufferReceiveOffset { get; set; }
-        public int PermanentReceiveMessageOffset;
-        public int BufferOffsetSend;
+        public int PermanentReceiveMessageOffset { get; set; }
+        public int BufferOffsetSend { get; set; }
         public int LengthOfCurrentIncomingMessage { get; set; }
 
         //receiveMessageOffset is used to mark the byte position where the message
@@ -31,26 +40,15 @@ namespace Risen.Server.Tcp.Tokens
         //name is similar but the usage is different from the variable
         //receiveSendToken.receivePrefixBytesDone.
         public int RecPrefixBytesDoneThisOperation { get; set; }
-
-        public int SendBytesRemainingCount;
-        public int SendPrefixLength;
-        public byte[] DataToSend;
-        public int BytesSentAlreadyCount;
+        public int SendBytesRemainingCount { get; set; }
+        public int SendPrefixLength { get; set; }
+        public byte[] DataToSend { get; set; }
+        public int BytesSentAlreadyCount { get; set; }
 
         //The session ID correlates with all the data sent in a connected session.
         //It is different from the transmission ID in the DataHolder, which relates
         //to one TCP message. A connected session could have many messages, if you
         //set up your app to allow it.
-
-        public DataHoldingUserToken(IMediatorFactory mediatorFactory, IServerConfiguration serverConfiguration)
-        {
-            _mediatorFactory = mediatorFactory;
-            _serverConfiguration = serverConfiguration;
-            ReceivedPrefixBytesDoneCount = 0;
-            RecPrefixBytesDoneThisOperation = 0;
-            ReceivedMessageBytesDoneCount = 0;
-        }
-
         public long SessionId { get; private set; }
         public int TokenId { get; set; }
         public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }

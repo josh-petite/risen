@@ -6,14 +6,14 @@ namespace Risen.Server.Tcp
 {
     public interface IOutgoingDataPreparer
     {
-        void PrepareOutgoingData(SocketAsyncEventArgs e, IDataHolder handledDataHolder);
+        void PrepareOutgoingData(SocketAsyncEventArgs e, DataHolder handledDataHolder);
     }
 
     public class OutgoingDataPreparer : IOutgoingDataPreparer
     {
-        private IDataHolder _dataHolder;
+        private DataHolder _dataHolder;
 
-        public void PrepareOutgoingData(SocketAsyncEventArgs e, IDataHolder handledDataHolder)
+        public void PrepareOutgoingData(SocketAsyncEventArgs e, DataHolder handledDataHolder)
         {
             var userToken = e.GetDataHoldingUserToken();
             _dataHolder = handledDataHolder;

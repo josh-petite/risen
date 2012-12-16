@@ -4,19 +4,10 @@ using System.Text;
 
 namespace Risen.Server.Tcp
 {
-    public interface IMediator
-    {
-        SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
-        IIncomingDataPreparer IncomingDataPreparer { get; set; }
-        void HandleData(IDataHolder dataHolder);
-        void PrepareOutgoingData();
-        SocketAsyncEventArgs GiveBack();
-    }
-
-    public class Mediator : IMediator
+    public class Mediator
     {
         private readonly IOutgoingDataPreparer _outgoingDataPreparer;
-        private IDataHolder _dataHolder;
+        private DataHolder _dataHolder;
         
         public Mediator(IOutgoingDataPreparer outgoingDataPreparer)
         {
@@ -24,10 +15,9 @@ namespace Risen.Server.Tcp
         }
 
         public IIncomingDataPreparer IncomingDataPreparer { get; set; }
-
         public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
 
-        public void HandleData(IDataHolder incomingDataHolder)
+        public void HandleData(DataHolder incomingDataHolder)
         {
             _dataHolder = IncomingDataPreparer.HandleReceivedData(incomingDataHolder, SocketAsyncEventArgs);
             Console.WriteLine("Data Received On Server: {0}", Encoding.Default.GetString(_dataHolder.DataMessageReceived));

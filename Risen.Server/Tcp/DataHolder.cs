@@ -2,7 +2,7 @@
 
 namespace Risen.Server.Tcp
 {
-    public class DataHolder : IDataHolder
+    public class DataHolder
     {
         //Remember, if a socket uses a byte array for its buffer, that byte array is
         //unmanaged in .NET and can cause memory fragmentation. So, first write to the
