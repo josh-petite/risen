@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 
@@ -25,7 +27,17 @@ namespace Risen.Client.Tcp
             var preparedMessage = PrepareMessage(message);
             var stream = _tcpClient.GetStream();
 
+            Program.TraceListener.WriteLine(string.Format("Message: {0} - Bytes: {1} - Prepared Message: {2}",
+                                                          message,
+                                                          preparedMessage.Aggregate(string.Empty, (current, t) => current + t),
+                                                          ReverseParseMessage(preparedMessage)));
+
             stream.Write(preparedMessage, 0, preparedMessage.Length);
+        }
+
+        private string ReverseParseMessage(byte[] preparedMessage)
+        {
+            return BitConverter.ToString(preparedMessage);
         }
 
         private byte[] PrepareMessage(string message)
