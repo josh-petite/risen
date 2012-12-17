@@ -36,7 +36,9 @@ namespace Risen.Client
         /// </summary>
         protected override void Initialize()
         {
+            _graphics.GraphicsDevice.Viewport = new Viewport(new Rectangle(0, 0, 320, 240));
             _socketClient.Connect();
+
             base.Initialize();
         }
 

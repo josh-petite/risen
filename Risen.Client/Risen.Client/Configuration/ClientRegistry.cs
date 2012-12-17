@@ -13,14 +13,11 @@ namespace Risen.Client.Configuration
             {
                 _isConfigured = true;
 
-                ObjectFactory.Initialize(r =>
-                    {
-                        r.Scan(x =>
-                            {
-                                x.TheCallingAssembly();
-                                x.WithDefaultConventions();
-                            });
-                    });
+                ObjectFactory.Initialize(r => r.Scan(x =>
+                                                         {
+                                                             x.TheCallingAssembly();
+                                                             x.WithDefaultConventions();
+                                                         }));
             }
         }
     }

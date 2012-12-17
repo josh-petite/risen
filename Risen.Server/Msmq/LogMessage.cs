@@ -12,7 +12,7 @@ namespace Risen.Server.Msmq
 
         public override string ToString()
         {
-            return string.Format("{0}: {1} - {2} <{3}>", Category, Severity, Description, CreatedDate.ToString("hh:mm:ss.ff - yyyy-MM-dd"));
+            return string.Format("{0}: {1} - {2} ~ {3}", Category, Severity, Description, CreatedDate.ToString("hh:mm:ss.ff"));
         }
 
         public static LogMessage Create(LogCategory logCategory, LogSeverity logSeverity, string description)
