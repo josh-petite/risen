@@ -55,7 +55,6 @@
     <Compile Include="Entities\Maps\CommentMap.cs" />
     <Compile Include="Entities\Maps\ExitMap.cs" />
     <Compile Include="Extentions\SocketAsyncEventArgsExtensions.cs" />
-    <Compile Include="Extentions\UserTokenExtensions.cs" />
     <Compile Include="Msmq\Logger.cs" />
     <Compile Include="Msmq\LogMessage.cs" />
     <Compile Include="Msmq\LogMessageQueue.cs">

@@ -238,13 +238,13 @@ namespace Risen.Server.Tcp
         {
             SocketAsyncEventArgs eventArgs;
             
-            while (_poolOfAcceptEventArgs.Count > 0)
+            while (_poolOfAcceptEventArgs.Any())
             {
                 eventArgs = _poolOfAcceptEventArgs.Pop();
                 eventArgs.Dispose();
             }
 
-            while (_poolOfRecSendEventArgs.Count > 0)
+            while (_poolOfRecSendEventArgs.Any())
             {
                 eventArgs = _poolOfRecSendEventArgs.Pop();
                 eventArgs.Dispose();
@@ -253,7 +253,8 @@ namespace Risen.Server.Tcp
 
         private void StartReceive(SocketAsyncEventArgs receiveSendEventArgs)
         {
-            receiveSendEventArgs.SetBuffer(((DataHoldingUserToken)receiveSendEventArgs.UserToken).BufferReceiveOffset, _serverConfiguration.BufferSize);
+            var dataHoldingUserToken = (DataHoldingUserToken) receiveSendEventArgs.UserToken;
+            receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferReceiveOffset, _serverConfiguration.BufferSize);
 
             var willRaiseEvent = receiveSendEventArgs.AcceptSocket.ReceiveAsync(receiveSendEventArgs);
 
@@ -290,43 +291,25 @@ namespace Risen.Server.Tcp
             ProcessReceivedMessage(receiveSendEventArgs, dataHoldingUserToken, remainingBytesToProcess);
         }
 
-        private void ProcessReceivedMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken userToken, int remainingBytesToProcess)
+        private void ProcessReceivedMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataToken, int remainingBytesToProcess)
         {
-            bool incomingTcpMessageIsReady = _messageHandler.HandleMessage(receiveSendEventArgs, userToken, remainingBytesToProcess);
+            bool incomingTcpMessageIsReady = _messageHandler.HandleMessage(receiveSendEventArgs, dataToken, remainingBytesToProcess);
 
             if (incomingTcpMessageIsReady)
             {
-                var dataToken = userToken.AsDataHoldingUserToken();
-                dataToken.Mediator.HandleData(userToken.DataHolder);
+                dataToken.Mediator.HandleData(dataToken.DataHolder);
 
                 // at this point, use the data
                 
-                // Create a new DataHolder for next message.
                 dataToken.CreateNewDataHolder();
-
-                //Reset the variables in the UserToken, to be ready for the
-                //next message that will be received on the socket in this SAEA object.
                 dataToken.Reset();
                 dataToken.Mediator.PrepareOutgoingData();
                 StartSend(dataToken.Mediator.GiveBack());
             }
             else
             {
-                // Since we have NOT gotten enough bytes for the whole message,
-                // we need to do another receive op. Reset some variables first.
-
-                // All of the data that we receive in the next receive op will be
-                // message. None of it will be prefix. So, we need to move the
-                // receiveSendToken.receiveMessageOffset to the beginning of the
-                // receive buffer space for this SAEA.
-                userToken.ReceiveMessageOffset = userToken.BufferReceiveOffset;
-
-                // Do NOT reset receiveSendToken.receivedPrefixBytesDoneCount here.
-                // Just reset recPrefixBytesDoneThisOp.
-                userToken.RecPrefixBytesDoneThisOperation = 0;
-
-                // Since we have not gotten enough bytes for the whole message,
-                // we need to do another receive op.
+                dataToken.ReceiveMessageOffset = dataToken.BufferReceiveOffset;
+                dataToken.RecPrefixBytesDoneThisOperation = 0;
                 StartReceive(receiveSendEventArgs);
             }
         }
@@ -335,42 +318,34 @@ namespace Risen.Server.Tcp
         {
             var dataHoldingUserToken = receiveSendEventArgs.GetDataHoldingUserToken();
 
-            //The number of bytes to send depends on whether the message is larger than
-            //the buffer or not. If it is larger than the buffer, then we will have
-            //to post more than one send operation. If it is less than or equal to the
-            //size of the send buffer, then we can accomplish it in one send op.
             if (dataHoldingUserToken.SendBytesRemainingCount <= _serverConfiguration.BufferSize)
             {
                 receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferOffsetSend, dataHoldingUserToken.SendBytesRemainingCount);
-                CopyDataToBufferAssociatedWithSaeaObject(receiveSendEventArgs, dataHoldingUserToken);
+                Buffer.BlockCopy(dataHoldingUserToken.DataToSend,
+                             dataHoldingUserToken.BytesSentAlreadyCount,
+                             receiveSendEventArgs.Buffer,
+                             dataHoldingUserToken.BufferOffsetSend,
+                             dataHoldingUserToken.SendBytesRemainingCount);
             }
             else
             {
-                //We cannot try to set the buffer any larger than its size.
-                //So since receiveSendToken.sendBytesRemainingCount > BufferSize, we just
-                //set it to the maximum size, to send the most data possible.
                 receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferOffsetSend, _serverConfiguration.BufferSize);
-                CopyDataToBufferAssociatedWithSaeaObject(receiveSendEventArgs, dataHoldingUserToken);
+                Buffer.BlockCopy(dataHoldingUserToken.DataToSend,
+                                 dataHoldingUserToken.BytesSentAlreadyCount,
+                                 receiveSendEventArgs.Buffer,
+                                 dataHoldingUserToken.BufferOffsetSend,
+                                 _serverConfiguration.BufferSize);
 
                 //We'll change the value of sendUserToken.sendBytesRemainingCount in the ProcessSend method.
             }
 
             //post asynchronous send operation
-            bool willRaiseEvent = receiveSendEventArgs.AcceptSocket.SendAsync(receiveSendEventArgs);
+            var willRaiseEvent = receiveSendEventArgs.AcceptSocket.SendAsync(receiveSendEventArgs);
 
             if (!willRaiseEvent)
                 ProcessSend(receiveSendEventArgs);
         }
-
-        private static void CopyDataToBufferAssociatedWithSaeaObject(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken)
-        {
-            Buffer.BlockCopy(dataHoldingUserToken.DataToSend,
-                             dataHoldingUserToken.BytesSentAlreadyCount,
-                             receiveSendEventArgs.Buffer,
-                             dataHoldingUserToken.BufferOffsetSend,
-                             dataHoldingUserToken.SendBytesRemainingCount);
-        }
-
+        
         private bool SocketIsInInvalidState(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken)
         {
             if (receiveSendEventArgs.SocketError != SocketError.Success)
@@ -387,12 +362,13 @@ namespace Risen.Server.Tcp
 
         private bool ClientIsFinishedSendingData(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken)
         {
-            // If no data was received, close the connection. This is a NORMAL
-            // situation that shows when the client has finished sending data.
             if (receiveSendEventArgs.BytesTransferred == 0)
             {
                 _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
                                                        string.Format("ProcessReceive, NO DATA on Token Id: {0}", dataHoldingUserToken.TokenId)));
+
+                dataHoldingUserToken.Reset();
+                CloseClientSocket(receiveSendEventArgs);
                 return true;
             }
 

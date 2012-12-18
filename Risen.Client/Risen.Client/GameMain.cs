@@ -51,8 +51,6 @@ namespace Risen.Client
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _spriteFont = Content.Load<SpriteFont>("Font");
-
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -88,9 +86,8 @@ namespace Risen.Client
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(_spriteFont, "testing...", new Vector2(250, 250), Color.White);
+            _spriteBatch.DrawString(_spriteFont, "testing...", new Vector2(50, 50), Color.White);
             _spriteBatch.End();
 
             base.Draw(gameTime);
