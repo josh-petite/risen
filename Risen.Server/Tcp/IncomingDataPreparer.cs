@@ -26,7 +26,7 @@ namespace Risen.Server.Tcp
 
         public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
 
-        private int ReceivedTransmissionIdGetter()
+        private int GetReceivedTransmissionId()
         {
             int mainTransmissionId = _serverConfiguration.MainTransmissionId;
             int receivedTransmissionId = Interlocked.Increment(ref mainTransmissionId);
@@ -47,7 +47,7 @@ namespace Risen.Server.Tcp
 
             _dataHolder = incomingDataHolder;
             _dataHolder.SessionId = receiveToken.SessionId;
-            _dataHolder.ReceivedTransmissionId = ReceivedTransmissionIdGetter();
+            _dataHolder.ReceivedTransmissionId = GetReceivedTransmissionId();
             _dataHolder.RemoteEndpoint = GetRemoteEndpoint();
 
             return _dataHolder;

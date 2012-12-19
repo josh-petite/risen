@@ -58,7 +58,7 @@ namespace Risen.Server.Tcp
 
         private void Log(Action action)
         {
-            _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug, string.Format("Method: {0} executed", action.Method)));
+            _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug, string.Format("{0} executed", action.Method)));
             action.Invoke();
         }
 
@@ -82,9 +82,9 @@ namespace Risen.Server.Tcp
 
         private void InitializeAcceptEventArgsPool()
         {
-            _poolOfAcceptEventArgs = _socketAsyncEventArgsPoolFactory.GenerateSocketAsyncEventArgsPool(_serverConfiguration.MaxSimultaneousAcceptOperations);
+            _poolOfAcceptEventArgs = _socketAsyncEventArgsPoolFactory.GenerateSocketAsyncEventArgsPool(_serverConfiguration.MaxAcceptOperations);
 
-            for (int i = 0; i < _serverConfiguration.MaxSimultaneousAcceptOperations; i++)
+            for (int i = 0; i < _serverConfiguration.MaxAcceptOperations; i++)
                 _poolOfAcceptEventArgs.Push(CreateNewSaeaForAccept());
         }
 
@@ -110,23 +110,45 @@ namespace Risen.Server.Tcp
             _listenSocket = new Socket(_serverConfiguration.LocalEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             _listenSocket.Bind(_serverConfiguration.LocalEndPoint);
             _listenSocket.Listen(_serverConfiguration.Backlog);
-
+            Console.WriteLine("****** Server is listening. ******");
             StartAccept();
         }
 
         public void StartAccept()
         {
-            var acceptEventArg = _poolOfAcceptEventArgs.Any() ? _poolOfAcceptEventArgs.Pop() : CreateNewSaeaForAccept();
+            SocketAsyncEventArgs acceptEventArg;
+
+            // Get a SocketAsyncEventArgs object to accept the connection.                        
+            // Get it from the pool if there is more than one in the pool.
+            // We could use zero as bottom, but one is a little safer.            
+            if (_poolOfAcceptEventArgs.Count > 1)
+            {
+                try
+                {
+                    acceptEventArg = _poolOfAcceptEventArgs.Pop();
+                }
+                    //or make a new one.
+                catch
+                {
+                    acceptEventArg = CreateNewSaeaForAccept();
+                }
+            }
+            else
+                acceptEventArg = CreateNewSaeaForAccept();
 
             // Used to control access to pool resources
             _maxConnectionsEnforcer.WaitOne();
-
             var willRaiseEvent = _listenSocket.AcceptAsync(acceptEventArg);
 
             // AcceptAsync returns true if the I/O operation is pending, i.socketAsyncEventArgs. is working asynchronously.
             // When it completes it will call the acceptEventArg.Completed event (AcceptEventArg_Completed, as wired above).
             if (!willRaiseEvent)
+            {
+                var acceptOperationUserToken = (AcceptOperationUserToken)acceptEventArg.UserToken;
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
+                                                       string.Format("StartAccept in if (!willRaiseEvent), accept token id {0}", acceptOperationUserToken.TokenId)));
                 ProcessAccept(acceptEventArg);
+            }
         }
 
         // This method is the callback method associated with Socket.AcceptAsync  

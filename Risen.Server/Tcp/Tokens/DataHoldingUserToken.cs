@@ -18,7 +18,7 @@ namespace Risen.Server.Tcp.Tokens
             ReceivedMessageBytesDoneCount = 0;
         }
 
-        public Mediator Mediator;
+        public Mediator Mediator { get; set; }
         public DataHolder DataHolder { get; set; }
         public int BufferReceiveOffset { get; set; }
         public int PermanentReceiveMessageOffset { get; set; }

@@ -5,14 +5,14 @@ namespace Risen.Server.Tcp.Factories
 {
     public interface IAcceptOperationUserTokenFactory
     {
-        IAcceptOperationUserToken GenerateAcceptOperationUserToken(int tokenId);
+        AcceptOperationUserToken GenerateAcceptOperationUserToken(int tokenId);
     }
 
     public class AcceptOperationUserTokenFactory : IAcceptOperationUserTokenFactory
     {
-        public IAcceptOperationUserToken GenerateAcceptOperationUserToken(int tokenId)
+        public AcceptOperationUserToken GenerateAcceptOperationUserToken(int tokenId)
         {
-            var token = ObjectFactory.GetInstance<IAcceptOperationUserToken>();
+            var token = ObjectFactory.GetInstance<AcceptOperationUserToken>();
             token.TokenId = tokenId;
 
             return token;
