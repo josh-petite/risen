@@ -422,25 +422,20 @@ namespace Risen.Server.Tcp
         {
             var receiveSendToken = receiveSendEventArgs.GetDataHoldingUserToken();
 
-            receiveSendToken.SendBytesRemainingCount = receiveSendToken.SendBytesRemainingCount - receiveSendEventArgs.BytesTransferred;
-            receiveSendToken.BytesSentAlreadyCount += receiveSendEventArgs.BytesTransferred;
-
             if (receiveSendEventArgs.SocketError == SocketError.Success)
             {
+                receiveSendToken.SendBytesRemainingCount = receiveSendToken.SendBytesRemainingCount - receiveSendEventArgs.BytesTransferred;
+
                 if (receiveSendToken.SendBytesRemainingCount == 0)
                     StartReceive(receiveSendEventArgs);
                 else
                 {
-                    //If some of the bytes in the message have NOT been sent,
-                    //then we will need to post another send operation. So let's loop back to StartSend().
+                    receiveSendToken.BytesSentAlreadyCount += receiveSendEventArgs.BytesTransferred;
                     StartSend(receiveSendEventArgs);
                 }
             }
             else
             {
-                //If we are in this else-statement, there was a socket error.
-                //In this example we'll just close the socket if there was a socket error
-                //when receiving data from the client.
                 receiveSendToken.Reset();
                 CloseClientSocket(receiveSendEventArgs);
             }
