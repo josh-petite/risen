@@ -30,16 +30,11 @@ namespace Risen.Client.Tcp
             Program.TraceListener.WriteLine(string.Format("Message: {0} - Bytes: {1} - Prepared Message: {2}",
                                                           message,
                                                           preparedMessage.Aggregate(string.Empty, (current, t) => current + t),
-                                                          ReverseParseMessage(preparedMessage)));
+                                                          BitConverter.ToString(preparedMessage)));
 
             stream.Write(preparedMessage, 0, preparedMessage.Length);
         }
-
-        private string ReverseParseMessage(byte[] preparedMessage)
-        {
-            return BitConverter.ToString(preparedMessage);
-        }
-
+        
         private byte[] PrepareMessage(string message)
         {
             var messageInBytes = Encoding.Default.GetBytes(message);

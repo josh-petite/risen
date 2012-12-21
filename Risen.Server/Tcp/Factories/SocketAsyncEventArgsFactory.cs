@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using StructureMap;
 
 namespace Risen.Server.Tcp.Factories
 {
@@ -23,19 +22,17 @@ namespace Risen.Server.Tcp.Factories
 
         public SocketAsyncEventArgs GenerateAcceptSocketAsyncEventArgs(EventHandler<SocketAsyncEventArgs> completedAction, int tokenId)
         {
-            var args = ObjectFactory.GetInstance<SocketAsyncEventArgs>();
+            var args = new SocketAsyncEventArgs {UserToken = _acceptOperationUserTokenFactory.GenerateAcceptOperationUserToken(tokenId)};
             args.Completed += completedAction;
-            args.UserToken = _acceptOperationUserTokenFactory.GenerateAcceptOperationUserToken(tokenId);
 
             return args;
         }
 
         public SocketAsyncEventArgs GenerateReceiveSendSocketAsyncEventArgs(EventHandler<SocketAsyncEventArgs> completedAction)
         {
-            var args = ObjectFactory.GetInstance<SocketAsyncEventArgs>();
-
-            _bufferManager.SetBuffer(args);
+            var args = new SocketAsyncEventArgs();
             args.Completed += completedAction;
+            _bufferManager.SetBuffer(args);
 
             return args;
         }

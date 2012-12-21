@@ -20,21 +20,24 @@ namespace Risen.Server.Tcp
             _logger = logger;
         }
 
-        public int HandlePrefix(SocketAsyncEventArgs socketAsyncEventArgs, DataHoldingUserToken token, Int32 remainingBytesToProcess)
+        public int HandlePrefix(SocketAsyncEventArgs socketAsyncEventArgs, DataHoldingUserToken token, int remainingBytesToProcess)
         {
             if (token.ReceivedPrefixBytesDoneCount == 0)
             {
-                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug, string.Format("Prefix Handler: Creating prefix array: {0}", token.TokenId)));
+                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
+                                                       string.Format("PrefixHandler: Creating prefix array: {0} with byte array length of: {1}", token.TokenId,
+                                                                     token.ReceivePrefixLength)));
+
                 token.ByteArrayForPrefix = new byte[token.ReceivePrefixLength];
             }
 
             if (remainingBytesToProcess >= token.ReceivePrefixLength - token.ReceivedPrefixBytesDoneCount)
             {
                 _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
-                                                       string.Format("PrefixHandler, enough for prefix on Token Id: {0}. remainingBytesToProcess = {1}",
+                                                       string.Format("PrefixHandler: Enough for prefix on Token Id: {0}. remainingBytesToProcess = {1}",
                                                                      token.TokenId,
                                                                      remainingBytesToProcess)));
-                
+
                 Buffer.BlockCopy(socketAsyncEventArgs.Buffer,
                                  token.ReceiveMessageOffset - token.ReceivePrefixLength + token.ReceivedPrefixBytesDoneCount,
                                  token.ByteArrayForPrefix,
@@ -50,7 +53,7 @@ namespace Risen.Server.Tcp
             else
             {
                 _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Warning,
-                                                       string.Format("PrefixHandler, NOT all of prefix on Token Id: {0}. remainingBytesToProcess = {1}",
+                                                       string.Format("PrefixHandler: NOT all of prefix on Token Id: {0}. remainingBytesToProcess = {1}",
                                                                      token.TokenId,
                                                                      remainingBytesToProcess)));
                 
@@ -77,7 +80,7 @@ namespace Risen.Server.Tcp
         private void LogPrefixDetails(DataHoldingUserToken receiveSendToken)
         {
             var sb = new StringBuilder(receiveSendToken.ByteArrayForPrefix.Length);
-            sb.Append(string.Format("Token Id: {0}. {1} bytes in prefix:", receiveSendToken.TokenId, receiveSendToken.ReceivePrefixLength));
+            sb.Append(string.Format("PrefixHandler: Token Id: {0}. {1} bytes in prefix:", receiveSendToken.TokenId, receiveSendToken.ReceivePrefixLength));
 
             foreach (byte theByte in receiveSendToken.ByteArrayForPrefix)
                 sb.Append(" " + theByte);

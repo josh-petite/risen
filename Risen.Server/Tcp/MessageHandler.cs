@@ -27,7 +27,7 @@ namespace Risen.Server.Tcp
             if (dataHoldingUserToken.ReceivedMessageBytesDoneCount == 0)
             {
                 _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
-                                                       string.Format("Message Handler: Creating Receive Array on Id: {0}", dataHoldingUserToken.TokenId)));
+                                                       string.Format("MessageHandler: Creating Receive Array on Id: {0}", dataHoldingUserToken.TokenId)));
 
                 dataHoldingUserToken.DataHolder.DataMessageReceived = new Byte[dataHoldingUserToken.LengthOfCurrentIncomingMessage];
             }
