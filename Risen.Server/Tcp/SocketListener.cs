@@ -58,9 +58,11 @@ namespace Risen.Server.Tcp
 
         public void Init()
         {
+            _logger.Enable(false);
             InitializeBufferManager();
             InitializeAcceptEventArgsPool();
             InitializeSendReceiveEventArgsPool();
+            _logger.Enable(true);
         }
 
         private void InitializeBufferManager()

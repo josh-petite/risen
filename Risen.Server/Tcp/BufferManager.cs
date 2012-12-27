@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Sockets;
+using Risen.Server.Msmq;
 
 namespace Risen.Server.Tcp
 {
@@ -11,6 +12,7 @@ namespace Risen.Server.Tcp
 
     public class BufferManager : IBufferManager
     {
+        private readonly ILogger _logger;
         // This class creates a single large buffer which can be divided up
         // and assigned to SocketAsyncEventArgs objects for use with each
         // socket I/O operation.
@@ -27,8 +29,9 @@ namespace Risen.Server.Tcp
         private int _currentIndex;
         private readonly int _bufferBytesAllocatedForEachSaea;
 
-        public BufferManager(IServerConfiguration configuration)
+        public BufferManager(IServerConfiguration configuration, ILogger logger)
         {
+            _logger = logger;
             _totalBytesInBufferBlock = configuration.GetTotalBytesRequiredForInitialBufferConfiguration();
             _currentIndex = 0;
             _bufferBytesAllocatedForEachSaea = configuration.GetTotalBufferSize();
@@ -64,8 +67,10 @@ namespace Risen.Server.Tcp
                 if ((_totalBytesInBufferBlock - _bufferBytesAllocatedForEachSaea) < _currentIndex)
                     return false;
 
-                args.SetBuffer(_bufferBlock, _currentIndex, _bufferBytesAllocatedForEachSaea); 
+                args.SetBuffer(_bufferBlock, _currentIndex, _bufferBytesAllocatedForEachSaea);
+                _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug, string.Format("SetBuffer: Current Index Value Before Incrementation: {0}", _currentIndex));
                 _currentIndex += _bufferBytesAllocatedForEachSaea;
+                _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug, string.Format("SetBuffer: Current Index Value After Incrementation: {0}", _currentIndex));
             }
 
             return true;
