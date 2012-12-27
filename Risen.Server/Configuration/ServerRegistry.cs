@@ -26,6 +26,7 @@ namespace Risen.Server.Configuration
 
                                                  r.For<ILogger>().Singleton().Use<Logger>();
                                                  r.For<IBufferManager>().Singleton().Use<BufferManager>();
+                                                 r.For<ILogMessageQueue>().Singleton().Use<LogMessageQueue>();
                                              });
             }
         }

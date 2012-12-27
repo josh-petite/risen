@@ -1,6 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Threading;
 using Risen.Server.Tcp.Factories;
+using StructureMap;
 
 namespace Risen.Server.Tcp.Tokens
 {
@@ -20,15 +21,10 @@ namespace Risen.Server.Tcp.Tokens
 
         public Mediator Mediator { get; set; }
         public DataHolder DataHolder { get; set; }
-        public int BufferReceiveOffset { get; set; }
-        public int PermanentReceiveMessageOffset { get; set; }
+        public int BufferOffsetReceive { get; set; }
+        public int CachedReceiveMessageOffset { get; set; }
         public int BufferOffsetSend { get; set; }
         public int LengthOfCurrentIncomingMessage { get; set; }
-
-        //receiveMessageOffset is used to mark the byte position where the message
-        //begins in the receive buffer. This value can sometimes be out of
-        //bounds for the data stream just received. But, if it is out of bounds, the
-        //code will not access it.
         public int ReceiveMessageOffset { get; set; }
         public byte[] ByteArrayForPrefix { get; set; }
         public int ReceivePrefixLength { get; set; }
@@ -55,21 +51,20 @@ namespace Risen.Server.Tcp.Tokens
 
         public void CreateNewDataHolder()
         {
-            DataHolder = new DataHolder();
+            DataHolder = ObjectFactory.GetInstance<DataHolder>();
         }
 
         public void Init()
         {
             Mediator = _mediatorFactory.GenerateMediator(SocketAsyncEventArgs);
-            BufferReceiveOffset = SocketAsyncEventArgs.Offset;
+            BufferOffsetReceive = SocketAsyncEventArgs.Offset;
             BufferOffsetSend = SocketAsyncEventArgs.Offset + _serverConfiguration.BufferSize;
             ReceivePrefixLength = _serverConfiguration.ReceivePrefixLength;
             SendPrefixLength = _serverConfiguration.SendPrefixLength;
-            ReceiveMessageOffset = BufferReceiveOffset + ReceivePrefixLength;
-            PermanentReceiveMessageOffset = ReceiveMessageOffset;
+            ReceiveMessageOffset = BufferOffsetReceive + ReceivePrefixLength;
+            CachedReceiveMessageOffset = ReceiveMessageOffset;
         }
 
-        // Used to create sessionId variable in GetDataHoldingUserToken. Called in ProcessAccept().
         public void CreateSessionId(ref long sessionId)
         {
             SessionId = Interlocked.Increment(ref sessionId);
@@ -80,7 +75,7 @@ namespace Risen.Server.Tcp.Tokens
             ReceivedPrefixBytesDoneCount = 0;
             ReceivedMessageBytesDoneCount = 0;
             RecPrefixBytesDoneThisOperation = 0;
-            ReceiveMessageOffset = PermanentReceiveMessageOffset;
+            ReceiveMessageOffset = CachedReceiveMessageOffset;
         }
     }
 }

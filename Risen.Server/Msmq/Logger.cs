@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Messaging;
+using Risen.Server.Tcp;
 
 namespace Risen.Server.Msmq
 {
@@ -15,9 +16,10 @@ namespace Risen.Server.Msmq
         private readonly ILogMessageQueue _logMessageQueue;
         private bool _isEnabled;
 
-        public Logger(ILogMessageQueue logMessageQueue)
+        public Logger(ILogMessageQueue logMessageQueue, IServerConfiguration serverConfiguration)
         {
             _logMessageQueue = logMessageQueue;
+            _isEnabled = serverConfiguration.IsLoggerEnabled;
         }
 
         public void QueueMessage(LogCategory logCategory, LogSeverity logSeverity, string message)

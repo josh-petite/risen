@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net.Sockets;
-using System.Text;
+﻿using System.Net.Sockets;
 
 namespace Risen.Server.Tcp
 {
@@ -20,7 +18,6 @@ namespace Risen.Server.Tcp
         public void HandleData(DataHolder incomingDataHolder)
         {
             _dataHolder = IncomingDataPreparer.HandleReceivedData(incomingDataHolder, SocketAsyncEventArgs);
-            Console.WriteLine("Data Received On Server: {0}", Encoding.Default.GetString(_dataHolder.DataMessageReceived));
         }
 
         public void PrepareOutgoingData()

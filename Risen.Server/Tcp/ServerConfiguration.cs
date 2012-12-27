@@ -16,6 +16,7 @@ namespace Risen.Server.Tcp
         int SendPrefixLength { get; }
         int MainTransmissionId { get; }
         string LogQueue { get; }
+        bool IsLoggerEnabled { get; }
 
         int GetTotalBytesRequiredForInitialBufferConfiguration();
         int GetTotalBufferSize();

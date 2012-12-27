@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using Risen.Server.Extentions;
 using Risen.Server.Msmq;
@@ -35,7 +36,7 @@ namespace Risen.Server.Tcp
 
         public static int MaxSimultaneousClientsThatWereConnected = 0;
         public long MainSessionId = 1000;
-        public const long PacketSizeThreshhold = 50000;
+        public const long PacketSizeThreshhold = 5000;
 
         public SocketListener(IServerConfiguration serverConfiguration, IBufferManager bufferManager, IPrefixHandler prefixHandler,
                               IMessageHandler messageHandler, ILogger logger, IDataHoldingUserTokenFactory dataHoldingUserTokenFactory,
@@ -58,11 +59,9 @@ namespace Risen.Server.Tcp
 
         public void Init()
         {
-            _logger.Enable(false);
             InitializeBufferManager();
             InitializeAcceptEventArgsPool();
             InitializeSendReceiveEventArgsPool();
-            _logger.Enable(true);
         }
 
         private void InitializeBufferManager()
@@ -226,7 +225,7 @@ namespace Risen.Server.Tcp
                     throw new ArgumentException("The last operation completed on the socket was not a receive or send");
             }
         }
-
+        
         private void HandleBadAccept(SocketAsyncEventArgs acceptEventArgs)
         {
             _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Error,
@@ -265,8 +264,8 @@ namespace Risen.Server.Tcp
         private void StartReceive(SocketAsyncEventArgs receiveSendEventArgs)
         {
             var dataHoldingUserToken = (DataHoldingUserToken) receiveSendEventArgs.UserToken;
-            receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferReceiveOffset, _serverConfiguration.BufferSize);
-
+            receiveSendEventArgs.SetBuffer(dataHoldingUserToken.BufferOffsetReceive, _serverConfiguration.BufferSize);
+            
             var willRaiseEvent = receiveSendEventArgs.AcceptSocket.ReceiveAsync(receiveSendEventArgs);
 
             // willRaiseEvent will return as false if I/O operation completed synchronously
@@ -280,16 +279,15 @@ namespace Risen.Server.Tcp
         // This method is invoked when an asynchronous receive operation completes.  
         // If the remote host closed the connection, then the socket is closed.   
         // If data was received then the data is echoed back to the client. 
-        // 
         private void ProcessReceive(SocketAsyncEventArgs receiveSendEventArgs)
         {
-            _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Error, string.Format("ProcessReceive: Bytes Transferred: {0}", receiveSendEventArgs.BytesTransferred));
+            _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug, string.Format("ProcessReceive: Bytes Transferred: {0}", receiveSendEventArgs.BytesTransferred));
             var dataHoldingUserToken = receiveSendEventArgs.GetDataHoldingUserToken();
-            
-            if (SocketIsInInvalidState(receiveSendEventArgs, dataHoldingUserToken)) 
+
+            if (SocketIsInInvalidState(receiveSendEventArgs, dataHoldingUserToken))
                 return;
 
-            if (ClientIsFinishedSendingData(receiveSendEventArgs, dataHoldingUserToken)) 
+            if (ClientIsFinishedSendingData(receiveSendEventArgs, dataHoldingUserToken))
                 return;
 
             var remainingBytesToProcess = receiveSendEventArgs.BytesTransferred;
@@ -312,9 +310,9 @@ namespace Risen.Server.Tcp
             var output = new byte[receiveSendEventArgs.BytesTransferred];
 
             for (int i = 0; i < receiveSendEventArgs.BytesTransferred; i++)
-                output[i] = receiveSendEventArgs.Buffer[dataHoldingUserToken.BufferReceiveOffset + i];
+                output[i] = receiveSendEventArgs.Buffer[dataHoldingUserToken.BufferOffsetReceive + i];
 
-            _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Error,
+            _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug,
                                  string.Format("{0}: Bytes Received: {1}", callingFunction, BitConverter.ToString(output)));
         }
 
@@ -324,10 +322,10 @@ namespace Risen.Server.Tcp
 
             if (incomingTcpMessageIsReady)
             {
-                dataToken.Mediator.HandleData(dataToken.DataHolder);
+                _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug,
+                                     string.Format("ProcessReceivedMessage: Message in DataHolder: {0}", Encoding.ASCII.GetString(dataToken.DataHolder.DataMessageReceived)));
 
-                // at this point, use the data
-                
+                dataToken.Mediator.HandleData(dataToken.DataHolder); // at this point, use the data
                 dataToken.CreateNewDataHolder();
                 dataToken.Reset();
                 dataToken.Mediator.PrepareOutgoingData();
@@ -335,7 +333,7 @@ namespace Risen.Server.Tcp
             }
             else
             {
-                dataToken.ReceiveMessageOffset = dataToken.BufferReceiveOffset;
+                dataToken.ReceiveMessageOffset = dataToken.BufferOffsetReceive;
                 dataToken.RecPrefixBytesDoneThisOperation = 0;
                 StartReceive(receiveSendEventArgs);
             }
@@ -429,6 +427,7 @@ namespace Risen.Server.Tcp
 
             if (receiveSendEventArgs.SocketError == SocketError.Success)
             {
+                _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug, string.Format("ProcessSend: Data sent to client."));
                 receiveSendToken.SendBytesRemainingCount = receiveSendToken.SendBytesRemainingCount - receiveSendEventArgs.BytesTransferred;
 
                 if (receiveSendToken.SendBytesRemainingCount == 0)
