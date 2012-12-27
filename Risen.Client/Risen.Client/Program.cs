@@ -11,13 +11,10 @@ namespace Risen.Client
         private static void Main(string[] args)
         {
             Debug.Listeners.Add(TraceListener);
-
             ClientRegistry.Configure();
 
             using (var game = ObjectFactory.GetInstance<IGameMain>())
                 game.Run();
-
-            Debug.Flush();
         }
     }
 }

@@ -42,8 +42,8 @@ namespace Risen.Server.Tcp
         {
             var receiveToken = socketAsyncEventArgs.GetDataHoldingUserToken();
 
-            _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
-                                                   string.Format("IncomingDataPreparer, HandleReceiveData() - Token Id: {0}", receiveToken.TokenId)));
+            _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug,
+                                 string.Format("IncomingDataPreparer, HandleReceiveData() - Token Id: {0}", receiveToken.TokenId));
 
             _dataHolder = incomingDataHolder;
             _dataHolder.SessionId = receiveToken.SessionId;

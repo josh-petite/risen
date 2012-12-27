@@ -31,8 +31,8 @@ namespace Risen.Server.Tcp.Factories
         public SocketAsyncEventArgs GenerateReceiveSendSocketAsyncEventArgs(EventHandler<SocketAsyncEventArgs> completedAction)
         {
             var args = new SocketAsyncEventArgs();
-            args.Completed += completedAction;
             _bufferManager.SetBuffer(args);
+            args.Completed += completedAction;
 
             return args;
         }

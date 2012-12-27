@@ -26,8 +26,8 @@ namespace Risen.Server.Tcp
             // Create the array where we'll store the complete message, if it has not been created on a previous receive op.
             if (dataHoldingUserToken.ReceivedMessageBytesDoneCount == 0)
             {
-                _logger.QueueMessage(LogMessage.Create(LogCategory.TcpServer, LogSeverity.Debug,
-                                                       string.Format("MessageHandler: Creating Receive Array on Id: {0}", dataHoldingUserToken.TokenId)));
+                _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug,
+                                     string.Format("MessageHandler: Creating Receive Array on Id: {0}", dataHoldingUserToken.TokenId));
 
                 dataHoldingUserToken.DataHolder.DataMessageReceived = new Byte[dataHoldingUserToken.LengthOfCurrentIncomingMessage];
             }

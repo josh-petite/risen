@@ -33,6 +33,8 @@ namespace Risen.Client.Tcp
                                                           BitConverter.ToString(preparedMessage)));
 
             stream.Write(preparedMessage, 0, preparedMessage.Length);
+
+            Program.TraceListener.Flush();
         }
         
         private byte[] PrepareMessage(string message)

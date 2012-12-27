@@ -5,7 +5,7 @@ namespace Risen.Server.Msmq
 {
     public interface ILogger
     {
-        void QueueMessage(LogMessage logMessage);
+        void QueueMessage(LogCategory logCategory, LogSeverity logSeverity, string message);
     }
 
     public class Logger : ILogger
@@ -18,9 +18,9 @@ namespace Risen.Server.Msmq
             _logMessageQueue = logMessageQueue;
         }
 
-        public void QueueMessage(LogMessage logMessage)
+        public void QueueMessage(LogCategory logCategory, LogSeverity logSeverity, string message)
         {
-         
+            var logMessage = LogMessage.Create(logCategory, logSeverity, message);
             Console.WriteLine(logMessage.ToString());
 
             lock (_mutex)
