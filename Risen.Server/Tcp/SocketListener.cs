@@ -215,8 +215,12 @@ namespace Risen.Server.Tcp
             switch (socketAsyncEventArgs.LastOperation)
             {
                 case SocketAsyncOperation.Receive:
-                    lock(Mutex)
+                    //lock (Mutex)
+                    //{
+                        Console.WriteLine("*** SendReceiveCompleted: Entering Lock...");
                         EvaluateIncomingMessage(socketAsyncEventArgs);
+                        Console.WriteLine("*** SendReceiveCompleted: Exiting Lock...");
+                    //}
                     break;
 
                 case SocketAsyncOperation.Send:
@@ -244,17 +248,25 @@ namespace Risen.Server.Tcp
             if (messageByteLength < incomingMessage.Length)
             {
                 _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Error, "*** Multiple messages detected!! Parsing... ***");
-                
-                while (incomingMessage.Length > 0)
+                LogEventArgsBuffer("EvaluateIncomingMessage", socketAsyncEventArgs, dataHoldingUserToken);
+                var currentMessageOffset = 0;
+
+                while (incomingMessage.Length > _serverConfiguration.ReceivePrefixLength)
                 {
-                    ClearCurrentBufferMessageBlock(socketAsyncEventArgs, incomingMessage.Length);
-                    StageMessage(socketAsyncEventArgs, messageByteLength, incomingMessage);
+                    Console.WriteLine("* Looping *");
+                    //ClearCurrentBufferMessageBlock(socketAsyncEventArgs, incomingMessage.Length);
+                    //StageMessage(socketAsyncEventArgs, messageByteLength, incomingMessage);
+                    socketAsyncEventArgs.SetBuffer(dataHoldingUserToken.BufferOffsetReceive + currentMessageOffset, _serverConfiguration.BufferSize - messageByteLength);
                     ProcessReceive(socketAsyncEventArgs);
                     incomingMessage = incomingMessage.Skip(messageByteLength).ToArray();
+                    currentMessageOffset += messageByteLength;
                 }
             }
             else
+            {
+                _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug, "Regular ProcessReceive");
                 ProcessReceive(socketAsyncEventArgs);
+            }
         }
 
         private void StageMessage(SocketAsyncEventArgs socketAsyncEventArgs, int messageByteLength, byte[] incomingMessage)
@@ -328,8 +340,8 @@ namespace Risen.Server.Tcp
         // If data was received then the data is echoed back to the client. 
         private void ProcessReceive(SocketAsyncEventArgs receiveSendEventArgs)
         {
-            _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug, string.Format("ProcessReceive: Bytes Transferred: {0}", receiveSendEventArgs.BytesTransferred));
             var dataHoldingUserToken = receiveSendEventArgs.GetDataHoldingUserToken();
+            LogEventArgsBuffer("****** ProcessReceive", receiveSendEventArgs, dataHoldingUserToken);
 
             if (SocketIsInInvalidState(receiveSendEventArgs, dataHoldingUserToken))
                 return;
@@ -355,6 +367,8 @@ namespace Risen.Server.Tcp
         {
             var prefix = new ArraySegment<byte>(receiveSendEventArgs.Buffer, receiveSendEventArgs.Offset, _serverConfiguration.ReceivePrefixLength).ToArray();
             var messageLength = BitConverter.ToInt32(prefix, 0);
+            _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug,
+                                 string.Format("GetRemainingBytesToProcess: Prefix Length:{0} MessageLength:{1}", prefix.Length, messageLength));
             return prefix.Length + messageLength;
         }
 
@@ -381,8 +395,25 @@ namespace Risen.Server.Tcp
             }
         }
 
+        private void LogEventArgsBuffer(string callingFunction, SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken)
+        {
+            var output = new byte[receiveSendEventArgs.BytesTransferred];
+
+            for (int i = 0; i < receiveSendEventArgs.BytesTransferred; i++)
+                output[i] = receiveSendEventArgs.Buffer[dataHoldingUserToken.BufferOffsetReceive + i];
+
+            _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Warning, string.Format("{0}: Bytes Received: {1}", callingFunction, BitConverter.ToString(output)));
+        }
+
         private void StartSend(SocketAsyncEventArgs receiveSendEventArgs)
         {
+            //while (Monitor.TryEnter(receiveSendEventArgs, 0) == false)
+            //{
+            //    Console.WriteLine("Sleeping at: {0}", DateTime.Now.TimeOfDay);
+            //    Thread.Sleep(25);
+            //}
+            
+            //Console.WriteLine("*** Passed monitor try enter for start send! ***");
             var dataHoldingUserToken = receiveSendEventArgs.GetDataHoldingUserToken();
 
             if (dataHoldingUserToken.SendBytesRemainingCount <= _serverConfiguration.BufferSize)

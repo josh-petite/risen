@@ -24,11 +24,10 @@ namespace Risen.Server.Tcp
         {
             if (token.ReceivedPrefixBytesDoneCount == 0)
             {
+                token.ByteArrayForPrefix = new byte[token.ReceivePrefixLength];
                 _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug,
                                      string.Format("PrefixHandler: Creating prefix array: {0} with byte array length of: {1}", token.TokenId,
                                                    token.ReceivePrefixLength));
-
-                token.ByteArrayForPrefix = new byte[token.ReceivePrefixLength];
             }
 
             if (remainingBytesToProcess >= token.ReceivePrefixLength - token.ReceivedPrefixBytesDoneCount)

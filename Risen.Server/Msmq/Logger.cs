@@ -37,7 +37,18 @@ namespace Risen.Server.Msmq
 
         private void EvaluateConsoleColor(LogSeverity logSeverity)
         {
-            Console.ForegroundColor = logSeverity == LogSeverity.Error ? ConsoleColor.Red : ConsoleColor.White;
+            switch (logSeverity)
+            {
+                case LogSeverity.Error:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                case LogSeverity.Warning:
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    break;
+                default:
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
+            }
         }
 
         public void Enable(bool isEnabled)
