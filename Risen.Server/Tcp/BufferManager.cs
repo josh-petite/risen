@@ -13,7 +13,7 @@ namespace Risen.Server.Tcp
     public class BufferManager : IBufferManager
     {
         // This class creates a single large buffer which can be divided up
-        // and assigned to SocketAsyncEventArgs objects for use with each
+        // and assigned to SocketAsyncEvent objects for use with each
         // socket I/O operation.
         // This enables buffers to be easily reused and guards against
         // fragmenting heap memory.
@@ -45,7 +45,7 @@ namespace Risen.Server.Tcp
 
         // Divide that one large buffer block out to each SocketAsyncEventArg object.
         // Assign a buffer space from the buffer block to the
-        // specified SocketAsyncEventArgs object.
+        // specified SocketAsyncEvent object.
         //
         // returns true if the buffer was successfully set, else false
         public bool SetBuffer(SocketAsyncEventArgs args)

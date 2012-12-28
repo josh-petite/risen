@@ -1,19 +1,18 @@
-﻿using System.Net.Sockets;
-using StructureMap;
+﻿using StructureMap;
 
 namespace Risen.Server.Tcp.Factories
 {
     public interface IIncomingDataPreparerFactory
     {
-        IIncomingDataPreparer GenerateIncomingDataPreparer(SocketAsyncEventArgs eventArgs);
+        IIncomingDataPreparer GenerateIncomingDataPreparer(SocketAsyncEvent socketAsyncEvent);
     }
 
     public class IncomingDataPreparerFactory : IIncomingDataPreparerFactory
     {
-        public IIncomingDataPreparer GenerateIncomingDataPreparer(SocketAsyncEventArgs eventArgs)
+        public IIncomingDataPreparer GenerateIncomingDataPreparer(SocketAsyncEvent socketAsyncEvent)
         {
             var dataPreparer = ObjectFactory.GetInstance<IIncomingDataPreparer>();
-            dataPreparer.SocketAsyncEventArgs = eventArgs;
+            dataPreparer.SocketAsyncEvent = socketAsyncEvent;
 
             return dataPreparer;
         }

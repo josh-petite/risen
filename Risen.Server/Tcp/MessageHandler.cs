@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 using Risen.Server.Msmq;
 using Risen.Server.Tcp.Tokens;
 
@@ -7,7 +6,7 @@ namespace Risen.Server.Tcp
 {
     public interface IMessageHandler
     {
-        bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess);
+        bool HandleMessage(SocketAsyncEvent socketAsyncEvent, DataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess);
     }
 
     public class MessageHandler : IMessageHandler
@@ -19,7 +18,7 @@ namespace Risen.Server.Tcp
             _logger = logger;
         }
 
-        public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess)
+        public bool HandleMessage(SocketAsyncEvent socketAsyncEvent, DataHoldingUserToken dataHoldingUserToken, int remainingBytesToProcess)
         {
             var incomingTcpMessageIsReady = false;
 
@@ -46,7 +45,7 @@ namespace Risen.Server.Tcp
 
                 // Write/append the bytes received to the byte array in the
                 // DataHolder object that we are using to store our data.
-                Buffer.BlockCopy(receiveSendEventArgs.Buffer,
+                Buffer.BlockCopy(socketAsyncEvent.Buffer,
                                  dataHoldingUserToken.ReceiveMessageOffset,
                                  dataHoldingUserToken.DataHolder.DataMessageReceived,
                                  dataHoldingUserToken.ReceivedMessageBytesDoneCount,
@@ -59,7 +58,7 @@ namespace Risen.Server.Tcp
                 // If we are inside this else-statement, then that means that we need another receive op. We still haven't got the whole message,
                 // even though we have examined all the data that was received. Not a problem. In SocketListener.ProcessReceive we will just call
                 // StartReceive to do another receive op to receive more data.
-                Buffer.BlockCopy(receiveSendEventArgs.Buffer,
+                Buffer.BlockCopy(socketAsyncEvent.Buffer,
                                  dataHoldingUserToken.ReceiveMessageOffset,
                                  dataHoldingUserToken.DataHolder.DataMessageReceived,
                                  dataHoldingUserToken.ReceivedMessageBytesDoneCount,

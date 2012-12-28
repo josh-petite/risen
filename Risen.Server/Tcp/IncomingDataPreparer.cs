@@ -1,15 +1,15 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Risen.Server.Extentions;
 using Risen.Server.Msmq;
+using Risen.Server.Tcp.Tokens;
 
 namespace Risen.Server.Tcp
 {
     public interface IIncomingDataPreparer
     {
-        SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
-        DataHolder HandleReceivedData(DataHolder incomingDataHolder, SocketAsyncEventArgs socketAsyncEventArgs);
+        SocketAsyncEvent SocketAsyncEvent { get; set; }
+        DataHolder HandleReceivedData(DataHolder incomingDataHolder, SocketAsyncEvent socketAsyncEventArgs);
     }
 
     public class IncomingDataPreparer : IIncomingDataPreparer
@@ -24,7 +24,7 @@ namespace Risen.Server.Tcp
             _logger = logger;
         }
 
-        public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
+        public SocketAsyncEvent SocketAsyncEvent { get; set; }
 
         private int GetReceivedTransmissionId()
         {
@@ -35,12 +35,12 @@ namespace Risen.Server.Tcp
 
         private EndPoint GetRemoteEndpoint()
         {
-            return SocketAsyncEventArgs.AcceptSocket.RemoteEndPoint;
+            return SocketAsyncEvent.AcceptSocket.RemoteEndPoint;
         }
 
-        public DataHolder HandleReceivedData(DataHolder incomingDataHolder, SocketAsyncEventArgs socketAsyncEventArgs)
+        public DataHolder HandleReceivedData(DataHolder incomingDataHolder, SocketAsyncEvent socketAsyncEventArgs)
         {
-            var receiveToken = socketAsyncEventArgs.GetDataHoldingUserToken();
+            var receiveToken = (DataHoldingUserToken)socketAsyncEventArgs.Token;
 
             _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug,
                                  string.Format("IncomingDataPreparer: HandleReceiveData() - Token Id: {0}", receiveToken.TokenId));

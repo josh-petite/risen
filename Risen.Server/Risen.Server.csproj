@@ -87,6 +87,7 @@
     <Compile Include="Tcp\AsyncTcpServer.cs" />
     <Compile Include="Tcp\BufferManager.cs" />
     <Compile Include="Tcp\DataHolder.cs" />
+    <Compile Include="Tcp\EventArgs\ProcessReceiveEventArgs.cs" />
     <Compile Include="Tcp\Factories\AcceptOperationUserTokenFactory.cs" />
     <Compile Include="Tcp\Factories\DataHoldingUserTokenFactory.cs" />
     <Compile Include="Tcp\Factories\IncomingDataPreparerFactory.cs" />
@@ -96,11 +97,13 @@
     <Compile Include="Tcp\IncomingDataPreparer.cs" />
     <Compile Include="Tcp\Mediator.cs" />
     <Compile Include="Tcp\MessageHandler.cs" />
+    <Compile Include="Tcp\OutboundQueue.cs" />
     <Compile Include="Tcp\OutgoingDataPreparer.cs" />
     <Compile Include="Tcp\PrefixHandler.cs" />
     <Compile Include="Tcp\ServerConfiguration.cs" />
     <Compile Include="Tcp\SocketAsyncEventArgsPool.cs" />
     <Compile Include="Tcp\SocketListener.cs" />
+    <Compile Include="Tcp\TcpListenerServer.cs" />
     <Compile Include="Tcp\Tokens\AcceptOperationUserToken.cs" />
     <Compile Include="Tcp\Tokens\DataHoldingUserToken.cs" />
     <Compile Include="Utility\Point.cs" />

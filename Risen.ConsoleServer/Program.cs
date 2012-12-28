@@ -16,11 +16,16 @@ namespace Risen.ConsoleServer
             //server.Start();
 
             // SocketAsyncEventArgsPool server
-            var server = ObjectFactory.GetInstance<ISocketListener>();
+            //var server = ObjectFactory.GetInstance<ISocketListener>();
             
-            Process.GetCurrentProcess().WaitForExit();
+            //Process.GetCurrentProcess().WaitForExit();
 
-            server.CleanUpOnExit();
+            //server.CleanUpOnExit();
+
+            var server = ObjectFactory.GetInstance<TcpListenerServer>();
+            server.Start();
+
+            Process.GetCurrentProcess().WaitForExit();
         }
     }
 }

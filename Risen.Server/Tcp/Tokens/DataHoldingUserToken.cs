@@ -1,5 +1,4 @@
-﻿using System.Net.Sockets;
-using System.Threading;
+﻿using System.Threading;
 using Risen.Server.Tcp.Factories;
 using StructureMap;
 
@@ -47,7 +46,7 @@ namespace Risen.Server.Tcp.Tokens
         //set up your app to allow it.
         public long SessionId { get; private set; }
         public int TokenId { get; set; }
-        public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
+        public SocketAsyncEvent SocketAsyncEvent { get; set; }
 
         public void CreateNewDataHolder()
         {
@@ -56,9 +55,9 @@ namespace Risen.Server.Tcp.Tokens
 
         public void Init()
         {
-            Mediator = _mediatorFactory.GenerateMediator(SocketAsyncEventArgs);
-            BufferOffsetReceive = SocketAsyncEventArgs.Offset;
-            BufferOffsetSend = SocketAsyncEventArgs.Offset + _serverConfiguration.BufferSize;
+            Mediator = _mediatorFactory.GenerateMediator(SocketAsyncEvent);
+            BufferOffsetReceive = SocketAsyncEvent.Offset;
+            BufferOffsetSend = SocketAsyncEvent.Offset + _serverConfiguration.BufferSize;
             ReceivePrefixLength = _serverConfiguration.ReceivePrefixLength;
             SendPrefixLength = _serverConfiguration.SendPrefixLength;
             ReceiveMessageOffset = BufferOffsetReceive + ReceivePrefixLength;

@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-
-namespace Risen.Server.Tcp
+﻿namespace Risen.Server.Tcp
 {
     public class Mediator
     {
@@ -13,21 +11,21 @@ namespace Risen.Server.Tcp
         }
 
         public IIncomingDataPreparer IncomingDataPreparer { get; set; }
-        public SocketAsyncEventArgs SocketAsyncEventArgs { get; set; }
+        public SocketAsyncEvent SocketAsyncEvent { get; set; }
 
         public void HandleData(DataHolder incomingDataHolder)
         {
-            _dataHolder = IncomingDataPreparer.HandleReceivedData(incomingDataHolder, SocketAsyncEventArgs);
+            _dataHolder = IncomingDataPreparer.HandleReceivedData(incomingDataHolder, SocketAsyncEvent);
         }
 
         public void PrepareOutgoingData()
         {
-            _outgoingDataPreparer.PrepareOutgoingData(SocketAsyncEventArgs, _dataHolder);
+            _outgoingDataPreparer.PrepareOutgoingData(SocketAsyncEvent, _dataHolder);
         }
 
-        public SocketAsyncEventArgs GiveBack()
+        public SocketAsyncEvent GiveBack()
         {
-            return SocketAsyncEventArgs;
+            return SocketAsyncEvent;
         }
     }
 }

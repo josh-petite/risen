@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Net.Sockets;
 using Risen.Server.Extentions;
+using Risen.Server.Tcp.Tokens;
 
 namespace Risen.Server.Tcp
 {
     public interface IOutgoingDataPreparer
     {
-        void PrepareOutgoingData(SocketAsyncEventArgs e, DataHolder handledDataHolder);
+        void PrepareOutgoingData(SocketAsyncEvent e, DataHolder handledDataHolder);
     }
 
     public class OutgoingDataPreparer : IOutgoingDataPreparer
     {
         private DataHolder _dataHolder;
 
-        public void PrepareOutgoingData(SocketAsyncEventArgs e, DataHolder handledDataHolder)
+        public void PrepareOutgoingData(SocketAsyncEvent e, DataHolder handledDataHolder)
         {
-            var userToken = e.GetDataHoldingUserToken();
+            var userToken = (DataHoldingUserToken) e.Token;
             _dataHolder = handledDataHolder;
 
             //In this example code, we will send back the receivedTransMissionId,

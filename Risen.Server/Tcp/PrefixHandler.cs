@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 using System.Text;
 using Risen.Server.Msmq;
 using Risen.Server.Tcp.Tokens;
@@ -8,7 +7,7 @@ namespace Risen.Server.Tcp
 {
     public interface IPrefixHandler
     {
-        int HandlePrefix(SocketAsyncEventArgs socketAsyncEventArgs, DataHoldingUserToken token, int remainingBytesToProcess);
+        int HandlePrefix(SocketAsyncEvent socketAsyncEvent, DataHoldingUserToken token, int remainingBytesToProcess);
     }
 
     public class PrefixHandler : IPrefixHandler
@@ -20,7 +19,7 @@ namespace Risen.Server.Tcp
             _logger = logger;
         }
 
-        public int HandlePrefix(SocketAsyncEventArgs socketAsyncEventArgs, DataHoldingUserToken token, int remainingBytesToProcess)
+        public int HandlePrefix(SocketAsyncEvent socketAsyncEvent, DataHoldingUserToken token, int remainingBytesToProcess)
         {
             if (token.ReceivedPrefixBytesDoneCount == 0)
             {
@@ -37,7 +36,7 @@ namespace Risen.Server.Tcp
                                                    token.TokenId,
                                                    remainingBytesToProcess));
 
-                Buffer.BlockCopy(socketAsyncEventArgs.Buffer,
+                Buffer.BlockCopy(socketAsyncEvent.Buffer,
                                  token.ReceiveMessageOffset - token.ReceivePrefixLength + token.ReceivedPrefixBytesDoneCount,
                                  token.ByteArrayForPrefix,
                                  token.ReceivedPrefixBytesDoneCount,
@@ -56,7 +55,7 @@ namespace Risen.Server.Tcp
                                                                      token.TokenId,
                                                                      remainingBytesToProcess));
                 
-                Buffer.BlockCopy(socketAsyncEventArgs.Buffer,
+                Buffer.BlockCopy(socketAsyncEvent.Buffer,
                                  token.ReceiveMessageOffset - token.ReceivePrefixLength + token.ReceivedPrefixBytesDoneCount,
                                  token.ByteArrayForPrefix,
                                  token.ReceivedPrefixBytesDoneCount,

@@ -74,8 +74,8 @@ namespace Risen.Client
 
             if (newlyPressedKeys.Any())
             {
-                _socketClient.Send(newlyPressedKeys.Aggregate(string.Empty, (current, keyPressed) => current + keyPressed));
-                //_socketClient.Hammer();
+                //_socketClient.Send(newlyPressedKeys.Aggregate(string.Empty, (current, keyPressed) => current + keyPressed));
+                _socketClient.Hammer();
             }
 
             base.Update(gameTime);
