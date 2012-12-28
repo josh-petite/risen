@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -19,6 +20,8 @@ namespace Risen.Server.Tcp
 
     public class SocketListener : ISocketListener
     {
+        private static readonly object Mutex = new object();
+
         private int _numberOfAcceptedSockets;
         private readonly IBufferManager _bufferManager;
         private readonly IServerConfiguration _serverConfiguration;
@@ -212,8 +215,8 @@ namespace Risen.Server.Tcp
             switch (socketAsyncEventArgs.LastOperation)
             {
                 case SocketAsyncOperation.Receive:
-                    LogEventArgsBuffer("SendReceiveCompleted", socketAsyncEventArgs, (DataHoldingUserToken)socketAsyncEventArgs.UserToken);
-                    ProcessReceive(socketAsyncEventArgs);
+                    lock(Mutex)
+                        EvaluateIncomingMessage(socketAsyncEventArgs);
                     break;
 
                 case SocketAsyncOperation.Send:
@@ -225,7 +228,51 @@ namespace Risen.Server.Tcp
                     throw new ArgumentException("The last operation completed on the socket was not a receive or send");
             }
         }
-        
+
+        private void EvaluateIncomingMessage(SocketAsyncEventArgs socketAsyncEventArgs)
+        {
+            var dataHoldingUserToken = (DataHoldingUserToken) socketAsyncEventArgs.UserToken;
+            var incomingMessage = new byte[socketAsyncEventArgs.BytesTransferred];
+
+            for (int i = 0; i < socketAsyncEventArgs.BytesTransferred; i++)
+                incomingMessage[i] = socketAsyncEventArgs.Buffer[dataHoldingUserToken.BufferOffsetReceive + i];
+
+            var prefix = incomingMessage.Take(_serverConfiguration.ReceivePrefixLength).ToArray();
+            var messageLength = BitConverter.ToInt32(prefix, 0);
+            var messageByteLength = prefix.Length + messageLength;
+
+            if (messageByteLength < incomingMessage.Length)
+            {
+                _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Error, "*** Multiple messages detected!! Parsing... ***");
+                
+                while (incomingMessage.Length > 0)
+                {
+                    ClearCurrentBufferMessageBlock(socketAsyncEventArgs, incomingMessage.Length);
+                    StageMessage(socketAsyncEventArgs, messageByteLength, incomingMessage);
+                    ProcessReceive(socketAsyncEventArgs);
+                    incomingMessage = incomingMessage.Skip(messageByteLength).ToArray();
+                }
+            }
+            else
+                ProcessReceive(socketAsyncEventArgs);
+        }
+
+        private void StageMessage(SocketAsyncEventArgs socketAsyncEventArgs, int messageByteLength, byte[] incomingMessage)
+        {
+            var currentBuffer = socketAsyncEventArgs.Buffer;
+
+            for (int i = 0; i < messageByteLength; i++)
+                currentBuffer[socketAsyncEventArgs.Offset + i] = incomingMessage[i];
+        }
+
+        private void ClearCurrentBufferMessageBlock(SocketAsyncEventArgs socketAsyncEventArgs, int length)
+        {
+            var currentBuffer = socketAsyncEventArgs.Buffer;
+
+            for (int i = 0; i < length; i++)
+                currentBuffer[socketAsyncEventArgs.Offset + i] = 0;
+        }
+
         private void HandleBadAccept(SocketAsyncEventArgs acceptEventArgs)
         {
             _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Error,
@@ -290,9 +337,8 @@ namespace Risen.Server.Tcp
             if (ClientIsFinishedSendingData(receiveSendEventArgs, dataHoldingUserToken))
                 return;
 
-            var remainingBytesToProcess = receiveSendEventArgs.BytesTransferred;
-            LogEventArgsBuffer("ProcessReceive", receiveSendEventArgs, dataHoldingUserToken);
-
+            var remainingBytesToProcess = GetRemainingBytesToProcess(receiveSendEventArgs);
+            
             if (remainingBytesToProcess > PacketSizeThreshhold)
                 return;
 
@@ -305,15 +351,11 @@ namespace Risen.Server.Tcp
             ProcessReceivedMessage(receiveSendEventArgs, dataHoldingUserToken, remainingBytesToProcess);
         }
 
-        private void LogEventArgsBuffer(string callingFunction, SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataHoldingUserToken)
+        private int GetRemainingBytesToProcess(SocketAsyncEventArgs receiveSendEventArgs)
         {
-            var output = new byte[receiveSendEventArgs.BytesTransferred];
-
-            for (int i = 0; i < receiveSendEventArgs.BytesTransferred; i++)
-                output[i] = receiveSendEventArgs.Buffer[dataHoldingUserToken.BufferOffsetReceive + i];
-
-            _logger.QueueMessage(LogCategory.TcpServer, LogSeverity.Debug,
-                                 string.Format("{0}: Bytes Received: {1}", callingFunction, BitConverter.ToString(output)));
+            var prefix = new ArraySegment<byte>(receiveSendEventArgs.Buffer, receiveSendEventArgs.Offset, _serverConfiguration.ReceivePrefixLength).ToArray();
+            var messageLength = BitConverter.ToInt32(prefix, 0);
+            return prefix.Length + messageLength;
         }
 
         private void ProcessReceivedMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken dataToken, int remainingBytesToProcess)

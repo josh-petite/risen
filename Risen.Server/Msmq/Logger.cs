@@ -28,10 +28,16 @@ namespace Risen.Server.Msmq
                 return;
 
             var logMessage = LogMessage.Create(logCategory, logSeverity, message);
+            EvaluateConsoleColor(logSeverity);
             Console.WriteLine(logMessage.ToString());
 
             lock (_mutex)
                 _logMessageQueue.Send(new Message {Body = logMessage, Label = "LogMessage", UseDeadLetterQueue = true});
+        }
+
+        private void EvaluateConsoleColor(LogSeverity logSeverity)
+        {
+            Console.ForegroundColor = logSeverity == LogSeverity.Error ? ConsoleColor.Red : ConsoleColor.White;
         }
 
         public void Enable(bool isEnabled)

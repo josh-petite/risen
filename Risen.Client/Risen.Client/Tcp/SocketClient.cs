@@ -11,6 +11,7 @@ namespace Risen.Client.Tcp
     {
         void Send(string message);
         void Connect();
+        void Hammer();
     }
 
     public class SocketClient : ISocketClient
@@ -20,6 +21,18 @@ namespace Risen.Client.Tcp
         public void Connect()
         {
             _tcpClient = new TcpClient("127.0.0.1", 4444);
+        }
+
+        public void Hammer()
+        {
+            var stream = _tcpClient.GetStream();
+
+            for (int i = 0; i < 500000; i++)
+            {
+                var preparedMessage = PrepareMessage(i.ToString());
+                stream.Write(preparedMessage, 0, preparedMessage.Length);
+            }
+
         }
 
         public void Send(string message)
