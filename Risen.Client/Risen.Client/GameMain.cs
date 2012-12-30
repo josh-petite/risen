@@ -1,9 +1,11 @@
 using System;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Newtonsoft.Json;
 using Risen.Client.Tcp;
+using Risen.Shared.Enums;
+using Risen.Shared.Models;
 
 namespace Risen.Client
 {
@@ -19,6 +21,9 @@ namespace Risen.Client
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private SpriteFont _spriteFont;
+
+        private readonly LoginModel _loginModelJosh = new LoginModel {Username = "Josh", Password = "Test"};
+        private readonly LoginModel _loginModelKris = new LoginModel { Username = "Kris", Password = "Test" };
         
         public GameMain(ISocketClient socketClient, IInputManager inputManager)
         {
@@ -72,13 +77,26 @@ namespace Risen.Client
             _inputManager.Update(Keyboard.GetState());
             var newlyPressedKeys = _inputManager.GetNewlyPressedKeys();
 
-            if (newlyPressedKeys.Any())
-            {
-                //_socketClient.Send(newlyPressedKeys.Aggregate(string.Empty, (current, keyPressed) => current + keyPressed));
-                _socketClient.Hammer();
-            }
+            foreach (var key in newlyPressedKeys)
+                Evalutate(key);
 
             base.Update(gameTime);
+        }
+
+        private void Evalutate(Keys key)
+        {
+            switch (key)
+            {
+                case Keys.F1:
+                    _socketClient.Send(MessageType.Login, JsonConvert.SerializeObject(_loginModelJosh));
+                    break;
+                case Keys.F2:
+                    _socketClient.Send(MessageType.Login, JsonConvert.SerializeObject(_loginModelKris));
+                    break;
+                default:
+                    _socketClient.Send(MessageType.Unknown, key.ToString());
+                    break;
+            }
         }
 
         /// <summary>

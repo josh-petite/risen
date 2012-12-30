@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using Risen.ConsoleServer.Configuration;
 using Risen.Server.Tcp;
-using StructureMap;
 
 namespace Risen.ConsoleServer
 {
@@ -11,19 +11,9 @@ namespace Risen.ConsoleServer
         {
             ConsoleServerRegistry.Configure();
 
-            // Simple Async Tcp Server
-            //var server = new AsyncTcpServer(new IPAddress(0), 4000);
-            //server.Start();
-
-            // SocketAsyncEventArgsPool server
-            //var server = ObjectFactory.GetInstance<ISocketListener>();
-            
-            //Process.GetCurrentProcess().WaitForExit();
-
-            //server.CleanUpOnExit();
-
-            var server = ObjectFactory.GetInstance<TcpListenerServer>();
-            server.Start();
+            var service = new TcpListenerService();
+            service.Start();
+            new ConnectedUsersMonitor().Start(service.ConnectedUsers);
 
             Process.GetCurrentProcess().WaitForExit();
         }

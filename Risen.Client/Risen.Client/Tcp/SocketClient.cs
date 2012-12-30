@@ -4,12 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using Risen.Shared.Enums;
 
 namespace Risen.Client.Tcp
 {
     public interface ISocketClient
     {
-        void Send(string message);
+        void Send(MessageType messageType, string message);
         void Connect();
         void Hammer();
     }
@@ -29,35 +30,29 @@ namespace Risen.Client.Tcp
 
             for (int i = 0; i < 500000; i++)
             {
-                var preparedMessage = PrepareMessage(i.ToString());
+                var preparedMessage = PrepareMessage(MessageType.Unknown, i.ToString());
                 stream.Write(preparedMessage, 0, preparedMessage.Length);
             }
 
         }
 
-        public void Send(string message)
+        public void Send(MessageType messageType, string message)
         {
-            var preparedMessage = PrepareMessage(message);
+            var preparedMessage = PrepareMessage(messageType, message);
             var stream = _tcpClient.GetStream();
-
-            Program.TraceListener.WriteLine(string.Format("Message: {0} - Bytes: {1} - Prepared Message: {2}",
-                                                          message,
-                                                          preparedMessage.Aggregate(string.Empty, (current, t) => current + t),
-                                                          BitConverter.ToString(preparedMessage)));
-
             stream.Write(preparedMessage, 0, preparedMessage.Length);
-
-            Program.TraceListener.Flush();
         }
-        
-        private byte[] PrepareMessage(string message)
+
+        private byte[] PrepareMessage(MessageType messageType, string message)
         {
             var messageInBytes = Encoding.Default.GetBytes(message);
+            var messageTypeInBytes = new[] {(byte) messageType};
             var prefix = BitConverter.GetBytes(messageInBytes.Length);
-            var result = new byte[prefix.Length + messageInBytes.Length];
+            var result = new byte[prefix.Length + messageTypeInBytes.Length + messageInBytes.Length];
 
             Buffer.BlockCopy(prefix, 0, result, 0, prefix.Length);
-            Buffer.BlockCopy(messageInBytes, 0, result, prefix.Length, messageInBytes.Length);
+            Buffer.BlockCopy(messageTypeInBytes, 0, result, prefix.Length, messageTypeInBytes.Length);
+            Buffer.BlockCopy(messageInBytes, 0, result, prefix.Length + messageTypeInBytes.Length, messageInBytes.Length);
             
             return result;
         }

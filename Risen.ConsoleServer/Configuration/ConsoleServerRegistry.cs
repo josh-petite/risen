@@ -20,20 +20,12 @@ namespace Risen.ConsoleServer.Configuration
                                                  r.Scan(x =>
                                                             {
                                                                 x.TheCallingAssembly();
-                                                                //x.AssemblyContainingType<ISocketListener>();
                                                                 x.AssemblyContainingType<ILogger>();
                                                                 x.WithDefaultConventions();
                                                             });
 
                                                  r.For<ILogger>().Singleton().Use<Logger>();
-                                                 r.For<IBufferManager>().Singleton().Use<BufferManager>();
                                                  r.For<ILogMessageQueue>().Singleton().Use<LogMessageQueue>();
-
-                                                 //r.For<ISocketListener>().Singleton().OnCreationForAll(o =>
-                                                 //    {
-                                                 //        o.Init();
-                                                 //        o.StartListen();
-                                                 //    });
                                              });
             }
         }

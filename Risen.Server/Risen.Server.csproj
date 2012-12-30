@@ -39,6 +39,9 @@
     <Reference Include="Iesi.Collections">
       <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Externals\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NHibernate">
       <HintPath>..\packages\NHibernate.3.3.2.4000\lib\Net35\NHibernate.dll</HintPath>
     </Reference>
@@ -57,7 +60,6 @@
     <Compile Include="Entities\EntityBase.cs" />
     <Compile Include="Entities\Maps\CommentMap.cs" />
     <Compile Include="Entities\Maps\ExitMap.cs" />
-    <Compile Include="Extentions\SocketAsyncEventArgsExtensions.cs" />
     <Compile Include="Msmq\Logger.cs" />
     <Compile Include="Msmq\LogMessage.cs" />
     <Compile Include="Msmq\LogMessageQueue.cs">
@@ -84,28 +86,10 @@
     <Compile Include="Logic\ZoneLogic.cs" />
     <Compile Include="ReferenceTypes\LevelDefinition.cs" />
     <Compile Include="Data\Repository.cs" />
-    <Compile Include="Tcp\AsyncTcpServer.cs" />
-    <Compile Include="Tcp\BufferManager.cs" />
-    <Compile Include="Tcp\DataHolder.cs" />
-    <Compile Include="Tcp\EventArgs\ProcessReceiveEventArgs.cs" />
-    <Compile Include="Tcp\Factories\AcceptOperationUserTokenFactory.cs" />
-    <Compile Include="Tcp\Factories\DataHoldingUserTokenFactory.cs" />
-    <Compile Include="Tcp\Factories\IncomingDataPreparerFactory.cs" />
-    <Compile Include="Tcp\Factories\MediatorFactory.cs" />
-    <Compile Include="Tcp\Factories\SocketAsyncEventArgsFactory.cs" />
-    <Compile Include="Tcp\Factories\SocketAsyncEventArgsPoolFactory.cs" />
-    <Compile Include="Tcp\IncomingDataPreparer.cs" />
-    <Compile Include="Tcp\Mediator.cs" />
-    <Compile Include="Tcp\MessageHandler.cs" />
-    <Compile Include="Tcp\OutboundQueue.cs" />
-    <Compile Include="Tcp\OutgoingDataPreparer.cs" />
-    <Compile Include="Tcp\PrefixHandler.cs" />
+    <Compile Include="Tcp\ConnectedUser.cs" />
     <Compile Include="Tcp\ServerConfiguration.cs" />
-    <Compile Include="Tcp\SocketAsyncEventArgsPool.cs" />
-    <Compile Include="Tcp\SocketListener.cs" />
-    <Compile Include="Tcp\TcpListenerServer.cs" />
-    <Compile Include="Tcp\Tokens\AcceptOperationUserToken.cs" />
-    <Compile Include="Tcp\Tokens\DataHoldingUserToken.cs" />
+    <Compile Include="Tcp\ConnectedUsersMonitor.cs" />
+    <Compile Include="Tcp\TcpListenerService.cs" />
     <Compile Include="Utility\Point.cs" />
     <Compile Include="Entities\Room.cs" />
     <Compile Include="Entities\World.cs" />
