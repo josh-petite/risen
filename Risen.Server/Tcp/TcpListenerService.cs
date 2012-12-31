@@ -36,8 +36,22 @@ namespace Risen.Server.Tcp
 
         private void TcpClientConnected(Task<TcpClient> tcpClientTask)
         {
-            HandshakeAndIdentify(tcpClientTask.Result);
-            _tcpListener.AcceptTcpClientAsync().ContinueWith(TcpClientConnected);
+            try
+            {
+                HandshakeAndIdentify(tcpClientTask.Result);
+            }
+            catch (AggregateException ex)
+            {
+                //TODO: Logging?
+            }
+            catch (Exception ex)
+            {
+                //TODO: Logging?
+            }
+            finally
+            {
+                _tcpListener.AcceptTcpClientAsync().ContinueWith(TcpClientConnected);
+            }            
         }
 
         private void HandshakeAndIdentify(TcpClient result)
