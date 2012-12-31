@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Risen.Server.Tcp
 {
-    public class ConnectedUsersMonitor
+    public interface IConnectedUsersMonitor
+    {
+        void Start(IConnectionService connectionService);
+    }
+
+    public class ConnectedUsersMonitor : IConnectedUsersMonitor
     {
         public void Start(IConnectionService connectionService)
         {

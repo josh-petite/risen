@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Risen.Server.Tcp
 {
+    public interface IConnectionService
+    {
+        void AddConnection(ConnectedUser user);
+        void RemoveConnection(ConnectedUser user);
+        ConnectedUser[] GetConnections();
+    }
+
     public class ConnectionService : IConnectionService
     {
         private readonly object _connectionMutex = new object();

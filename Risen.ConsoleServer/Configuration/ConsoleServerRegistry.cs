@@ -11,23 +11,25 @@ namespace Risen.ConsoleServer.Configuration
 
         public static void Configure()
         {
-            if (!_isConfigured)
-            {
-                _isConfigured = true;
+            if (_isConfigured) 
+                return;
 
-                ObjectFactory.Initialize(r =>
-                                             {
-                                                 r.Scan(x =>
-                                                            {
-                                                                x.TheCallingAssembly();
-                                                                x.AssemblyContainingType<ILogger>();
-                                                                x.WithDefaultConventions();
-                                                            });
+            _isConfigured = true;
 
-                                                 r.For<ILogger>().Singleton().Use<Logger>();
-                                                 r.For<ILogMessageQueue>().Singleton().Use<LogMessageQueue>();
-                                             });
-            }
+            ObjectFactory.Initialize(r =>
+                                         {
+                                             r.Scan(x =>
+                                                        {
+                                                            x.TheCallingAssembly();
+                                                            x.AssemblyContainingType<ILogger>();
+                                                            x.WithDefaultConventions();
+                                                        });
+
+                                             r.For<ILogger>().Singleton();
+                                             r.For<ILogMessageQueue>().Singleton();
+                                             r.For<ITcpListenerService>().Singleton().OnCreationForAll(o => o.Start());
+                                             r.For<IConnectionService>().Singleton();
+                                         });
         }
     }
 }

@@ -1,23 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Risen.Server.Entities;
-using Risen.Shared.Models;
+using Risen.Server.Tcp.Cache;
+using Risen.Shared.Enums;
 
 namespace Risen.Server.Tcp
 {
-    public class TcpListenerService
+    public interface ITcpListenerService
+    {
+        void Start();
+    }
+
+    public class TcpListenerService : ITcpListenerService
     {
         private readonly IConnectionService _connectionService;
+        private readonly ITcpMessageProcessorCache _tcpMessageProcessorCache;
 
-        public TcpListenerService(IConnectionService connectionService)
+        public TcpListenerService(IConnectionService connectionService, ITcpMessageProcessorCache tcpMessageProcessorCache)
         {
             _connectionService = connectionService;
+            _tcpMessageProcessorCache = tcpMessageProcessorCache;
         }
 
         private TcpListener _tcpListener;
@@ -63,25 +68,17 @@ namespace Risen.Server.Tcp
 
         private void AwaitLoginInformationFromNewConnection(ConnectedUser connectedUser)
         {
-            new TcpLoginService().Await(connectedUser);
-        }
-    }
-    
-    public class TcpLoginService // this will be refactored ... just hardcoding a login service to test json serialization/deserialization
-    {
-        public void Await(ConnectedUser connectedUser)
-        {
             while (true)
             {
-                var prefixBuffer = new byte[4];
-                var messageTypeBuffer = new byte[1];
-
                 if (!connectedUser.TcpClient.Connected)
                     continue;
 
                 var stream = connectedUser.TcpClient.GetStream();
                 if (!stream.CanRead || !stream.DataAvailable)
                     continue;
+
+                var prefixBuffer = new byte[4];
+                var messageTypeBuffer = new byte[1];
 
                 stream.Read(prefixBuffer, 0, 4);
                 stream.Read(messageTypeBuffer, 0, 1);
@@ -90,16 +87,11 @@ namespace Risen.Server.Tcp
                 var buffer = new byte[length];
                 
                 stream.Read(buffer, 0, length);
-                
-                var loginModel = JsonConvert.DeserializeObject<LoginModel>(Encoding.ASCII.GetString(buffer));
 
-                if (loginModel != null)
-                {
-                    connectedUser.Player = new Player {User = new User {Username = loginModel.Username, Password = loginModel.Password}};
-                    Console.WriteLine("User: {0} with password of {1} has logged in with the following identifier: {2}.", loginModel.Username, loginModel.Password,
-                                      connectedUser.Identifier);
-                    break;
-                }
+                var processor = _tcpMessageProcessorCache.GetApplicableProcessor((MessageType) messageTypeBuffer.First());
+                processor.Execute(connectedUser, Encoding.ASCII.GetString(buffer));
+
+                break;
             }
         }
     }

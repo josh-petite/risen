@@ -2,6 +2,7 @@
 using System.Linq;
 using Risen.ConsoleServer.Configuration;
 using Risen.Server.Tcp;
+using StructureMap;
 
 namespace Risen.ConsoleServer
 {
@@ -11,11 +12,10 @@ namespace Risen.ConsoleServer
         {
             ConsoleServerRegistry.Configure();
 
-            var connectionService = new ConnectionService();
-
-            var service = new TcpListenerService(connectionService);
-            service.Start();
-            new ConnectedUsersMonitor().Start(connectionService);
+            var connectionService = ObjectFactory.GetInstance<IConnectionService>();
+            ObjectFactory.GetInstance<ITcpListenerService>();
+            var connectedUsersMonitor = ObjectFactory.GetInstance<IConnectedUsersMonitor>();
+            connectedUsersMonitor.Start(connectionService);
 
             Process.GetCurrentProcess().WaitForExit();
         }
