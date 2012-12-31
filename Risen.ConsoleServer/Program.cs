@@ -11,9 +11,11 @@ namespace Risen.ConsoleServer
         {
             ConsoleServerRegistry.Configure();
 
-            var service = new TcpListenerService();
+            var connectionService = new ConnectionService();
+
+            var service = new TcpListenerService(connectionService);
             service.Start();
-            new ConnectedUsersMonitor().Start(service.ConnectedUsers);
+            new ConnectedUsersMonitor().Start(connectionService);
 
             Process.GetCurrentProcess().WaitForExit();
         }

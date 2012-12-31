@@ -13,12 +13,14 @@ namespace Risen.Server.Tcp
 {
     public class TcpListenerService
     {
-        private TcpListener _tcpListener;
-        private readonly List<ConnectedUser> _connectedUsers = new List<ConnectedUser>();
-        public List<ConnectedUser> ConnectedUsers
+        private readonly IConnectionService _connectionService;
+
+        public TcpListenerService(IConnectionService connectionService)
         {
-            get { return _connectedUsers; }
+            _connectionService = connectionService;
         }
+
+        private TcpListener _tcpListener;
 
         public void Start()
         {
@@ -42,7 +44,7 @@ namespace Risen.Server.Tcp
         {
             var connectedUser = new ConnectedUser {TcpClient = result, Identifier = Guid.NewGuid()};
             AwaitLoginInformationFromNewConnection(connectedUser);
-            _connectedUsers.Add(connectedUser);
+            _connectionService.AddConnection(connectedUser);
         }
 
         private void AwaitLoginInformationFromNewConnection(ConnectedUser connectedUser)

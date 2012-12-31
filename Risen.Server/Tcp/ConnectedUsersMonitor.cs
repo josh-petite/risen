@@ -8,17 +8,19 @@ namespace Risen.Server.Tcp
 {
     public class ConnectedUsersMonitor
     {
-        public void Start(List<ConnectedUser> connectedUsers)
+        public void Start(IConnectionService connectionService)
         {
             while (true)
             {
                 Thread.Sleep(5000);
 
+                var connectedUsers = connectionService.GetConnections();
+
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Number of players connected: {0}.", connectedUsers.Count());
                 Console.ForegroundColor = ConsoleColor.White;
 
-                for (int i = 0; i < connectedUsers.Count; i++)
+                for (int i = 0; i < connectedUsers.Length; i++)
                 {
                     var connectedUser = connectedUsers[i];
                     if (connectedUser.TcpClient.Connected)
@@ -28,7 +30,7 @@ namespace Risen.Server.Tcp
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("{0} has disconnected!");
                         Console.ForegroundColor = ConsoleColor.White;
-                        connectedUsers.Remove(connectedUser);
+                        connectionService.RemoveConnection(connectedUser);
                     }
                 }
             }

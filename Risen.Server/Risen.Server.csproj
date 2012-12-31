@@ -87,6 +87,8 @@
     <Compile Include="ReferenceTypes\LevelDefinition.cs" />
     <Compile Include="Data\Repository.cs" />
     <Compile Include="Tcp\ConnectedUser.cs" />
+    <Compile Include="Tcp\ConnectionService.cs" />
+    <Compile Include="Tcp\IConnectionService.cs" />
     <Compile Include="Tcp\ServerConfiguration.cs" />
     <Compile Include="Tcp\ConnectedUsersMonitor.cs" />
     <Compile Include="Tcp\TcpListenerService.cs" />
