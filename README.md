@@ -1,4 +1,4 @@
 risen
 =====
 
-The next generation of MUD gaming, streamlined.
+A space-based strategy/real-time combat online world.
