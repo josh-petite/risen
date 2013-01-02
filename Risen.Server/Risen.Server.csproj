@@ -60,6 +60,7 @@
     <Compile Include="Entities\EntityBase.cs" />
     <Compile Include="Entities\Maps\CommentMap.cs" />
     <Compile Include="Entities\Maps\ExitMap.cs" />
+    <Compile Include="Extentions\ConnectedUserExtensions.cs" />
     <Compile Include="Msmq\Logger.cs" />
     <Compile Include="Msmq\LogMessage.cs" />
     <Compile Include="Msmq\LogMessageQueue.cs">
@@ -87,8 +88,10 @@
     <Compile Include="ReferenceTypes\LevelDefinition.cs" />
     <Compile Include="Data\Repository.cs" />
     <Compile Include="Tcp\Cache\ITcpMessageProcessor.cs" />
+    <Compile Include="Tcp\Cache\TcpKeepAliveMessageProcessor.cs" />
     <Compile Include="Tcp\Cache\TcpLoginMessageProcessor.cs" />
     <Compile Include="Tcp\Cache\TcpMessageProcessorCache.cs" />
+    <Compile Include="Tcp\Cache\TcpUnknownMessageProcessor.cs" />
     <Compile Include="Tcp\ConnectedUser.cs" />
     <Compile Include="Tcp\ConnectionService.cs" />
     <Compile Include="Tcp\ServerConfiguration.cs" />

@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using Risen.Shared.Enums;
 
 namespace Risen.Client.Tcp
 {
-    public interface ISocketClient
+    public interface ISocketClient : IDisposable
     {
         void Send(MessageType messageType, string message);
         void Connect();
         void Hammer();
+        void Update();
     }
 
     public class SocketClient : ISocketClient
@@ -33,7 +31,27 @@ namespace Risen.Client.Tcp
                 var preparedMessage = PrepareMessage(MessageType.Unknown, i.ToString());
                 stream.Write(preparedMessage, 0, preparedMessage.Length);
             }
+        }
 
+        public void Update()
+        {
+            var stream = _tcpClient.GetStream();
+
+            if (!stream.CanRead || !stream.DataAvailable)
+                return;
+
+            var prefixBuffer = new byte[4];
+            var messageTypeBuffer = new byte[1];
+
+            stream.Read(prefixBuffer, 0, 4);
+            stream.Read(messageTypeBuffer, 4, 1);
+
+            var length = BitConverter.ToInt32(prefixBuffer, 0);
+            var messageBuffer = new byte[length];
+
+            stream.Read(messageBuffer, 0, length);
+
+            Receive((MessageType) BitConverter.ToInt32(messageTypeBuffer, 0), Encoding.Default.GetString(messageBuffer));
         }
 
         public void Send(MessageType messageType, string message)
@@ -55,6 +73,24 @@ namespace Risen.Client.Tcp
             Buffer.BlockCopy(messageInBytes, 0, result, prefix.Length + messageTypeInBytes.Length, messageInBytes.Length);
             
             return result;
+        }
+
+        private void Receive(MessageType messageType, string message)
+        {
+            switch (messageType)
+            {
+                case MessageType.KeepAlive:
+                    GameMain.KeepAlivesReceived++;
+                    break;
+                case MessageType.Unknown:
+                    GameMain.MessageReceived = message;
+                    break;
+            }
+        }
+
+        public void Dispose()
+        {
+            _tcpClient.Close();
         }
     }
 }

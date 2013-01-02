@@ -33,6 +33,9 @@ namespace Risen.Client
             Content.RootDirectory = "Content";
         }
 
+        public static int KeepAlivesReceived { get; set; }
+        public static string MessageReceived { get; set; }
+
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -41,6 +44,7 @@ namespace Risen.Client
         /// </summary>
         protected override void Initialize()
         {
+            KeepAlivesReceived = 0;
             _graphics.GraphicsDevice.Viewport = new Viewport(new Rectangle(0, 0, 320, 240));
             _socketClient.Connect();
 
@@ -80,6 +84,8 @@ namespace Risen.Client
             foreach (var key in newlyPressedKeys)
                 Evalutate(key);
 
+            _socketClient.Update();
+
             base.Update(gameTime);
         }
 
@@ -108,7 +114,8 @@ namespace Risen.Client
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(_spriteFont, "testing...", new Vector2(50, 50), Color.White);
+            _spriteBatch.DrawString(_spriteFont, string.Format("Keep Alive Messages Received: {0}", KeepAlivesReceived), new Vector2(6, 6), Color.Black);
+            _spriteBatch.DrawString(_spriteFont, string.Format("Keep Alive Messages Received: {0}", KeepAlivesReceived), new Vector2(5, 5), Color.White);
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -116,6 +123,7 @@ namespace Risen.Client
 
         protected override void Dispose(bool disposing)
         {
+            _socketClient.Dispose();
             base.Dispose(disposing);
         }
     }

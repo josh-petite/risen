@@ -18,25 +18,27 @@ namespace Risen.Server.Tcp
                 Thread.Sleep(5000);
 
                 var connectedUsers = connectionService.GetConnections();
+                ColorText(ConsoleColor.Green, "Number of players connected: {0}.", connectedUsers.Count());
+                
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Number of players connected: {0}.", connectedUsers.Count());
-                Console.ForegroundColor = ConsoleColor.White;
-
-                for (int i = 0; i < connectedUsers.Length; i++)
+                foreach (var connectedUser in connectedUsers)
                 {
-                    var connectedUser = connectedUsers[i];
                     if (connectedUser.TcpClient.Connected)
                         Console.WriteLine("Player {0} is connected.", connectedUser.Player.User.Username);
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("{0} has disconnected!");
-                        Console.ForegroundColor = ConsoleColor.White;
+                        ColorText(ConsoleColor.Red, "{0} has disconnected!", connectedUser.Player.User.Username);
                         connectionService.RemoveConnection(connectedUser);
                     }
                 }
             }
+        }
+
+        private void ColorText(ConsoleColor consoleColor, string mask, params object[] extras)
+        {
+            Console.ForegroundColor = consoleColor;
+            Console.WriteLine(mask, extras);
+            Console.ResetColor();
         }
     }
 }

@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Risen.Server.Tcp.Cache;
 using Risen.Shared.Enums;
@@ -26,17 +28,22 @@ namespace Risen.Server.Tcp
         }
 
         private TcpListener _tcpListener;
+        private Thread _pollSocketsThread;
 
         public void Start()
         {
             _tcpListener = new TcpListener(IPAddress.Any, 4444);
             _tcpListener.Start();
             _tcpListener.AcceptTcpClientAsync().ContinueWith(TcpClientConnected);
+            
+            _pollSocketsThread = new Thread(_connectionService.PollConnectedUsersForUpdates);
+            _pollSocketsThread.Start();
         }
 
         public void Stop()
         {
             _tcpListener.Stop();
+            _pollSocketsThread.Abort();
         }
 
         private void TcpClientConnected(Task<TcpClient> tcpClientTask)
@@ -76,7 +83,7 @@ namespace Risen.Server.Tcp
                 var stream = connectedUser.TcpClient.GetStream();
                 if (!stream.CanRead || !stream.DataAvailable)
                     continue;
-
+                
                 var prefixBuffer = new byte[4];
                 var messageTypeBuffer = new byte[1];
 
@@ -90,7 +97,7 @@ namespace Risen.Server.Tcp
 
                 var processor = _tcpMessageProcessorCache.GetApplicableProcessor((MessageType) messageTypeBuffer.First());
                 processor.Execute(connectedUser, Encoding.ASCII.GetString(buffer));
-
+                
                 break;
             }
         }
