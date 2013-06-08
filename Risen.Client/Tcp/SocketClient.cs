@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using Risen.Shared.Enums;
 
+
 namespace Risen.Client.Tcp
 {
     public interface ISocketClient : IDisposable
@@ -51,7 +52,7 @@ namespace Risen.Client.Tcp
 
             stream.Read(messageBuffer, 0, length);
 
-            Receive((MessageType) BitConverter.ToInt32(messageTypeBuffer, 0), Encoding.Default.GetString(messageBuffer));
+            Receive((MessageType)BitConverter.ToInt32(messageTypeBuffer, 0), Encoding.Default.GetString(messageBuffer));
         }
 
         public void Send(MessageType messageType, string message)
@@ -64,14 +65,14 @@ namespace Risen.Client.Tcp
         private byte[] PrepareMessage(MessageType messageType, string message)
         {
             var messageInBytes = Encoding.Default.GetBytes(message);
-            var messageTypeInBytes = new[] {(byte) messageType};
+            var messageTypeInBytes = new[] { (byte)messageType };
             var prefix = BitConverter.GetBytes(messageInBytes.Length);
             var result = new byte[prefix.Length + messageTypeInBytes.Length + messageInBytes.Length];
 
             Buffer.BlockCopy(prefix, 0, result, 0, prefix.Length);
             Buffer.BlockCopy(messageTypeInBytes, 0, result, prefix.Length, messageTypeInBytes.Length);
             Buffer.BlockCopy(messageInBytes, 0, result, prefix.Length + messageTypeInBytes.Length, messageInBytes.Length);
-            
+
             return result;
         }
 
@@ -80,10 +81,10 @@ namespace Risen.Client.Tcp
             switch (messageType)
             {
                 case MessageType.KeepAlive:
-                    GameMain.KeepAlivesReceived++;
+                    //GameMain.KeepAlivesReceived++;
                     break;
                 case MessageType.Unknown:
-                    GameMain.MessageReceived = message;
+                    //GameMain.MessageReceived = message;
                     break;
             }
         }

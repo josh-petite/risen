@@ -1,40 +1,41 @@
+﻿#region Using Statements
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Storage;
+using Microsoft.Xna.Framework.GamerServices;
 using Newtonsoft.Json;
 using Risen.Client.Tcp;
 using Risen.Shared.Enums;
 using Risen.Shared.Models;
 
+#endregion
+
 namespace Risen.Client
 {
-    public interface IGameMain : IDisposable
-    {
-        void Run();
-    }
-
-    public class GameMain : Game, IGameMain
+    /// <summary>
+    /// This is the main type for your game
+    /// </summary>
+    public class GameMain : Game
     {
         private readonly ISocketClient _socketClient;
         private readonly IInputManager _inputManager;
-        private GraphicsDeviceManager _graphics;
+        private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private SpriteFont _spriteFont;
 
-        private readonly LoginModel _loginModelJosh = new LoginModel {Username = "Josh", Password = "Test"};
-        private readonly LoginModel _loginModelKris = new LoginModel { Username = "Kris", Password = "Test" };
-        
-        public GameMain(ISocketClient socketClient, IInputManager inputManager)
+        private readonly LoginModel _loginModelJosh = new LoginModel { Username = "Josh", Password = "Test" };
+        private readonly LoginModel _loginModelKris = new LoginModel { Username = "Gordon", Password = "Test" };
+
+        public GameMain()
         {
-            _socketClient = socketClient;
-            _inputManager = inputManager;
+            _socketClient = new SocketClient();
+            _inputManager = new InputManager();
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
-
-        public static int KeepAlivesReceived { get; set; }
-        public static string MessageReceived { get; set; }
 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -44,7 +45,6 @@ namespace Risen.Client
         /// </summary>
         protected override void Initialize()
         {
-            KeepAlivesReceived = 0;
             _graphics.GraphicsDevice.Viewport = new Viewport(new Rectangle(0, 0, 320, 240));
             _socketClient.Connect();
 
@@ -59,7 +59,8 @@ namespace Risen.Client
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _spriteFont = Content.Load<SpriteFont>("Font");
+
+            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -113,18 +114,9 @@ namespace Risen.Client
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin();
-            _spriteBatch.DrawString(_spriteFont, string.Format("Keep Alive Messages Received: {0}", KeepAlivesReceived), new Vector2(6, 6), Color.Black);
-            _spriteBatch.DrawString(_spriteFont, string.Format("Keep Alive Messages Received: {0}", KeepAlivesReceived), new Vector2(5, 5), Color.White);
-            _spriteBatch.End();
+            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _socketClient.Dispose();
-            base.Dispose(disposing);
         }
     }
 }
