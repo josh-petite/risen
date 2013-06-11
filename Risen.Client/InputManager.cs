@@ -1,29 +1,25 @@
 ﻿using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace Risen.Client
 {
-    public interface IInputManager
-    {
-        bool KeyWasNewlyPressed(Keys key);
-        void Update(KeyboardState currentState);
-        Keys[] GetNewlyPressedKeys();
-    }
-
-    public class InputManager : IInputManager
+    public class InputManager : GameComponent
     {
         private KeyboardState _currentState;
         private KeyboardState _previousState;
+
+        public InputManager(Game game) : base(game) {}
 
         public bool KeyWasNewlyPressed(Keys key)
         {
             return _currentState.IsKeyDown(key) && _previousState.IsKeyUp(key);
         }
 
-        public void Update(KeyboardState currentState)
+        public void Update()
         {
             _previousState = _currentState;
-            _currentState = currentState;
+            _currentState = Keyboard.GetState();
         }
 
         public Keys[] GetNewlyPressedKeys()

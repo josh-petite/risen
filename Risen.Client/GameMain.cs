@@ -1,18 +1,8 @@
-﻿#region Using Statements
-using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Storage;
-using Microsoft.Xna.Framework.GamerServices;
-using Newtonsoft.Json;
-using Risen.Client.Tcp;
-using Risen.Shared.Enums;
+using Risen.Client.Graphics;
 using Risen.Shared.Models;
-
-#endregion
 
 namespace Risen.Client
 {
@@ -21,18 +11,16 @@ namespace Risen.Client
     /// </summary>
     public class GameMain : Game
     {
-        private readonly ISocketClient _socketClient;
-        private readonly IInputManager _inputManager;
+        //private readonly ISocketClient _socketClient;
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
         private readonly LoginModel _loginModelJosh = new LoginModel { Username = "Josh", Password = "Test" };
-        private readonly LoginModel _loginModelKris = new LoginModel { Username = "Gordon", Password = "Test" };
-
+        private readonly LoginModel _loginModelGordon = new LoginModel { Username = "Gordon", Password = "Test" };
+        
         public GameMain()
         {
-            _socketClient = new SocketClient();
-            _inputManager = new InputManager();
+            //_socketClient = new SocketClient();
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -45,8 +33,17 @@ namespace Risen.Client
         /// </summary>
         protected override void Initialize()
         {
-            _graphics.GraphicsDevice.Viewport = new Viewport(new Rectangle(0, 0, 320, 240));
-            _socketClient.Connect();
+            _graphics.GraphicsDevice.Viewport = new Viewport(new Rectangle(0, 0, 640, 480));
+            
+            var screen = new Screen(this);
+            Components.Add(screen);
+            Services.AddService(typeof(Screen), screen);
+
+            var inputManager = new InputManager(this);
+            Components.Add(inputManager);
+            Services.AddService(typeof(InputManager), inputManager);
+
+            //_socketClient.Connect();
 
             base.Initialize();
         }
@@ -79,13 +76,12 @@ namespace Risen.Client
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            _inputManager.Update(Keyboard.GetState());
-            var newlyPressedKeys = _inputManager.GetNewlyPressedKeys();
+            var mgr = (InputManager)Services.GetService(typeof(InputManager));
 
-            foreach (var key in newlyPressedKeys)
+            foreach (var key in mgr.GetNewlyPressedKeys())
                 Evalutate(key);
 
-            _socketClient.Update();
+            //_socketClient.Update();
 
             base.Update(gameTime);
         }
@@ -94,15 +90,15 @@ namespace Risen.Client
         {
             switch (key)
             {
-                case Keys.F1:
-                    _socketClient.Send(MessageType.Login, JsonConvert.SerializeObject(_loginModelJosh));
-                    break;
-                case Keys.F2:
-                    _socketClient.Send(MessageType.Login, JsonConvert.SerializeObject(_loginModelKris));
-                    break;
-                default:
-                    _socketClient.Send(MessageType.Unknown, key.ToString());
-                    break;
+                //case Keys.F1:
+                //    _socketClient.Send(MessageType.Login, JsonConvert.SerializeObject(_loginModelJosh));
+                //    break;
+                //case Keys.F2:
+                //    _socketClient.Send(MessageType.Login, JsonConvert.SerializeObject(_loginModelGordon));
+                //    break;
+                //default:
+                //    _socketClient.Send(MessageType.Unknown, key.ToString());
+                //    break;
             }
         }
 
@@ -113,9 +109,7 @@ namespace Risen.Client
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
-
+            
             base.Draw(gameTime);
         }
     }
