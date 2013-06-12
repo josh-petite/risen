@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,8 +8,8 @@ namespace Risen.Client.Graphics
 {
     public class Screen : DrawableGameComponent
     {
-        private const int Width = 320;
-        private const int Height = 240;
+        private const int Width = 640;
+        private const int Height = 480;
         private const int Scale = 2;
         
         private int[] _pixels;
@@ -15,37 +17,41 @@ namespace Risen.Client.Graphics
         private SpriteBatch _spriteBatch;
         private Texture2D _background;
 
-        public Screen(Game game) : base(game) {}
-        
+        public Screen(Game game) : base(game)
+        {
+            game.Components.Add(this);
+        }
+
+
+        Random r = new Random();
         public override void Update(GameTime gameTime)
         {
-            var elapsed = gameTime.ElapsedGameTime.Milliseconds;
+            //var elapsed = gameTime.ElapsedGameTime.Milliseconds;
 
-            for (int y = 0; y < Height; y++)
+            
+        }
+        
+        public override void Draw(GameTime gameTime)
+        {
+            for (int i = 0; i < Height * Width; i++)
             {
-                for (int x = 0; x < Width; x++)
-                {
-                    int xx = (int)Math.Sin(elapsed) % 15;
-                    int yy = (int)Math.Cos(elapsed) % 15;
-                    _pixels[x*y] =  xx + yy;
-                }
+                int xo = (int) (Math.Sin(gameTime.TotalGameTime.Milliseconds - i)%2000/2000.0d*Math.PI*2)*100;
+                int yo = (int)(Math.Cos(gameTime.TotalGameTime.Milliseconds - i) % 2000 / 2000.0d * Math.PI * 2) * 60;
+                //var result = (r.Next(255) >> 16) + (r.Next(255) >> 8) + (r.Next(255));
+                //_pixels[i] = result;
             }
 
             _background.SetData(_pixels);
-        }
 
-        public override void Draw(GameTime gameTime)
-        {
-            _spriteBatch.Begin();
-            _spriteBatch.Draw(_background, Vector2.Zero, Color.TransparentBlack);
-            _spriteBatch.End();
+            _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
+            base.Draw(gameTime);
         }
 
         public override void Initialize()
         {
             _pixels = new int[Width * Height];
             _background = new Texture2D(Game.GraphicsDevice, Width, Height);
-            _spriteBatch = new SpriteBatch(Game.GraphicsDevice);
+            _spriteBatch = (SpriteBatch) Game.Services.GetService(typeof (SpriteBatch));
         }
     }
 }

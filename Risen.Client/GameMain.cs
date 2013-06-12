@@ -34,14 +34,11 @@ namespace Risen.Client
         protected override void Initialize()
         {
             _graphics.GraphicsDevice.Viewport = new Viewport(new Rectangle(0, 0, 640, 480));
-            
-            var screen = new Screen(this);
-            Components.Add(screen);
-            Services.AddService(typeof(Screen), screen);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            var inputManager = new InputManager(this);
-            Components.Add(inputManager);
-            Services.AddService(typeof(InputManager), inputManager);
+            Services.AddService(typeof(SpriteBatch), _spriteBatch);
+            Services.AddService(typeof(Screen), new Screen(this));
+            Services.AddService(typeof(InputManager), new InputManager(this));
 
             //_socketClient.Connect();
 
@@ -54,10 +51,6 @@ namespace Risen.Client
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -110,7 +103,9 @@ namespace Risen.Client
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
             base.Draw(gameTime);
+            _spriteBatch.End();
         }
     }
 }

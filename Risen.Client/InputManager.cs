@@ -9,7 +9,10 @@ namespace Risen.Client
         private KeyboardState _currentState;
         private KeyboardState _previousState;
 
-        public InputManager(Game game) : base(game) {}
+        public InputManager(Game game) : base(game)
+        {
+            game.Components.Add(this);
+        }
 
         public bool KeyWasNewlyPressed(Keys key)
         {
